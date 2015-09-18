@@ -1,0 +1,190 @@
+<!--{include_file name="_smenu_node.htm"}-->
+<style type="text/css">.tag_data {margin:5px 0px;line-height:30px;}</style>
+<section id="ifr-main" class="ifr-main">
+
+<div class="breadcrumb">当前位置：<span>赛事活动</span>
+&nbsp;&gt;&nbsp;
+<!--{if $node_type eq '' || $node_type eq 'match'}-->
+<a href="#/node" class="oplink hashreq">活动列表</a>&nbsp;&gt;&nbsp;<span><!--{if $is_edit}-->编辑赛事活动<!--{else}-->添加赛事活动<!--{/if}--></span>
+<!--{/if}-->
+</div>
+
+<div class="dtnav"></div>
+<div class="dtContent">
+
+<!--{if $node_type eq '' OR $node_type eq 'match'}-->
+
+  <form name="formPost" action="" method="post" id="formPost" onsubmit="return false;">
+    <table class="frmTable frmGamePost card">
+      <tbody>
+        <tr>
+          <th class="c1">赛事标题：</th>
+          <td class="c2">
+            <input type="hidden" name="nid" value="<!--{$ninfo.nid}-->" id="frm_id" />
+            <input type="hidden" name="ntype" value="<!--{$node_type}-->" id="frm_ntype" />
+            <input type="text" name="title" value="<!--{$ninfo.title}-->" class="inptxt inplong" id="frm_title"  /><!--{form_required}-->
+          </td>
+        </tr>
+        <tr>
+          <th class="c1">赛事主图片：</th>
+          <td class="c2"><input type="text" name="thumb_url" value="<!--{$ninfo.thumb_url}-->" class="inptxt inplong" id="frm_thumb_url"  /><!--{form_required}--><!--{form_tips text='宽度>=640px'}-->
+          <a href="javascript:;" class="asslink" onclick="return popUpload('上传图片','/upload/upfile',pop_cb_succ,pop_cb_fail);">上传</a>
+          <span id="frm_thumb_img"><!--{if $ninfo.thumb_url neq ''}-->&nbsp;&nbsp;<a href="<!--{$ninfo.thumb_url}-->" target="_blank"><img src="<!--{$ninfo.thumb_url}-->" alt="" style="height:20px;" /></a><!--{/if}--></span>
+          </td>
+        </tr>
+        <tr>
+          <th class="c1">赛事类型：</th>
+          <td class="c2">
+           <select name="match_type" id="frm_match_type" style="width:100px;">
+           <!--{foreach from=$match_types key=k item=v}-->
+             <option value="<!--{$k}-->" <!--{show_selected chkval=$k refval=$ninfo.match_type}-->><!--{$v}--></option>
+           <!--{/foreach}-->
+           </select>
+          </td>
+        </tr>
+        <tr>
+          <th class="c1">赛事开始日期：</th>
+          <td class="c2"><input type="text" name="start_date" value="<!--{if $ninfo.start_date=='0000-00-00'}--><!--{else}--><!--{$ninfo.start_date}--><!--{/if}-->" class="inptxt inplong" id="frm_start_date"  /><!--{form_tips text='格式：YYYY-MM-DD'}--></td>
+        </tr>
+        <tr>
+          <th class="c1">赛事结束日期：</th>
+          <td class="c2"><input type="text" name="end_date" value="<!--{if $ninfo.end_date=='0000-00-00'}--><!--{else}--><!--{$ninfo.end_date}--><!--{/if}-->" class="inptxt inplong" id="frm_end_date"  /><!--{form_tips text='格式：YYYY-MM-DD'}--></td>
+        </tr>
+        <tr>
+          <th class="c1">关键词：</th>
+          <td class="c2"><input type="text" name="keyword" value="<!--{$ninfo.keyword}-->" class="inptxt inplong" id="frm_keyword"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">赛事详情：</th>
+          <td class="c2"><script id="content_detail"  name="content_detail" type="text/plain"></script></td>
+        </tr>
+        <!--{if $is_edit}-->
+        <tr>
+          <th class="c1">状态：</th>
+          <td class="c2">
+           <select name="status" id="frm_status" style="width:100px;">
+           <!--{foreach from=$status_set key=k item=v}-->
+             <option value="<!--{$k}-->" <!--{show_selected chkval=$k refval=$ninfo.status}-->><!--{$v}--></option>
+           <!--{/foreach}-->
+           </select>
+          </td>
+        </tr>
+        <!--{/if}-->
+        <tr class="rbtn">
+         <th class="c1"></th>
+         <td class="c2"><input type="submit" name="btnsubmit" value="提交" class="frmbtn" id="btnsubmit" />&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="oplink undl" title="返回列表页" onclick="return F.hashRefer('#/node/<!--{$node_type}-->');">返回</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+
+  <!-- 配置文件 -->
+  <script type="text/javascript" src="/misc/editor/ueditor_full/ueditor.config.js"></script>
+  <!-- 编辑器源码文件 -->
+  <script type="text/javascript" src="/misc/editor/ueditor_full/ueditor.all.js"></script>
+  <!-- 实例化编辑器 -->
+  <script type="text/javascript">
+      var content = UE.getEditor('content_detail', {initialFrameWidth:640,initialFrameHeight:667});
+      //对编辑器的操作最好在编辑器ready之后再做
+      content.ready(function() {
+          //设置编辑器的内容
+          content.setContent('<!--{$ninfo.content_detail}-->');
+      });
+  </script>
+<!--{/if}-->
+
+</div>
+
+<script>
+var _nav_second = '<!--{$nav_second}-->';
+var is_edit = '<!--{$is_edit}-->';
+is_edit = is_edit ? true : false;
+function pop_cb_succ(data,status){
+  if (data.flag=='OK') {
+    showTopPrompt('上传成功！', 'ok');
+    $('#frm_thumb_url').val(data.path);
+    $('#frm_thumb_img').html('&nbsp;&nbsp;<a href="'+data.path+'" target="_blank"><img src="'+data.path+'" alt="" style="height:20px;" /></a>');
+  }
+  else {
+    showTopPrompt('上传失败！', 'error');
+  }
+  closePopup();
+};
+function pop_cb_fail(xhr,status,e){
+  closePopup();
+};
+$(function(){
+	$('#frm_title').focus();
+});
+// form post
+F.formPost = function() {
+	var post_data = {};
+	
+	// node id
+	var _nid = $('#frm_id').val();
+	_nid = ''==_nid ? 0 : parseInt(_nid);
+	post_data.nid = _nid;
+	
+	// node type
+	post_data.ntype = $('#frm_ntype').val();
+
+	// node title
+	var $title = $('#frm_title');
+	var _title = $title.val().trim();
+	post_data.title = _title;
+	
+  // thumb url
+  post_data.thumb_url = $('#frm_thumb_url').val().trim();
+  
+  // start date && end date
+  post_data.match_type = $('#frm_match_type').val();
+  
+  // match type
+  post_data.start_date = $('#frm_start_date').val().trim();
+  post_data.end_date = $('#frm_end_date').val().trim();
+	
+  // node keyword
+  var $keyword = $('#frm_keyword');
+  var _keyword = $keyword.val();
+  _keyword = tickDuplicate(_keyword);
+  $keyword.val(_keyword);
+  post_data.keyword = _keyword;
+  
+	// node content detail
+	post_data.content_detail = content.getContent();;
+
+	if (is_edit) {
+		post_data.status = $('#frm_status').val();
+	}
+
+	if (''==_nav_second || 'match'==_nav_second) {
+		if(''==_title){
+			showTopPrompt('请输入标题', 'error', 2, function(){
+			  $title.val('').focus();
+			});
+			return false;
+		}
+	}
+	
+	// Submit
+	var $btnsubmit = $('#btnsubmit');
+	$btnsubmit.prop('disabled',true);
+  F.post(genurl('node/add'),post_data,function(data){
+	  
+    if (data.flag=='OK') {
+      F.clearCacheAll();      
+      showTopPrompt(data.msg, 'ok', 3, function(){
+        F.hashRefer('#/node'+((''==_nav_second||'match'==_nav_second) ? '' : '/'+_nav_second));
+      });
+    }
+    else {
+    	showTopPrompt(data.msg,'error',2,function(){F.locatePoint($title.get(0), $title.val().length);});
+    }
+    
+    $btnsubmit.prop('disabled',false);
+  });
+};
+
+</script>
+
+</section>

@@ -1,0 +1,125 @@
+<?php defined('IN_SIMPHP') or die('Access Denied');?>
+
+<?php if(''!==$errmsg):?>
+
+<div class="error"><?=$errmsg?></div>
+
+<?php else:?>
+
+<div class="match-player">
+  <div class="swipe">
+    <div id="slider" class="slider">
+      <?php for($i=0;$i<$player_gallery_num;$i++):?>
+      <div class="slidit" <?php if(0===$i) echo 'style="display:block"';?>><span class="edge"></span><img src="<?=$player_gallery[$i]?>" alt="" /></div>
+      <?php endfor;?>
+    </div>
+    <?php if ($player_gallery_num>1):/*仅多个图片时才显示*/?>
+    <div id="slidnav" class="slidnav clearfix">
+      <?php for($i=0;$i<$player_gallery_num;$i++):?>
+      <a href="javascript:void(0);" <?php if(0===$i):?>class="active"<?php endif;?>><?php echo $i+1;?></a>
+      <?php endfor;?>
+     </div>
+     <?php endif;?>
+  </div>
+  <div class="match-pos joinno"><?=$player_info['player_id']?>号</div>
+  <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">比赛</a>
+  <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
+  <a class="match-pos torank" href="">排名
+    <p>排行榜</p>
+  </a>
+  <div class="match-pos rttop">
+    <p class="r1"><em><?=$player_info['flowercnt']?></em>花</p>
+    <p class="r2"><em><?=$player_info['kisscnt']?></em>吻</p>
+  </div>
+  <div class="match-pos btmnav">
+    <div class="navit"><a href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a></div>
+    <div class="navit"><a href="<?php echo U('trade/order/confirm',['goods'=>'flower','player_id'=>$player_info['player_id']])?>" id="op-toflower">送花<br><span>(<em><?=$player_info['flowercnt']?></em>花)</span></a></div>
+    <div class="navit"><a href="<?php echo U('trade/order/confirm',['goods'=>'kiss','player_id'=>$player_info['player_id']])?>" id="op-tokiss">送吻<br><span>(<em><?=$player_info['kisscnt']?></em>吻)</span></a></div>
+    <div class="navit"><a href="javascript:;" id="op-toshare">分享<br><span>给朋友</span></a></div>
+  </div>
+<script type="text/javascript">
+var t1;
+$(function(){
+	var _active = 0, $_ap = $('#slidnav a');
+  
+  t1 = new TouchSlider({
+     id:'slider',
+     auto: false,
+     speed:300,
+     timeout:5000,
+     before:function(newIndex, oldSlide){
+    	 if ($_ap.size()>0) {
+         $_ap.get(_active).className = '';
+         _active = newIndex;
+         $_ap.get(_active).className = 'active';
+    	 }
+     }
+  });
+
+  if ($_ap.size()>0) {
+	  $_ap.each(function(index,ele){
+      $(ele).click(function(){
+        t1.slide(index);
+        return false;     
+      });
+		});
+  }
+  
+  setTimeout(function(){t1.resize();},500);
+
+  //禁用浏览器的左右滑动手势
+  var control = navigator.control || {};
+  if (control.gesture) {
+  	control.gesture(false);
+  }
+});
+</script>
+
+<script type="text/javascript">
+var currpic = '<?php echo isset($player_gallery[0]) ? $player_gallery[0] : ''?>';
+var picset = new Array();
+<?php foreach($player_gallery AS $it):?>
+picset.push('<?=$it?>');
+<?php endforeach;?>
+$('#slider img').click(function(){
+  wx.previewImage({
+    current: currpic,
+    urls: picset
+  });
+});
+</script>
+
+<script type="text/javascript">
+$(function(){
+
+	$('#op-toshare').click(function(){
+		wxData.share.title= '<?=$share_info['title']?>';
+		wxData.share.desc = '<?=$share_info['desc']?>';
+		wxData.share.link = '<?=$share_info['link']?>';
+		wxData.share.pic  = '<?=$share_info['pic']?>';
+		document.title = wxData.share.title;
+		wxData.share.refresh();
+		wxData.share.show_cover();
+	});
+
+	var ajaxing = false, player_id = '<?=$player_info['player_id']?>';
+	$('#op-tovote').click(function(){
+		if (ajaxing) return false;
+		ajaxing = true;
+		var oThis = this;
+		F.post('<?php echo U('match/vote')?>', {player_id: player_id}, function(ret){
+			ajaxing = false;
+			if (ret.flag=='SUC') {
+				alert(ret.msg);
+				$(oThis).find('em').text(ret.latest_votecnt);
+			}
+			else {
+				alert(ret.msg);
+			}
+		});
+  });
+	
+});
+</script>
+</div>
+<?php endif;?>
