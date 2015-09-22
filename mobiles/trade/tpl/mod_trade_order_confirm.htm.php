@@ -15,11 +15,11 @@
   <div class="frmbox">
     <div class="r r1">输入赠送的数量：<input type="text" name="amount" value="<?=$amount_start?>" id="amount"/> <?php if($goods_type=='kiss'):?>吻<?php else: ?>花<?php endif;?></div>
     <div class="r r2">支付金额：<em id="money"><?=$amount_start?></em> 元</div>
-    <div class="r r3"><?php if($goods_type=='kiss'):?>每一个吻可抵两票<?php else: ?>每一束花可抵两票<?php endif;?></div>
+    <div class="r r3"><?php if($goods_type=='kiss'):?>每一个吻可抵两票！<?php else: ?>每一束花可抵两票！<?php endif;?></div>
   </div>
 </div>
 
-<div class="box-topay"><button class="btn btn-block btn-green" id="btn-wxpay" data-payid="2">确定赠送</button></div>
+<div class="box-topay"><button class="btn btn-block btn-blue" id="btn-wxpay" data-payid="2">确定赠送</button></div>
 
 </div>
 

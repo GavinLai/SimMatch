@@ -8,7 +8,7 @@
 <div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　投票总数：<em><?=$ninfo['votecnt']?></em></div>
 <div class="match-thumb">
   <img src="<?=$ninfo['thumb_url']?>" alt="" />
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-green">我要参赛</a></div></div>
+  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
 </div>
   
 <div class="block-page match-info">
@@ -25,7 +25,7 @@
   <?php else:?>
   <div class="row"><div class="dt"><?=$ninfo['content_detail']?></div></div>
   <?php endif;?>
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-green">我要参赛</a></div></div>
+  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
 </div>  
 <div class="block-page player-info">
 <?php if ($player_num):?>
@@ -33,38 +33,32 @@
 <?php endif;?>  
   <div id="player-list">
   <?php if (!$player_num):?>
-    <div class="tip">还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a></div>
+    <div class="emptytip">还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a></div>
   <?php else:?>
   
-    <div class="itbox col-1">
-    <?php $i=0;foreach ($player_list AS $it):?>
-    <?php if ($i++%2===0):?>
-      <a class="bbsizing itcont" href="<?php echo U('player/'.$it['player_id'])?>">
-        <p><img src="<?=$it['img_thumb']?>" alt="" /></p>
-        <p class="stat"><em><?=$it['votecnt']?></em>票&nbsp;<em><?=$it['flowercnt']?></em>花&nbsp;<em><?=$it['kisscnt']?></em>吻</p>
-        <p class="name"><?=$it['truename']?>&nbsp;<span></span></p>
+  <?php foreach ($player_list AS $it):?>
+    <div class="itbox">
+      <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont">
+        <div class="cot">#<?=$it['player_id']?> <?=$it['truename']?><p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p></div>
+        <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
       </a>
-    <?php endif;?>
-    <?php endforeach;?>
     </div>
-    
-    <div class="itbox col-2">
-    <?php $i=0;foreach ($player_list AS $it):?>
-    <?php if ($i++%2===1):?>
-      <a class="bbsizing itcont" href="<?php echo U('player/'.$it['player_id'])?>">
-        <p><img src="<?=$it['img_thumb']?>" alt="" /></p>
-        <p class="stat"><em><?=$it['votecnt']?></em>票&nbsp;<em><?=$it['flowercnt']?></em>花&nbsp;<em><?=$it['kisscnt']?></em>吻</p>
-        <p class="name"><?=$it['truename']?>&nbsp;<span></span></p>
-      </a>
-    <?php endif;?>
-    <?php endforeach;?>
-    </div>
+  <?php endforeach;?>
     
   <?php endif;?>
   </div>
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-green">我要参赛</a></div></div>
+  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
 </div>
-
+<script type="text/javascript">
+$(function(){
+	setTimeout(function(){
+		var $ele = $('#player-list .imgc');
+		var w = $ele.width();
+		var h = parseInt(w/0.75); //ratio used by iphone4 w/h ratio
+		$ele.css('height',h+'px');
+	},1);
+});
+</script>
 <script type="text/javascript">
 function show_full(obj) {
 	$('.match-info .row.hide').show();

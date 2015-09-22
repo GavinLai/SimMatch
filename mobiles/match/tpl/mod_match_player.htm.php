@@ -21,21 +21,17 @@
      </div>
      <?php endif;?>
   </div>
-  <div class="match-pos joinno"><?=$player_info['player_id']?>号</div>
+  <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p></div>
   <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">比赛</a>
   <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
-  <a class="match-pos torank" href="">排名
-    <p>排行榜</p>
+  <a class="match-pos torank" href=""><?=$player_info['rank_info']['rank']?> / <?=$player_info['rank_info']['total']?>
+    <span>排行榜</span>
   </a>
-  <div class="match-pos rttop">
-    <p class="r1"><em><?=$player_info['flowercnt']?></em>花</p>
-    <p class="r2"><em><?=$player_info['kisscnt']?></em>吻</p>
-  </div>
   <div class="match-pos btmnav">
-    <div class="navit"><a href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a></div>
-    <div class="navit"><a href="<?php echo U('trade/order/confirm',['goods'=>'flower','player_id'=>$player_info['player_id']])?>" id="op-toflower">送花<br><span>(<em><?=$player_info['flowercnt']?></em>花)</span></a></div>
-    <div class="navit"><a href="<?php echo U('trade/order/confirm',['goods'=>'kiss','player_id'=>$player_info['player_id']])?>" id="op-tokiss">送吻<br><span>(<em><?=$player_info['kisscnt']?></em>吻)</span></a></div>
-    <div class="navit"><a href="javascript:;" id="op-toshare">分享<br><span>给朋友</span></a></div>
+    <a class="navit" href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt_single']?></em>票)</span></a>
+    <a class="navit" href="<?php echo U('trade/order/confirm',['goods'=>'flower','player_id'=>$player_info['player_id']])?>" id="op-toflower">送花<br><span>(<em><?=$player_info['flowercnt']?></em>花)</span></a>
+    <a class="navit" href="javascript:;" id="op-tokiss">总票数<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a>
+    <a class="navit" href="javascript:;" id="op-toshare">分享<br><span>给朋友</span></a>
   </div>
 <script type="text/javascript">
 var t1;
@@ -91,13 +87,12 @@ $('#slider img').click(function(){
 
 <script type="text/javascript">
 $(function(){
-
+	
 	$('#op-toshare').click(function(){
 		wxData.share.title= '<?=$share_info['title']?>';
 		wxData.share.desc = '<?=$share_info['desc']?>';
 		wxData.share.link = '<?=$share_info['link']?>';
 		wxData.share.pic  = '<?=$share_info['pic']?>';
-		document.title = wxData.share.title;
 		wxData.share.refresh();
 		wxData.share.show_cover();
 	});
@@ -111,7 +106,8 @@ $(function(){
 			ajaxing = false;
 			if (ret.flag=='SUC') {
 				alert(ret.msg);
-				$(oThis).find('em').text(ret.latest_votecnt);
+				$(oThis).find('em').text(ret.votedcnt_single);
+				$('#op-tokiss em').text(ret.votedcnt);
 			}
 			else {
 				alert(ret.msg);

@@ -27,8 +27,10 @@
 <body>
 <div id="rtWrap">
   <?php include T($tpl_header);?>
-  <div id="activePage" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>"><section class="scrollArea<?php if(isset($extra_css)&&!empty($extra_css)) echo ' '.$extra_css?>"></section>
-    <div class="pageBg">网页由 <?php echo C('env.copyright')?> 提供</div>
+  <div id="activePage" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>">
+    <section class="scrollArea<?php if(isset($extra_css)&&!empty($extra_css)) echo ' '.$extra_css?>"><?php if(1===$page_render_mode):?><?php include T($tpl_content);?><script>$(function(){F.set_scroller(false,100);});</script><?php endif;?></section>
+    <script>window.page_render_mode='<?=$page_render_mode?>';</script>
+    <div class="pageBg">该应用由 <?php echo C('env.copyright')?> 提供</div>
   </div>
   <div id="loadingCanvas" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>"></div>
   <div class="hide"><img src="<?php echo ploadingimg()?>" alt=""/></div>
@@ -36,7 +38,7 @@
   <?php include T('_popdlg');?>
 </div>
 <!-- 微信操作提示 -->
-<div id="cover-wxtips" class="cover"><img alt="" src="<?=$contextpath;?>themes/mobiles/img/guide.png"/></div>
+<div id="cover-wxtips" class="wxcover"><img alt="" src="<?=$contextpath;?>themes/mobiles/img/guide.png"/></div>
 </body>
 <?php footscript();?>
 <?php tplholder('FOOT_JS');?>

@@ -7,9 +7,9 @@
 defined('IN_SIMPHP') or die('Access Denied');
 
 return [
-  'default'   => ['title'  => '福小蜜',
-                'keyword'=> '福小蜜',
-                'desc'   => '福小蜜'],                
+  'default'   => ['title'  => '微信美女大赛',
+                'keyword'=> '微信,美女,大赛',
+                'desc'   => '寻找那些独特优秀，却没人捧红的奇女子'],                
   'index'   => ['title'  => '福小蜜',
                 'keyword'=> '福小蜜',
                 'desc'   => '福小蜜'],                
