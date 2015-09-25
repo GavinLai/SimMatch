@@ -12,12 +12,14 @@
 </div>
   
 <div class="block-page match-info">
+<?php if(0):?>
   <div class="row">比赛时间：<?=$ninfo['match_type_text']?>截止时间 <?php echo date('Y年m月d日',strtotime($ninfo['end_date']))?></div>
+<?php endif;?>
   <?php if ($content_parsed_num):?>
   <?php foreach($content_parsed AS $p):?>
-  <div class="row<?php if($content_parsed_num > 2 && $p['tag']!='begin' && $p['tag']!='end') echo ' hide'?>">
+  <div class="row<?php if($content_parsed_num > 2 && !in_array($p['tag'], ['show','more'])) echo ' hide'?>">
     <div class="dt"><?=$p['txt']?></div>
-    <?php if ($content_parsed_num > 2 && $p['tag']=='begin'):?>
+    <?php if ($p['tag']=='more'):?>
     <div class="dtmore"><button class="btn btn-block btn-orange" onclick="show_full(this)">点击查看详情</button></div>
     <?php endif;?>
   </div>
