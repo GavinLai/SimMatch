@@ -167,7 +167,7 @@ class User_Controller extends Controller {
         $this->tips($request, $response);
       }
       else { //先用base方式获取微信OAuth2授权，以便于取得openid
-        (new Weixin())->authorizing('http://'.$request->host().'/user/oauth/weixin?act=login&refer='.$refer);
+        (new Weixin())->authorizing('http://'.$request->host().'/user/oauth/weixin?act=login&refer='.$refer, 'detail');
       }
     }
     else {
@@ -213,74 +213,66 @@ class User_Controller extends Controller {
       //获取到openid
       $openid = $code_ret['openid'];
       $uid    = 0;
+      $auth_method = 'oauth2_'.$state;  //认证方式
       
       //查询本地是否存在对应openid的用户
       $uinfo_bd = Member::getTinyInfoByOpenid($openid, $from);
-      if (!empty($uinfo_bd)) { //用户已存在，对state='base'，则仅需设置登录状态；而对state='detail'，需保存或更新用户数据
-        $uid = intval($uinfo_bd['uid']);
-        
-        if ('detail'===$state) { //detail认证模式，需更新用户数据
-          
-          $auth_method = 'oauth2_detail';//OAuth2详细认证方式
-          
-          $uinfo_wx = $wx->userInfoByOAuth2($openid, $code_ret['access_token']);
-          if (!empty($uinfo_wx['errcode'])) { //失败！则报错
-            Fn::show_error_message('微信获取用户信息出错！<br/>'.$uinfo_wx['errcode'].'('.$uinfo_wx['errmsg'].')');
-          }
-          
-          //保存微信用户信息到本地库
-          $udata = [
-            //'openid'   => $openid,
-            'unionid'  => isset($uinfo_wx['unionid']) ? $uinfo_wx['unionid'] : '',
-            'subscribe'=> isset($uinfo_wx['subscribe']) ? $uinfo_wx['subscribe'] : 0,
-            'subscribe_time'=> isset($uinfo_wx['subscribe_time']) ? $uinfo_wx['subscribe_time'] : 0,
-            'nickname' => isset($uinfo_wx['nickname']) ? $uinfo_wx['nickname'] : '',
-            'logo'     => isset($uinfo_wx['headimgurl']) ? $uinfo_wx['headimgurl'] : '',
-            'sex'      => isset($uinfo_wx['sex']) ? $uinfo_wx['sex'] : 0,
-            'lang'     => isset($uinfo_wx['language']) ? $uinfo_wx['language'] : '',
-            'country'  => isset($uinfo_wx['country']) ? $uinfo_wx['country'] : '',
-            'province' => isset($uinfo_wx['province']) ? $uinfo_wx['province'] : '',
-            'city'     => isset($uinfo_wx['city']) ? $uinfo_wx['city'] : '',
-            'auth_method'=> $auth_method
-          ];
-          Member::updateUser($udata,$openid,$from);
-          
-          //尝试用基本型接口获取用户信息，以便确认用户是否已经关注(基本型接口存在 50000000次/日 调用限制，且仅对关注者有效)
-          if (!$uinfo_bd['subscribe'] && !$udata['subscribe']) {
-            $uinfo_wx = $wx->userInfo($openid);
-            //trace_debug('weixin_basic_userinfo', $uinfo_wx);
-            if (!empty($uinfo_wx['errcode'])) { //失败！说明很可能没关注，维持现状不处理
-              
-            }
-            else { //成功！说明之前已经关注，得更新关注标记
-              $udata = [
-                'subscribe'=> isset($uinfo_wx['subscribe']) ? $uinfo_wx['subscribe'] : 0,
-                'subscribe_time'=> isset($uinfo_wx['subscribe_time']) ? $uinfo_wx['subscribe_time'] : 0,
-              ];
-              Member::updateUser($udata,$openid,$from);
-            }
-          }
-          
-        } //End: if ('detail'===$state)
-        
+      if (empty($uinfo_bd)) { //用户不存在，则要尝试建立
+      	
+      	//保存微信用户信息到本地库
+      	$udata = [
+			'openid'     => $openid,
+			'auth_method'=> $auth_method
+      	];
+      	$uid = Member::createUser($udata, $from);
+      	$uinfo_bd = ['uid' => $uid];
       }
-      else { //用户不存在，则要尝试建立
-        
-        if ('base'===$state) { //基本授权方式
-          
-          $auth_method = 'oauth2_base';//基本认证方式
-          
-          //保存微信用户信息到本地库
-          $udata = [
-            'openid'     => $openid,
-            'auth_method'=> $auth_method
-          ];
-          $uid = Member::createUser($udata, $from);
-          
-        }
-
-
-      } //End: if (!empty($uinfo_bd)) else
+      else { //用户已存在，对state='base'，则仅需设置登录状态；而对state='detail'，需保存或更新用户数据
+      	$uid = intval($uinfo_bd['uid']);
+      }
+      
+      //detail认证模式，需更新用户数据
+      if ('detail'==$state && empty($uinfo_bd['nickname'])) {
+      
+      	$uinfo_wx = $wx->userInfoByOAuth2($openid, $code_ret['access_token']);
+      	if (!empty($uinfo_wx['errcode'])) { //失败！则报错
+      		Fn::show_error_message('微信获取用户信息出错！<br/>'.$uinfo_wx['errcode'].'('.$uinfo_wx['errmsg'].')');
+      	}
+      	
+      	//保存微信用户信息到本地库
+      	$udata = [
+      	    //'openid'   => $openid,
+      		'unionid'  => isset($uinfo_wx['unionid']) ? $uinfo_wx['unionid'] : '',
+      		'subscribe'=> isset($uinfo_wx['subscribe']) ? $uinfo_wx['subscribe'] : 0,
+      		'subscribe_time'=> isset($uinfo_wx['subscribe_time']) ? $uinfo_wx['subscribe_time'] : 0,
+      		'nickname' => isset($uinfo_wx['nickname']) ? $uinfo_wx['nickname'] : '',
+      		'logo'     => isset($uinfo_wx['headimgurl']) ? $uinfo_wx['headimgurl'] : '',
+      		'sex'      => isset($uinfo_wx['sex']) ? $uinfo_wx['sex'] : 0,
+      		'lang'     => isset($uinfo_wx['language']) ? $uinfo_wx['language'] : '',
+      		'country'  => isset($uinfo_wx['country']) ? $uinfo_wx['country'] : '',
+      		'province' => isset($uinfo_wx['province']) ? $uinfo_wx['province'] : '',
+      		'city'     => isset($uinfo_wx['city']) ? $uinfo_wx['city'] : '',
+      		'auth_method'=> $auth_method
+      	];
+      	Member::updateUser($udata,$openid,$from);
+      
+      	//尝试用基本型接口获取用户信息，以便确认用户是否已经关注(基本型接口存在 50000000次/日 调用限制，且仅对关注者有效)
+      	if (FALSE && !$uinfo_bd['subscribe'] && !$udata['subscribe']) {
+      		$uinfo_wx = $wx->userInfo($openid);
+      		//trace_debug('weixin_basic_userinfo', $uinfo_wx);
+      		if (!empty($uinfo_wx['errcode'])) { //失败！说明很可能没关注，维持现状不处理
+      
+      		}
+      		else { //成功！说明之前已经关注，得更新关注标记
+      			$udata = [
+      				'subscribe'=> isset($uinfo_wx['subscribe']) ? $uinfo_wx['subscribe'] : 0,
+      				'subscribe_time'=> isset($uinfo_wx['subscribe_time']) ? $uinfo_wx['subscribe_time'] : 0,
+      			];
+      			Member::updateUser($udata,$openid,$from);
+      		}
+      	}
+      
+      } //End: if ('detail'===$state)
       
       //设置本地登录状态
       if ('login'==$auth_action) {

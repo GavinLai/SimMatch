@@ -16,10 +16,10 @@ class WxPayConfig
 	 * APPSECRET：公众帐号secert（仅JSAPI支付的时候需要配置）
 	 * @var string
 	 */
-	const APPID = 'wx426b3015555a46be';
-	const MCHID = '1225312702';
-	const KEY = 'e10adc3949ba59abbe56e057f20f883e';
-	const APPSECRET = '01c6d59a3f9024db6336662ac95c8e74';
+	const APPID = 'wx650e3083e05013ab';
+	const MCHID = '1234978202';
+	const KEY = 'kt9cfoxqmmnf6xy39zcf7374519nlzxp';
+	const APPSECRET = '7801472767d930d4708b2314f5fc8adb';
 	
 	//=======【证书路径设置】=====================================
 	/**
@@ -27,8 +27,10 @@ class WxPayConfig
 	 * 证书路径,注意应该填写绝对路径（仅退款、撤销订单时需要）
 	 * @var path
 	 */
-	const SSLCERT_PATH = './cert/apiclient_cert.pem';
-	const SSLKEY_PATH = './cert/apiclient_key.pem';
+	//const SSLCERT_PATH = './cert/apiclient_cert.pem';
+	//const SSLKEY_PATH = './cert/apiclient_key.pem';
+	const SSLCERT_PATH = '/data/www/SimMatch/incs/libs/wxpay/cert/apiclient_cert.pem';
+	const SSLKEY_PATH = '/data/www/SimMatch/incs/libs/wxpay/cert/apiclient_key.pem';
 	
 	//=======【curl代理设置】===================================
 	/**

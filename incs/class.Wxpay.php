@@ -22,7 +22,7 @@ class Wxpay {
    * 
    * @var constant
    */
-  const NOFIFY_URL = 'http://api.fxmgou.com/wxpay/notify';
+  const NOFIFY_URL = 'http://bs.fxmapp.com/wxpay/notify';
   
   /**
    * 交易类型常量，共4个可选值
@@ -54,8 +54,9 @@ class Wxpay {
       $openId = $tools->GetOpenid();      
     }
     
-    $order_detail  = '';
-    $wx_order_body = '';
+    $wx_order_body = '女神送花';
+    $order_detail  = ($order['goods_type']=='flower' ? "送花(" : "送吻(") . $order['goods_amount'] . ")";
+    /*
     if (!empty($order['order_goods'])) {
       foreach ($order['order_goods'] As $g) {
         $order_detail .= $g['goods_name'].'('.$g['goods_price'].'x'.$g['goods_number'].")\n";
@@ -65,15 +66,16 @@ class Wxpay {
       }
       $order_detail = rtrim($order_detail,"\n");
     }
+    */
     
     //统一下单
     if (1||empty($order['pay_data1'])) { //订单状态可能会被后台更改，所以同一订单每次支付都要重新生成提交信息
-      if (''==$wx_order_body) $wx_order_body = '福小蜜商品';
+      if (''==$wx_order_body) $wx_order_body = '微信支付商品';
       $now   = time();
       $input = new WxPayUnifiedOrder();
       $input->SetBody($wx_order_body);
       $input->SetDetail($order_detail);
-      $input->SetAttach('fxmgou'); //商家自定义数据，原样返回
+      $input->SetAttach('simphp'); //商家自定义数据，原样返回
       $input->SetOut_trade_no($order['order_sn']);
       $input->SetTotal_fee(intval($order['order_amount']*100)); //'分'为单位
       $input->SetTime_start(date('YmdHis', $now));
@@ -84,6 +86,7 @@ class Wxpay {
       $input->SetOpenid($openId);
       
       $order_wx = WxPayApi::unifiedOrder($input);
+      //trace_debug('wxpay_order_wx', $order_wx);
       
       if ('SUCCESS'==$order_wx['return_code'] && 'SUCCESS'==$order_wx['result_code']) { //保存信息以防再次重复提交
         $wxpay_data = [

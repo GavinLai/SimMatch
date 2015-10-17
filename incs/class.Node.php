@@ -134,6 +134,101 @@ class Node {
     return $rs ? true : false;
   }
   
+  /**
+   *
+   * @param string $act, 'vote','flower','kiss'
+   * @param integer $player_id
+   * @param integer $uid
+   * @param integer $inc
+   * @param boolean $sendvote
+   * @return number
+   *   -11: vote超过了最大次数(5)
+   *   -12: vote时间间隔没超过120分钟
+   *  -100: 操作失败
+   */
+  static function action($act, $player_id, $uid, $inc = 1, $sendvote = FALSE) {
+  
+  	$now = simphp_time();
+  	$votedcnt   = 0;
+  	$maxvotenum = 5; //一个用户一天可以对每个女神投5次票，可连续投
+  
+  	if ('vote'==$act && !$sendvote) {
+  
+  		$today_start = shorttotime('jt');
+  		$today_end   = shorttotime('mt');
+  
+  		//查找当天已经投的次数
+  		$votedcnt = D()->from("action")->where("`player_id`=%d AND `action`='%s' AND `uid`=%d AND `timeline`>=%d AND `timeline`<%d", $player_id,$act,$uid,$today_start,$today_end)
+  		               ->select("SUM(`inc`) AS cnt")->result();
+  		if ($votedcnt >= $maxvotenum) {
+  			return -11;
+  		}
+  
+  		/*
+  		 //查找前一次投票时间
+  		 $now = simphp_time();
+  		 $latest = D()->from("action")->where("`action`='%s' AND `player_id`=%d AND `uid`=%d", $act, $player_id, $uid)->order_by("`aid` DESC")->limit(1)
+  		 ->select("`timeline`")->result();
+  		 if (($now - $latest) < 60*120) {
+  		 return -12;
+  		 }
+  		 */
+  
+  	}
+  
+  	if (in_array($act, ['vote','flower','kiss'])) {
+  		 
+  		$aid = 0;
+  		if (!$sendvote) {
+  			$aid = D()->insert("action", ['action'=>$act, 'player_id'=>$player_id, 'inc'=>$inc, 'uid'=>$uid, 'timeline'=>$now]);
+  		}
+  		 
+  		if ($sendvote || $aid) {
+  			 
+  			//更新player投票数
+  			D()->query("UPDATE {player} SET {$act}cnt={$act}cnt+%d WHERE player_id=%d", $inc, $player_id);
+  			 
+  			//更新node总投票数
+  			$match_id = D()->from("player")->where("player_id=%d", $player_id)->select("match_id")->result();
+  			D()->query("UPDATE {node} SET {$act}cnt={$act}cnt+%d WHERE nid=%d", $inc, $match_id);
+  			 
+  			if ($act == 'vote') {
+  				return $maxvotenum - $votedcnt - $inc; //返回当前剩余可投票数
+  			}
+  			elseif ($act == 'flower') {
+  				//规则：
+  				// 1、一枝花抵两票
+  				// 2、数量不限、时间不限
+  				 
+  				// 送票(x2)
+  				self::action('vote', $player_id, $uid, $inc*2, TRUE);
+  			}
+  			elseif ($act == 'kiss') {
+  				 
+  			}
+  
+  			return $aid; //返回动作id
+  		}
+  	}
+  
+  	return -100;
+  }
+  
+  /**
+   * 获取player的真实某动作数
+   * 
+   * @param integer $player_id
+   * @param string $type
+   * @return number
+   */
+  static function getActionNum($player_id, $type = 'vote') {
+  	if (!$player_id || !in_array($type, ['vote','flower','kiss'])) {
+  		return -1;
+  	}
+  	$num = D()->from("action")->where("`player_id`=%d AND `action`='%s'", $player_id, $type)->select("SUM(`inc`) AS cnt")->result();
+  	return $num ? : 0;
+  }
+  
 }
  
 /*----- END FILE: class.Node.php -----*/

@@ -236,7 +236,7 @@ class Match_Model extends Model {
   }
   
   static function getPlayerList($match_id) {
-    $list = D()->from("player")->where("`match_id`=%d AND `status`='R'",$match_id)
+    $list = D()->from("player")->where("`match_id`=%d AND `status`='R'",$match_id)->order_by("votecnt DESC")
               ->select("`player_id`,`match_id`,`uid`,`truename`,`slogan`,`votecnt`,`flowercnt`,`kisscnt`")
               ->fetch_array_all();
     if (!empty($list)) {
@@ -264,14 +264,6 @@ class Match_Model extends Model {
     return $rs;
   }
   
-  static function getActionNum($player_id, $type = 'vote') {
-    if (!$player_id || !in_array($type, ['vote','flower','kiss'])) {
-      return -1;
-    }
-    $num = D()->from("action")->where("`player_id`=%d AND `action`='%s'", $player_id, $type)->select("COUNT(aid) AS cnt")->result();
-    return $num;
-  }
-  
   static function getRankInfo($match_id, $player_id) {
     if (!$player_id) {
       return false;
@@ -297,67 +289,6 @@ class Match_Model extends Model {
       return true;
     }
     return false;
-  }
-  
-  /**
-   * 
-   * @param string $act, 'vote','flower','kiss'
-   * @param integer $player_id
-   * @param integer $uid
-   * @param integer $inc
-   * @param boolean $nocheck
-   * @return number
-   *   -1: vote超过了最大次数(5)
-   *   -2: vote时间间隔没超过120分钟
-   */
-  static function action($act, $player_id, $uid, $inc = 1,$nocheck = FALSE) {
-    
-    if ($act == 'vote') {
-      //规则：
-      // 1、一个用户一天可以对每个女神投5次，可连续投
-      $maxnum = 5;
-      
-      $votedcnt = 0;
-      $now = simphp_time();
-      if (!$nocheck) {
-        
-        $today_start = shorttotime('jt');
-        $today_end   = shorttotime('mt');
-        
-        //查找当天已经投的次数
-        $votedcnt = D()->from("action")->where("`player_id`=%d AND `action`='%s' AND `uid`=%d AND `timeline`>=%d AND `timeline`<%d", $player_id,$act,$uid,$today_start,$today_end)
-                       ->select("COUNT(`aid`) AS cnt")->result();
-        if ($votedcnt >= $maxnum) {
-          return -1;
-        }
-        
-        /*
-        //查找前一次投票时间
-        $now = simphp_time();
-        $latest = D()->from("action")->where("`action`='%s' AND `player_id`=%d AND `uid`=%d", $act, $player_id, $uid)->order_by("`aid` DESC")->limit(1)
-                     ->select("`timeline`")->result();
-        if (($now - $latest) < 60*120) {
-          return -2;
-        }
-        */
-        
-      }
-      
-      $aid = D()->insert("action", ['action'=>$act, 'player_id'=>$player_id, 'uid'=>$uid, 'timeline'=>$now]);
-      if ($aid) {
-        
-        //更新player投票数
-        D()->query("UPDATE {player} SET votecnt=votecnt+1 WHERE player_id=%d", $player_id);
-        
-        //更新node总投票数
-        $match_id = D()->from("player")->where("player_id=%d", $player_id)->select("match_id")->result();
-        D()->query("UPDATE {node} SET votecnt=votecnt+1 WHERE nid=%d", $match_id);
-        
-        return $maxnum - $votedcnt - 1; //返回当前剩余可投票数
-      }
-    }
-    
-    return -100;
   }
   
 }

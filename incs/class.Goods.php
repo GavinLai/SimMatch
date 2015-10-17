@@ -803,7 +803,7 @@ HERESQL;
    */
   static function orderUpdate(Array $updata, $order_id) {
     if (!$order_id) return false;
-    D()->update(ectable('order_info'), $updata, ['order_id'=>$order_id], true);
+    D()->update('order_info', $updata, ['order_id'=>$order_id], false);
     if (D()->affected_rows()==1) {
       return true;
     }

@@ -7,7 +7,7 @@
 	
 	F.isTouch = "createTouch" in document;
 	F.isDownpullDisplay = true;
-	//w.page_render_mode = 2; //1: general一般请求页面；2: hash请求页面 (不能在这个位置设置该值，放这里是提醒有这么一个全局变量)
+	//gData.page_render_mode = 2; //1: general一般请求页面；2: hash请求页面 (不能在这个位置设置该值，放这里是提醒有这么一个全局变量)
 	
 	// Set dom constants
 	F.doms = {wrapper:"#rtWrap",activepage:"#activePage",nav:"#nav-1",scroller:".scrollArea",loading:"#loadingCanvas"};
@@ -80,6 +80,13 @@
 		case 'pure':
 			break;
 		}
+	};
+	// Util functions
+	F.parseInt = function(val){
+		return (undefined==val || ''==val.trim()) ? 0 : parseInt(val);
+	};
+	F.parseFloat = function(val){
+		return (undefined==val || ''==val.trim()) ? 0 : parseInt(val);
 	};
 	// set content minimal height
 	F.set_content_minheight = function(){
@@ -310,7 +317,7 @@
 		//else {$(w).hashchange();}
 		
 		// Req page ajax
-		if (typeof(w.page_render_mode)=='undefined' || w.page_render_mode==2) {
+		if (typeof(gData.page_render_mode)=='undefined' || gData.page_render_mode==2) {
 			w.go_ajaxreq(gData.currURI);
 		}
 		
@@ -319,57 +326,6 @@
 })(jQuery, FUI, this);
 
 /***** Util Functions *****/
-;function checkUsername(username){
-	var _self = checkUsername;
-	if(typeof _self.error == 'undefined'){
-		_self.error = '';
-	}
-	var msg = '用户名规则为5-15个字母数字或下划线(首字母不能为数字)';
-	var re = /^[a-zA-Z_][a-zA-Z_\d]{4,14}$/;
-	if(username.match(re)==null){
-		_self.error = msg;
-		return false;
-	}
-	return true;
-}
-;function checkPwd(pwd){
-	var _self = checkPwd;
-	if(typeof _self.error == 'undefined'){
-		_self.error = '';
-	}
-	var msg = '密码应为6-20个字符';
-	if(pwd.length<6||pwd.length>20){
-		_self.error = msg;
-		return false;
-	}
-	return true;
-}
-;function checkEmail(email){
-	var _self = checkEmail;
-	if(typeof _self.error == 'undefined'){
-		_self.error = '';
-	}
-	var msg = '邮箱格式不正确';
-	var re = /^[\w\-\.]+@[\w\-]+(\.\w+)+$/;
-	if(email.length<6||email.match(re)==null){
-		_self.error = msg;
-		return false;
-	}
-	return true;
-}
-;function checkMobile(mobile){
-	var _self = checkMobile;
-	if(typeof _self.error == 'undefined'){
-		_self.error = '';
-	}
-	var msg = '手机号格式不正确';
-	var re = /^[0-9]{11}$/;
-	if(mobile.match(re)==null){
-		_self.error = msg;
-		return false;
-	}
-	return true;
-}
 
 //显示和隐藏弹出框
 ;function show_popdlg(title,content) {
@@ -441,14 +397,6 @@
 	return false;
 }
 
-//去文本输入框末尾
-;function toEditText(id) {
-	var ele = id;
-	if (typeof(id)=='string') ele = document.getElementById(id);
-	F.placeCaretAtEnd(ele);
-	return false;
-}
-
 //查看更多内容
 ;function see_more(_self, callback) {
     var page = $(_self).attr('data-next-page');
@@ -473,22 +421,6 @@
       
     },{changeHash:false});
 }
-
-;function imgLoaded(img) {
-	img.setAttribute('data-loaded','1');
-}
-;function imgLazyLoad(img, thesrc) {
-	img.onerror = img.onload = null;
-	var _img = new Image();
-	_img.onload = function() {
-		this.onload = null;
-		img.src = thesrc;
-		imgLoaded(img);
-	};
-	_img.src = thesrc;
-	return;
-}
-
 
 
 

@@ -12,13 +12,13 @@
     <p class="row"><input name="mobile" id="frm_mobile" type="text" class="inptxt row-ele" value="" placeholder="手机号，非常重要，唯一身份识别（必填）" /></p>
     <p class="row"><input name="weixin" id="frm_weixin" type="text" class="inptxt row-ele" value="" placeholder="微信号，唯一互联网联系方式（必填）" /></p>
     <div class="row">
-    <select name="province" id="frm_province" class="inpsel row-ele" onchange="change_province(this)" style="width: 48%;">
+    <select name="province" id="frm_province" class="inpsel row-ele" onchange="change_province(this)">
       <option value="0">请选择省份▼</option>
 <?php foreach ($province AS $it):?>
       <option value="<?=$it['locaid']?>"><?=$it['location']?></option>
 <?php endforeach;?>
     </select>
-    <select name="city" id="frm_city" class="inpsel row-ele" style="width: 48%;margin-left: 2%;">
+    <select name="city" id="frm_city" class="inpsel row-ele" style="margin-left: 2%;">
       <option value="0">请选择城市▼</option>
     </select>
     </div>
@@ -27,7 +27,7 @@
       <div id="match-preview"></div>
       <div class="uparea">
         <input type="file" name="upfile" id="frm_upfile" />
-        <p>请上传您的照片，最多可以上传<?=$maxuploadnum?>张</p>
+        <p>请上传您的照片，最多可以上传<?=$maxuploadnum?>张<br/><span>(第一张默认为封面，最好选用竖版图片)</span></p>
       </div>
     </div>
     <p class="row"><input name="idcard" id="frm_idcard" type="text" class="inptxt row-ele" value="" placeholder="身份证号（可不填）" /></p>
@@ -36,7 +36,7 @@
     <p class="row"><input name="slogan" id="frm_slogan" type="text" class="inptxt row-ele" value="" placeholder="参赛口号（可不填）" /></p>
     <p class="row"><input name="remark" id="frm_remark" type="text" class="inptxt row-ele" value="" placeholder="备注，附加说明（可不填）" /></p>
     -->
-    <p class="row tips">所有参赛选手请添加官方公众平台：<em>FEOfeel</em>，以便随时关注赛事进程。</p>
+    <p class="row tips">所有参赛选手请添加官方公众平台：<em>FEOfeel</em>，<br/>以便随时关注赛事进程。</p>
     <p class="row"><input name="submit" type="submit" class="btn btn-purple" id="frm_submit" value="提 交" /></p>
     <p class="row">&nbsp;</p>
   </form>

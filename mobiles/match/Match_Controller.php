@@ -371,14 +371,14 @@ class Match_Controller extends Controller {
       $ninfo = Node::getInfo($player_info['match_id']);
       
       //选手“投票数”统计
-      $player_info['votecnt_single'] = Match_Model::getActionNum($player_id, 'vote');
+      $player_info['votecnt_single'] = Node::getActionNum($player_id, 'vote');
       
       //排名信息
       $player_info['rank_info'] = Match_Model::getRankInfo($player_info['match_id'], $player_id);
       
       //SEO信息
       $seo = [
-        'title'   => '#'.$player_info['player_id'].$player_info['truename'] . ' - '.$ninfo['title'],
+        'title'   => '#'.$player_info['player_id'].' '.$player_info['truename'] . ' - '.$ninfo['title'],
         'keyword' => $player_info['truename'].$ninfo['keyword'],
         'desc'    => $ninfo['title'],
       ];
@@ -424,14 +424,14 @@ class Match_Controller extends Controller {
         $response->sendJSON($res);
       }
       
-      $ret = Match_Model::action('vote', $player_id, $uid);
+      $ret = Node::action('vote', $player_id, $uid);
       if ($ret >= 0) {
         
         //返回当前player总投票数(包括flower加权)
         $votedcnt = D()->from("player")->where("player_id=%d", $player_id)->select("votecnt")->result();
         
         //返回当前player投票数
-        $votedcnt_single = Match_Model::getActionNum($player_id, 'vote');
+        $votedcnt_single = Node::getActionNum($player_id, 'vote');
         
         $res['flag'] = 'SUC';
         $res['msg']  = "投票成功";
@@ -446,10 +446,10 @@ class Match_Controller extends Controller {
         $response->sendJSON($res);
       }
       else {
-        if (-1==$ret) {
+        if (-11==$ret) {
           $res['msg']  = '票数已用完，明天再来，还可以给女神送花或者看看其他女神哦~';
         }
-        elseif (-2==$ret) {
+        elseif (-12==$ret) {
           $res['msg']  = '连续投票时间间隔要在120分钟以上';
         }
         else {

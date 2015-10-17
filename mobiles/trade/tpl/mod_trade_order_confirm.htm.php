@@ -19,37 +19,39 @@
   </div>
 </div>
 
-<div class="box-topay"><button class="btn btn-block btn-blue" id="btn-wxpay" data-payid="2">确定赠送</button></div>
+<div class="box-topay"><button class="btn btn-block" id="btn-wxpay" data-payid="2">确定赠送</button></div>
 
 </div>
 
 <script>
 var goods_type = '<?=$goods_type?>';
-var amount_start = '<?=$amount_start?>';
-amount_start = ''==amount_start ? 0 : parseInt(amount_start);
+var amount_start = myParseInt('<?=$amount_start?>');
+var player_id = myParseInt('<?=$player_id?>');
 
 //调用微信JS api 支付
 function jsApiCall(jsApiParams, back_url)
 {
-	WeixinJSBridge.invoke(
-		'getBrandWCPayRequest',
-		jsApiParams,
-		function (res){
-	  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
-	  	  alert('支付成功');
-	  	}
-	  	else if ("get_brand_wcpay_request:cancel" == res.err_msg) {
-	  	  alert('取消支付');
-	  	}
-	  	else {
-	  	  alert('支付失败！');
-	  	}
-	  	if (typeof(back_url)!='undefined' && ''!=back_url) window.location.href = back_url;
-	  	else {
-	  	  setTimeout(function(){ WeixinJSBridge.invoke("closeWindow"); },1000);
-	  	}
-		}
-	);
+	if (typeof(WeixinJSBridge)!='undefined') {
+		WeixinJSBridge.invoke(
+				'getBrandWCPayRequest',
+				jsApiParams,
+				function (res){
+				  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
+				  	  alert('支付成功');
+				  	}
+				  	else if ("get_brand_wcpay_request:cancel" == res.err_msg) {
+				  	  alert('取消支付');
+				  	}
+				  	else {
+				  	  alert('支付失败！');
+				  	}
+				  	if (typeof(back_url)!='undefined' && ''!=back_url) window.location.href = back_url;
+				  	else {
+				  	  setTimeout(function(){ WeixinJSBridge.invoke("closeWindow"); },1000);
+				  	}
+				}
+			);
+	}
 }
 
 $(function(){
@@ -64,21 +66,21 @@ $(function(){
 
 		$('#money').text(amount);
 		if (amount < amount_start) {
-			alert('亲，好闺蜜好男友应该大气一点，'+amount_start+'个起送噢~');
+			alert('亲，好闺蜜亲男友应该大气一点，'+amount_start+'个起送噢~');
 			return;
 		}
 
-		alert('微信支付稍候接入，请稍等待');
-		return;
+		//alert('微信支付稍候接入，请稍等待');
+		//return;
 
 		var _this = this;
 		$(this).text('支付中...').attr('disabled',true);
-		F.post('<?php echo U('trade/order/submit')?>',{"goods_type":goods_type,"amount":amount},function(ret){
+		F.post('<?php echo U('trade/order/submit')?>',{"player_id":player_id,"goods_type":goods_type,"amount":amount},function(ret){
+			$(_this).text('确定赠送').removeAttr('disabled');
   			if (ret.flag=='SUC') {
-  				jsApiCall(ret.js_api_params, '/');
+  				jsApiCall(ret.js_api_params, '<?php echo U('player/'.$player_id)?>');
   			}
   			else{
-  				$(_this).text('确定赠送').removeAttr('disabled');
   				alert(ret.msg);
   			}
 	  });

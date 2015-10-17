@@ -29,7 +29,7 @@
   <?php include T($tpl_header);?>
   <div id="activePage" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>">
     <section class="scrollArea<?php if(isset($extra_css)&&!empty($extra_css)) echo ' '.$extra_css?>"><?php if(1===$page_render_mode):?><?php include T($tpl_content);?><script>$(function(){F.set_scroller(false,100);});</script><?php endif;?></section>
-    <script>window.page_render_mode='<?=$page_render_mode?>';</script>
+    <script>gData.page_render_mode='<?=$page_render_mode?>';</script>
     <div class="pageBg">该应用由 <?php echo C('env.copyright')?> 提供</div>
   </div>
   <div id="loadingCanvas" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>"></div>
@@ -57,6 +57,7 @@ add_js('ext/jquery-2.1.3.min.js',['pos'=>'head','ver'=>'none']);
 add_js('fm.min.js',['pos'=>'foot','ver'=>'none']);
 endif;
 add_css('m.css',['scope'=>'global']);
+add_js('global.js',['pos'=>'head']);
 add_js('m.js',['pos'=>'foot']);
 
 ?>

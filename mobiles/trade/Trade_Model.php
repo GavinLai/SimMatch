@@ -29,7 +29,7 @@ class Trade_Model extends Model {
       'order_type'  => $type,
       'is_paid'     => $is_paid,
     ];
-    $log_id = D()->insert(ectable('pay_log'), $insert, true, true);
+    $log_id = D()->insert('pay_log', $insert);
     return $log_id;
   }
   

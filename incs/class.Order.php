@@ -31,31 +31,47 @@ class Order {
    * @param string $order_sn
    */
   static function get_order_paid_info($order_sn) {
-    $ectb = ectable('order_info');
-    $row  = D()->raw_query("SELECT `order_id`,`order_sn`,`user_id`,`order_status`,`shipping_status`,`pay_status`,`pay_id`,`order_amount` FROM {$ectb} WHERE `order_sn`='%s'", $order_sn)
+    //$ectb = ectable('order_info');
+    $ectb = '{order_info}';
+    $row  = D()->raw_query("SELECT `order_id`,`order_sn`,`user_id`,`order_status`,`pay_status`,`pay_id`,`order_amount`,`money_paid` FROM {$ectb} WHERE `order_sn`='%s'", $order_sn)
                ->get_one();
     return !empty($row) ? $row : [];
   }
 
   /**
+   * 订单成功后的操作，如送分、送票等
+   * 
+   * @param integer $order_id
+   */
+  static function order_success_after($order_id) {
+  	if (empty($order_id)) return false;
+  	$oinfo = D()->get_one("SELECT `user_id`,`player_id`,`goods_type`,`goods_amount` FROM {order_info} WHERE `order_id`=%d", $order_id);
+  	
+  	//送花/吻等付费操作
+  	if (!empty($oinfo)) {
+  		Node::action($oinfo['goods_type'], $oinfo['player_id'], $oinfo['user_id'], $oinfo['goods_amount']);
+  	}
+  }
+  
+  /**
    * 插入订单动作日志
    */
   static function order_action_log($order_id, Array $insert_data) {
     if (empty($order_id)) return false;
-    $oinfo = D()->get_one("SELECT `order_id`,`order_status`,`shipping_status`,`pay_status` FROM ".ectable('order_info')." WHERE `order_id`=%d", $order_id);
+    $oinfo = D()->get_one("SELECT `order_id`,`order_status`,`pay_status` FROM {order_info} WHERE `order_id`=%d", $order_id);
     $init_data = [
       'order_id'       => $order_id,
       'action_user'    => 'buyer',
       'order_status'   => $oinfo['order_status'],
-      'shipping_status'=> $oinfo['shipping_status'],
+      'shipping_status'=> SS_RECEIVED,
       'pay_status'     => $oinfo['pay_status'],
       'action_place'   => 0,
       'action_note'    => '',
-      'log_time'       => simphp_gmtime(),
+      'log_time'       => simphp_time(),
     ];
     $insert_data = array_merge($init_data, $insert_data);
      
-    $rid = D()->insert(ectable('order_action'), $insert_data, true, true);
+    $rid = D()->insert('order_action', $insert_data, true,false);
     return $rid;
   }
   

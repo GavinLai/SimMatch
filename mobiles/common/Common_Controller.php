@@ -15,6 +15,8 @@ class Common_Controller extends Controller {
   public static $loginWhiteList = [
     'user/oauth',
     'user/oauth/%s',
+    'wxpay/notify',
+    'match/%d',
   ];
   
   /**
