@@ -145,11 +145,12 @@ function fixpath($oripath)
 		$contextpath = C('env.contextpath');
 	}
 	
-	if (preg_match("/^http(s?):\/\//i", $oripath) || preg_match("/^\//", $oripath)) {
+	if (preg_match("/^http(s?):\/\//i", $oripath)) {
 		return $oripath;
 	}
 	else {
-		return $contextpath.$oripath;
+		$oripath = ltrim($oripath,'/ ');
+		return $base_url.$contextpath.$oripath;
 	}
 }
 
