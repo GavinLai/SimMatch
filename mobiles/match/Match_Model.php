@@ -254,11 +254,10 @@ class Match_Model extends Model {
   }
   
   static function getPlayerGallery($player_id) {
-    $base_url  = C('env.site.mobile');
     $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select("`img_std`")->fetch_column('img_std');
     if (!empty($rs)) {
       foreach ($rs AS &$it) {
-        $it = $base_url . $it;
+        $it = fixpath($it);
       }
     }
     return $rs;

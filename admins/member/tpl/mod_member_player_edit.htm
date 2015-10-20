@@ -1,0 +1,86 @@
+<!--{include_file name="_smenu_member.htm"}-->
+<section id="ifr-main" class="ifr-main">
+
+<div class="breadcrumb">当前位置：<span>用户管理</span>
+&nbsp;&gt;&nbsp;
+<!--{if $node_type eq '' || $node_type eq 'match'}-->
+<a href="#/member/player" class="oplink hashreq">参赛者列表</a>&nbsp;&gt;&nbsp;<span><!--{if $is_edit}-->编辑参赛者信息<!--{else}-->添加参赛者<!--{/if}--></span>
+<!--{/if}-->
+</div>
+
+<div class="dtnav"></div>
+<div class="dtContent">
+
+  <form name="formPost" action="" method="post" id="formPost" onsubmit="return false;">
+    <table class="frmTable">
+      <tbody>
+        <tr>
+          <th class="c1">参赛编号：</th>
+          <td class="c2"><!--{$player_info.player_id}--><input type="hidden" name="player_id" value="<!--{$player_info.player_id}-->" id="frm_id" /></td>
+        </tr>
+        <tr>
+          <th class="c1">真实姓名：</th>
+          <td class="c2"><!--{$player_info.truename}--></td>
+        </tr>
+        <tr>
+          <th class="c1">增加投票数：</th>
+          <td class="c2"><input type="text" name="inc_vote" value="0" class="inptxt" id="frm_inc_vote"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">增加送花数：</th>
+          <td class="c2"><input type="text" name="inc_flower" value="0" class="inptxt" id="frm_inc_flower"  /></td>
+        </tr>
+        <tr class="rbtn">
+         <th class="c1"></th>
+         <td class="c2"><input type="submit" name="btnsubmit" value="提交" class="frmbtn" id="btnsubmit" />&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="oplink undl" title="返回列表页" onclick="return F.hashRefer();">返回</a></td>
+        </tr>
+      </tbody>
+    </table>
+  </form>
+  
+</div>
+
+<script>
+var is_edit = '<!--{$is_edit}-->';
+is_edit = is_edit ? true : false;
+
+// form post
+F.formPost = function() {
+  var post_data = {};
+  
+  // node id
+  var _nid = $('#frm_id').val();
+  _nid = ''==_nid ? 0 : parseInt(_nid);
+  post_data.player_id = _nid;
+
+  // inc value
+  post_data.inc_vote   = $('#frm_inc_vote').val().trim();
+  post_data.inc_flower = $('#frm_inc_flower').val().trim();
+  post_data.inc_vote   = parseInt(post_data.inc_vote);
+  post_data.inc_flower = parseInt(post_data.inc_flower);
+  
+  if ((post_data.inc_vote || post_data.inc_flower) && confirm('确定增加？')) {
+	  // Submit
+	  var $btnsubmit = $('#btnsubmit');
+	  $btnsubmit.prop('disabled',true);
+	  F.post(genurl('member/player_edit'),post_data,function(data){
+	    
+	    if (data.flag=='SUC') {
+	      F.clearCacheAll();      
+	      showTopPrompt(data.msg, 'ok', 3, function(){
+	        F.hashRefer();
+	      });
+	    }
+	    else {
+	      showTopPrompt(data.msg,'error',2,function(){});
+	    }
+	    
+	    $btnsubmit.prop('disabled',false);
+	  });	  
+  }
+  
+};
+
+</script>
+
+</section>

@@ -1,0 +1,96 @@
+<!--{include_file name="_smenu_member.htm"}-->
+<section id="ifr-main" class="ifr-main">
+<div class="breadcrumb">当前位置：<span>用户管理</span>&nbsp;&gt;&nbsp;<span>参赛者列表</span></div>
+
+<div class="listnav">
+  <div class="listbtn-grp listbtn-grp-pager"><!--{include_pager url=$qparturl extraurl=$extraurl}--></div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="javascript:void(0);" class="listbtn-link" data-rid="batch" onclick="return F.confirmListDelete(this, 'member/player_delete');">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>删除</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="javascript:void(0);" class="listbtn-link" data-rid="batch" onclick="return F.confirmListSuspend(this, 'member/player_suspend', 1);">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>挂起</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="javascript:void(0);" class="listbtn-link" data-rid="batch" onclick="return F.confirmListSuspend(this, 'member/player_suspend', 0);">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>激活</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="javascript:void(0);" class="listbtn-link" onclick="return F.hashReload();">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>刷新</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <span>总记录数:&nbsp;<!--{$totalNum}-->&nbsp;&nbsp;当前记录数:&nbsp;<!--{$recordNum}--></span>
+    </div>
+  </div>
+  
+</div>
+
+<div class="listContent">
+  <table class="listTable">
+  <tr class="rh">
+    <th class="c0"><input type="checkbox" name="chkall" value="0" onclick="F.checkListAll(this);" id="chkListAll" /></th>
+    <th class="c1 sortfield" data-rel="<!--{$qparturl}-->,orderby=player_id">参赛编号<!--{sortfield field='player_id'}--></th>
+    <th class="c2">参赛姓名</th>
+    <th class="c3">参赛照片</th>
+    <th class="c4">所在城市</th>
+    <th class="c5">手机号</th>
+    <th class="c6">微信号</th>
+    <th class="c7">身份证号</th>
+    <th class="c8 sortfield" data-rel="<!--{$qparturl}-->,orderby=votecnt">总投票数<!--{sortfield field='votecnt'}--></th>
+    <th class="c9 sortfield" data-rel="<!--{$qparturl}-->,orderby=flowercnt">送花数<!--{sortfield field='flowercnt'}--></th>
+    <th class="c10 sortfield" data-rel="<!--{$qparturl}-->,orderby=jointime">报名时间<!--{sortfield field='jointime'}--></th>
+    <th class="cl">操作</th>
+  </tr>
+  <!--{foreach from=$recordList item=it}-->
+  <tr class="rb">
+    <td class="c0"><input type="checkbox" name="rids[]" value="<!--{$it.player_id}-->" class="chkrid" /></td>
+    <td class="c1"><!--{$it.player_id}--></td>
+    <td class="c2"><a href="<!--{$mainsite}-->/player/<!--{$it.player_id}-->" target="_blank"><!--{$it.truename}--></a></td>
+    <td class="c3">
+      <!--{foreach from=$it.gallery item=pic}-->
+      <a href="<!--{$pic}-->" target="_blank"><img src="<!--{$pic}-->" alt="" style="max-width:30px;"/></a>&nbsp;
+      <!--{/foreach}-->
+    </td>
+    <td class="c4"><!--{$it.province}--> - <!--{$it.city}--></td>
+    <td class="c5"><!--{$it.mobile}--></td>
+    <td class="c6"><!--{$it.weixin}--></td>
+    <td class="c7"><!--{$it.idcard}--></td>
+    <td class="c8"><!--{$it.votecnt}--></td>
+    <td class="c9"><!--{$it.flowercnt}--></td>
+    <td class="c10"><!--{trans_time time=$it.jointime}--></td>
+    <td class="cl">
+      <a href="#/member/player/<!--{$it.player_id}-->/suspend" class="oplink" data-rid="<!--{$it.player_id}-->" onclick="return F.confirmListSuspend(this, 'member/player_suspend', <!--{if $it.status eq 'S'}-->0<!--{else}-->1<!--{/if}-->);"><!--{if $it.status eq 'S'}--><em style="color: blue">激活</em><!--{else}--><em style="color: green">挂起</em><!--{/if}--></a>
+      <span class="wsep">|</span><a href="#/member/player/<!--{$it.player_id}-->/edit" class="oplink hashreq">编辑</a>
+      <span class="wsep">|</span><a href="#/member/player/<!--{$it.player_id}-->/delete" class="oplink" data-rid="<!--{$it.player_id}-->" onclick="return F.confirmListDelete(this, 'member/player_delete');">删除</a>
+    </td>
+  </tr>
+  <!--{foreachelse}-->
+  <tr class="rn"><td colspan="12">暂没有相应的记录</td></tr>
+  <!--{/foreach}-->
+  </table>
+</div>
+
+</section>

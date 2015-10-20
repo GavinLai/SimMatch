@@ -11,14 +11,34 @@ class Member_Controller extends Controller {
   private $_nav = 'yh';
   private $_nav_second = '';//二级导航
 
-  public function menu(){
+  public function menu() {
   	return [
-  		'member/%d/edit'=>'member_edit',
-  		'member/save' => 'member_save',
+  		'member/%d/edit'  => 'member_edit',
+  		'member/save'     => 'member_save',
   		'member/loginlog' => 'member_loginlog',
-  		
+  		'member/player'            => 'player',
+  		'member/player/%d/edit'    => 'player_edit',
+  		'member/player/%d/suspend' => 'player_suspend',
+  		'member/player/%d/delete'  => 'player_delete',
   	];
   }
+  
+  /**
+   * hook init
+   *
+   * @param string $action
+   * @param Request $request
+   * @param Response $response
+   */
+  function init($action, Request $request, Response $response)
+  {
+  	$this->v = new PageView();
+  	$this->v->add_render_filter(function(View $v){
+  		$v->assign('nav',     $this->_nav)
+  		  ->assign('nav_second',  $this->_nav_second);
+  	});
+  }
+  
   /**
    * default action 'index'
    * @param Request $request
@@ -274,6 +294,125 @@ class Member_Controller extends Controller {
   	 
   	$response->send($v);
   }
+  
+  public function player(Request $request, Response $response) {
+  	$this->_nav_second = 'player';
+  	$this->v->set_tplname('mod_member_player');
+  	
+  	//BEGIN list order
+  	$orderinfo = $this->v->set_listorder('player_id', 'desc');
+  	$extraurl  = '';
+  	$extraurl .= $orderinfo[2];
+  	$this->v->assign('extraurl', $extraurl);
+  	$this->v->assign('qparturl', "#/member/player");
+  	//END list order
+  	
+  	// Record List
+  	$limit = 20;
+  	$recordList = Member_Model::getPlayerList($orderinfo[0],$orderinfo[1],$limit);
+  	$recordNum  = count($recordList);
+  	$totalNum   = $GLOBALS['pager_totalrecord_arr'][0];
+  	
+  	$this->v->assign('recordList', $recordList)
+				  	->assign('recordNum', $recordNum)
+				  	->assign('totalNum', $totalNum)
+				  	->assign('mainsite', C('env.site.mobile'))
+  	;
+  	
+  	$response->send($this->v);
+  }
+  
+  /**
+   * action 'player_edit'
+   * @param Request $request
+   * @param Response $response
+   */
+  public function player_edit(Request $request, Response $response)
+  {
+  	if ($request->is_post()) {
+  
+  		$ret = ['flag' => 'ERR', 'msg' => ''];
+  		
+  		$player_id   = $request->post('player_id', 0);
+  		$inc_vote    = $request->post('inc_vote', 0);
+  		$inc_flower  = $request->post('inc_flower', 0);
+  		
+  		$player_info = Member_Model::getPlayerInfo($player_id);
+  		if (empty($player_info)) {
+  			$ret['msg'] = '参赛者不存在';
+  			$response->sendJSON($ret);
+  		}
+  		
+  		if (empty($inc_vote) && empty($inc_flower)) {
+  			$ret['flag'] = 'SUC';
+  			$ret['msg'] = '数据没变化';
+  			$response->sendJSON($ret);
+  		}
+  		else {
+  			$uid = 10000; //10000 为系统管理员帐号
+  			$ret['flag'] = 'SUC';
+  			$ret['msg'] = '更新成功';
+  			
+  			if ($inc_vote) {
+  				$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE);
+  				$ret['msg'].= '，增加了'.$inc_vote.'票';
+  			}
+  			if ($inc_flower) {
+  				$action_id = Node::action('flower', $player_id, $uid, $inc_flower);
+  				$ret['msg'].= '，增加了'.$inc_flower.'花';
+  			}
+  			$response->sendJSON($ret);
+  		}
+  		
+  	}
+  	else { // GET request
+  
+  		$this->_nav_second = 'player';
+  		$this->v->set_tplname('mod_member_player_edit');
+  		
+  		// Player Info
+  		$player_id = $request->arg(2);
+  		$player_id = intval($player_id);
+  		$is_edit = $player_id ? TRUE : FALSE;
+  		$player_info = $is_edit ? Member_Model::getPlayerInfo($player_id) : [];
+  
+  		$this->v->assign('player_info', $player_info)
+  		        ->assign('is_edit', $is_edit);
+  		$response->send($this->v);
+  	}
+  }
+  
+  /**
+   * action 'player_suspend'
+   * @param Request $request
+   * @param Response $response
+   */
+  public function player_suspend(Request $request, Response $response)
+  {
+  	if ($request->is_post()) {
+  		$ids = $request->post('rids');
+  		$act = $request->post('act',0);
+  
+  		$ret = Member_Model::suspendPlayers($ids, $act);
+  		$response->sendJSON(['flag'=>'OK', 'rids'=>$ret]);
+  	}
+  }
+  
+  /**
+   * action 'player_delete'
+   * @param Request $request
+   * @param Response $response
+   */
+  public function player_delete(Request $request, Response $response)
+  {
+  	if ($request->is_post()) {
+  		$ids = $request->post('rids');
+  
+  		$ret = Member_Model::deletePlayers($ids);
+  		$response->sendJSON(['flag'=>'OK', 'rids'=>$ret]);
+  	}
+  }
+  
 }
  
 /*----- END FILE: Member_Controller.php -----*/

@@ -119,10 +119,38 @@ function emptyimg()
                          : C('env.contextpath').'misc/images/b.gif';
 }
 
+/**
+ * 返回一个预加载图片路径(用于占位)
+ * @return string
+ */
 function ploadingimg()
 {
   return C('env.usecdn') ? 'http://fcdn.qiniudn.com/img/bloading.gif' 
                          : C('env.contextpath').'misc/images/bloading.gif';
+}
+
+/**
+ * 修正图片等静态资源的最终呈现路径
+ * 
+ * @param string $oripath
+ * @return string
+ */
+function fixpath($oripath)
+{
+	static $base_url, $contextpath;
+	if (!isset($base_url)) {
+		$base_url = C('env.site.mobile');
+	}
+	if (!isset($contextpath)) {
+		$contextpath = C('env.contextpath');
+	}
+	
+	if (preg_match("/^http(s?):\/\//i", $oripath) || preg_match("/^\//", $oripath)) {
+		return $oripath;
+	}
+	else {
+		return $contextpath.$oripath;
+	}
 }
 
 /**

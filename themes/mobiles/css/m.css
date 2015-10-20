@@ -232,9 +232,9 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #fff;padding: 0 2.5%;background: #b5359d;opacity:.8;z-index: 100; }
 .match-thumb { position: relative; }
 .match-thumb img { max-width: 100%;vertical-align: top; }
-.match-thumb .join { position: absolute;bottom: 5%;width: 100%; }
-.match-thumb .join > div { margin: 0 2.5%;text-align: center; }
-.match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -126px;width: 175px;height: 64px;line-height: 64px;border: none;border-radius: 0;padding: 0; }
+.match-thumb .join { position: absolute;bottom: -2px;width: 100%; }
+.match-thumb .join > div { /*margin: 0 2.5%;*/text-align: center; }
+.match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -126px;width: 175px;height: 62px;line-height: 64px;border: none;border-radius: 0;padding: 0; }
 .match-info .join { padding-top: 10px; }
 .player-info .join > div { margin: 10px 4px; }
 .block-page { margin: 10px; font-size: 14px; font-size: 1.4rem; }

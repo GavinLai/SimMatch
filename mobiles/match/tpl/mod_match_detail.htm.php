@@ -7,7 +7,7 @@
 
 <div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　投票总数：<em><?=$ninfo['votecnt']?></em></div>
 <div class="match-thumb">
-  <img src="<?=$ninfo['thumb_url']?>" alt="" />
+  <img src="<?=fixpath($ninfo['thumb_url'])?>" alt="" />
   <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
 </div>
   

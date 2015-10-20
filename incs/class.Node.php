@@ -83,10 +83,10 @@ class Node {
   
   static function getStatus() {
     static $_status = [
-      'N' => '新建',
-      'R' => '展示',
-      'S' => '挂起',
-      'D' => '删除'
+      'N' => '<em style="color:yellow">新建</em>',
+      'R' => '<em style="color:green">展示</em>',
+      'S' => '<em style="color:blue">挂起</em>',
+      'D' => '<em style="color:grey">删除</em>'
     ];
     return $_status;
   }
@@ -140,19 +140,20 @@ class Node {
    * @param integer $player_id
    * @param integer $uid
    * @param integer $inc
-   * @param boolean $sendvote
+   * @param boolean $nocheck，是否不检查
+   * @param boolean $norecord，是否不记录
    * @return number
    *   -11: vote超过了最大次数(5)
    *   -12: vote时间间隔没超过120分钟
    *  -100: 操作失败
    */
-  static function action($act, $player_id, $uid, $inc = 1, $sendvote = FALSE) {
+  static function action($act, $player_id, $uid, $inc = 1, $nocheck = FALSE, $norecord = FALSE) {
   
   	$now = simphp_time();
   	$votedcnt   = 0;
   	$maxvotenum = 5; //一个用户一天可以对每个女神投5次票，可连续投
   
-  	if ('vote'==$act && !$sendvote) {
+  	if ('vote'==$act && !$nocheck) {
   
   		$today_start = shorttotime('jt');
   		$today_end   = shorttotime('mt');
@@ -179,11 +180,11 @@ class Node {
   	if (in_array($act, ['vote','flower','kiss'])) {
   		 
   		$aid = 0;
-  		if (!$sendvote) {
+  		if (!$norecord) {
   			$aid = D()->insert("action", ['action'=>$act, 'player_id'=>$player_id, 'inc'=>$inc, 'uid'=>$uid, 'timeline'=>$now]);
   		}
   		 
-  		if ($sendvote || $aid) {
+  		if ($norecord || $aid) {
   			 
   			//更新player投票数
   			D()->query("UPDATE {player} SET {$act}cnt={$act}cnt+%d WHERE player_id=%d", $inc, $player_id);
@@ -193,7 +194,9 @@ class Node {
   			D()->query("UPDATE {node} SET {$act}cnt={$act}cnt+%d WHERE nid=%d", $inc, $match_id);
   			 
   			if ($act == 'vote') {
-  				return $maxvotenum - $votedcnt - $inc; //返回当前剩余可投票数
+  				if (!$nocheck) {
+  					return $maxvotenum - $votedcnt - $inc; //需检查限制的，返回当前剩余可投票数；否则留最后默认范围$aid
+  				}
   			}
   			elseif ($act == 'flower') {
   				//规则：
@@ -201,13 +204,13 @@ class Node {
   				// 2、数量不限、时间不限
   				 
   				// 送票(x2)
-  				self::action('vote', $player_id, $uid, $inc*2, TRUE);
+  				self::action('vote', $player_id, $uid, $inc*2, TRUE, TRUE);
   			}
   			elseif ($act == 'kiss') {
   				 
   			}
   
-  			return $aid; //返回动作id
+  			return $aid; //默认返回动作id
   		}
   	}
   
