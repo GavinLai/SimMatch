@@ -229,12 +229,13 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .slidnav a.active{background:#b5359d;border:1px solid #b5359d;}
 
 /*match页*/
-.match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #fff;padding: 0 2.5%;background: #b5359d;opacity:.8;z-index: 100; }
+.match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #fff;padding: 0 2.5%;background: #00B8D1/*#44b549*//*#b5359d*/;opacity:.8;z-index: 100; }
+.match-top > span { text-align: right;width: 50%;float: right; }
 .match-thumb { position: relative; }
 .match-thumb img { max-width: 100%;vertical-align: top; }
 .match-thumb .join { position: absolute;bottom: -2px;width: 100%; }
 .match-thumb .join > div { /*margin: 0 2.5%;*/text-align: center; }
-.match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -126px;width: 175px;height: 62px;line-height: 64px;border: none;border-radius: 0;padding: 0; }
+.match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -0px;width: 175px;height: 62px;line-height: 62px;border: none;border-radius: 0;padding: 0; }
 .match-info .join { padding-top: 10px; }
 .player-info .join > div { margin: 10px 4px; }
 .block-page { margin: 10px; font-size: 14px; font-size: 1.4rem; }
@@ -252,6 +253,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #player-list .itbox { display: inline-block;width: 50%; }
 #player-list .itcont { display: block;font-size: 12px;font-size: 1.2rem;margin: 0 4px 8px;border-radius: 5px;border-width: 1px 1px 2px;border-style: solid;border-color: #ddd;background: #fff;color: #999; }
 #player-list .cot { padding: 2px 5px 5px; }
+#player-list .cot .rt { float: right;width: 50%; }
 #player-list .imgc { width: 100%;overflow: hidden;text-align: center;vertical-align: middle; }
 #player-list .imgc .edge { width: 0;height: 100%;display:inline-block;vertical-align:middle; }
 #player-list .imgc img { width: 100%; display:inline-block;text-align: center;vertical-align: middle; }
@@ -288,7 +290,8 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .match-player .joinno { left: 5px;top: 8px;width: 70px;height: 70px;line-height: 70px;border-radius: 35px;background:#44b549;font-size: 18px;font-size: 1.8rem;font-weight:bold; }
 .match-player .tomatch,.match-player .tojoin { left: 5px;bottom: 125px;width: 40px;height: 40px;line-height: 40px;border: 1px solid #fff;border-radius: 21px;color: #fff; }
 .match-player .tojoin { bottom: 65px; }
-.match-player .torank { right: 5px;bottom: 68px;width: 60px;height: 60px;line-height: 60px;border-radius: 50%;color: #b5359d; }
+.match-player .torank { right: 5px;bottom: 68px;width: 100px;height: 40px;line-height: 18px;border-radius: 5px;color: #fff;padding: 5px 5px 2px;text-align: left; }
+.match-player .torank em { color: #b5359d; }
 .match-player .torank span { position: absolute;left: 0;bottom: -3px;width: 100%;height: 16px;line-height: 16px;border-radius: 5px;background: #b5359d;color: #fff;opacity: .75;font-size: 12px;font-size: 1.2rem; }
 .match-player .btmnav { height: 44px;width: 100%;border-top: 1px solid #262626;background: #141414;bottom: 0; }
 .match-player .btmnav .navit { width: 25%;height: 100%;display: block;float: left;text-align: center;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box; }

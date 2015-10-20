@@ -155,7 +155,7 @@ $(function(){
 		F.post($(this).attr('action'), post_data, function(ret){
 			_btn.val('完成！').removeAttr('disabled');
 			if(ret.flag=='SUC'){
-				alert('我们已接到您的报名信息，感谢您的参与！');
+				alert('恭喜您已报名成功！请关注大赛客服微信：choumeikufang，随时了解获奖情况。');
 				window.location.href = '<?php echo U('match/'.$nid)?>';
 			}else{
 				_btn.val('提 交');

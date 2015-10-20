@@ -24,8 +24,11 @@
   <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p></div>
   <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">比赛</a>
   <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
-  <a class="match-pos torank" href=""><?=$player_info['rank_info']['rank']?>/<?=$player_info['rank_info']['total']?>
-    <span>排行</span>
+  <a class="match-pos torank" href="javascript:;">
+  当前排名：<em><?=$player_info['rank_info']['rank']?></em><br/>选手总数：<em><?=$player_info['rank_info']['total']?></em>
+  <!-- 
+    <span>排名</span>
+   -->
   </a>
   <div class="match-pos btmnav">
     <a class="navit" href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt_single']?></em>票)</span></a>
@@ -105,7 +108,8 @@ $(function(){
 		F.post('<?php echo U('match/vote')?>', {player_id: player_id}, function(ret){
 			ajaxing = false;
 			if (ret.flag=='SUC') {
-				alert(ret.msg);
+				//alert(ret.msg);
+				alert('你已投票成功！请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态');
 				$(oThis).find('em').text(ret.votedcnt_single);
 				$('#op-tokiss em').text(ret.votedcnt);
 			}

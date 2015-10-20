@@ -5,7 +5,7 @@
 
 <?php else:?>
 
-<div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　投票总数：<em><?=$ninfo['votecnt']?></em></div>
+<div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　<span>投票总数：<em><?=$ninfo['votecnt']?></em></span></div>
 <div class="match-thumb">
   <img src="<?=fixpath($ninfo['thumb_url'])?>" alt="" />
   <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
@@ -41,7 +41,7 @@
   <?php foreach ($player_list AS $it):?>
     <div class="itbox">
       <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont">
-        <div class="cot">#<?=$it['player_id']?> <?=$it['truename']?><p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p></div>
+        <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span><p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p></div>
         <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
       </a>
     </div>

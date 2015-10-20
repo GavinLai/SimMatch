@@ -37,7 +37,7 @@ function jsApiCall(jsApiParams, back_url)
 				jsApiParams,
 				function (res){
 				  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
-				  	  alert('支付成功');
+				  	  alert('你已送花成功！请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态');
 				  	}
 				  	else if ("get_brand_wcpay_request:cancel" == res.err_msg) {
 				  	  alert('取消支付');
