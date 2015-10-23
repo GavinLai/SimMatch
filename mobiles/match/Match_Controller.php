@@ -79,7 +79,8 @@ class Match_Controller extends Controller {
     $this->v->set_tplname('mod_match_detail');
   
     $nid = $request->arg(1);
-    $this->v->assign('the_nid', $nid);
+    $isajax = $request->get('isajax', 0);
+    $this->v->assign('the_nid', $nid)->assign("isajax", $isajax);
   
     if ($request->is_hashreq()) {
   
@@ -92,33 +93,47 @@ class Match_Controller extends Controller {
       }
       else {
   
-        //更新访问次数
-        Node::addVisitCnt($nid);
-  
-        //解析一些数据
-        $match_types = Node::getMatchTypes();
-        $ninfo['match_type_text'] = $match_types[$ninfo['match_type']];
-  
-        //解析content_detail里面的[p]xxx[/p]
-        $content_parsed     = Node::parseContentParagraph($ninfo['content_detail']);
-        $content_parsed_num = count($content_parsed);
-        $this->v->assign('content_parsed', $content_parsed);
-        $this->v->assign('content_parsed_num', $content_parsed_num);
+      	if (!$isajax) {
+      		
+      		//更新访问次数
+      		Node::addVisitCnt($nid);
+      		
+      		//解析一些数据
+      		$match_types = Node::getMatchTypes();
+      		$ninfo['match_type_text'] = $match_types[$ninfo['match_type']];
+      		
+      		//解析content_detail里面的[p]xxx[/p]
+      		$content_parsed     = Node::parseContentParagraph($ninfo['content_detail']);
+      		$content_parsed_num = count($content_parsed);
+      		$this->v->assign('content_parsed', $content_parsed);
+      		$this->v->assign('content_parsed_num', $content_parsed_num);
+      		
+      		//分享信息
+      		$share_info = [
+      				'title' => $ninfo['title'],
+      				'desc'  => $this->share_slogan,
+      				'link'  => U('match/'.$ninfo['nid'], '', true),
+      				'pic'   => fixpath($ninfo['thumb_url']),
+      		];
+      		$this->v->assign('share_info', $share_info);
+      	}
   
         //参赛者列表
-        $player_list = Match_Model::getPlayerList($nid);
+        $limit = 10;
+        $page  = $request->get('p', 1);
+        $search= $request->get('s', '');
+        $search= trim($search);
+        $this->v->assign('search', $search);
+        
+        $start = ($page-1) * $limit;
+        $totalnum = 0;
+        $maxpage  = 1;
+        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage);
         $this->v->assign('player_list', $player_list);
         $this->v->assign('player_num', count($player_list));
-        
-        //分享信息
-        $base_url = C('env.site.mobile');
-        $share_info = [
-          'title' => $ninfo['title'],
-          'desc'  => $this->share_slogan,
-          'link'  => U('match/'.$ninfo['nid'], '', true),
-          'pic'   => $base_url.$ninfo['thumb_url'],
-        ];
-        $this->v->assign('share_info', $share_info);
+        $this->v->assign('totalnum', $totalnum);
+        $this->v->assign('curpage', $page);
+        $this->v->assign('maxpage', $maxpage);
         
       }
   
@@ -129,6 +144,16 @@ class Match_Controller extends Controller {
     }
     else {
   
+    }
+    
+    if ($isajax) {
+    	$this->v->add_output_filter(function($result){
+    		preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
+    		if (!empty($matches) && !empty($matches[1][0])) {
+    			$result = $matches[1][0];
+    		}
+    		return $result;
+    	});
     }
     $response->send($this->v);
   }
@@ -367,7 +392,6 @@ class Match_Controller extends Controller {
       $this->v->assign('player_gallery', $player_gallery);
       $this->v->assign('player_gallery_num', count($player_gallery));
       
-      $base_url = C('env.site.mobile');
       $ninfo = Node::getInfo($player_info['match_id']);
       
       //选手“投票数”统计

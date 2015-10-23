@@ -235,8 +235,21 @@ class Match_Model extends Model {
     return $rid ? : false;
   }
   
-  static function getPlayerList($match_id) {
-    $list = D()->from("player")->where("`match_id`=%d AND `status`='R'",$match_id)->order_by("votecnt DESC")
+  static function getPlayerList($match_id, $search = '', $start = 0, $limit = 20, &$totalnum = 0, &$maxpage = 0) {
+  	$where = '';
+  	if (''!=$search) {
+  		if (is_numeric($search)) {
+  			$where .= "AND `player_id`=%d";
+  		}
+  		else {
+  			$where .= "AND `truename` like '%%%s%%'";
+  		}
+  	}
+  	$totalnum = D()->from("player")->where("`match_id`=%d {$where} AND `status`='R'",$match_id, $search)
+  	               ->select("COUNT(`player_id`) AS rcnt")->result();
+  	$maxpage  = ceil($totalnum / $limit);
+    $list = D()->from("player")->where("`match_id`=%d {$where} AND `status`='R'",$match_id, $search)->order_by("votecnt DESC")
+              ->limit($start, $limit)
               ->select("`player_id`,`match_id`,`uid`,`truename`,`slogan`,`votecnt`,`flowercnt`,`kisscnt`")
               ->fetch_array_all();
     if (!empty($list)) {

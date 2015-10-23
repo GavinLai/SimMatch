@@ -233,11 +233,10 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .match-top > span { text-align: right;width: 50%;float: right; }
 .match-thumb { position: relative; }
 .match-thumb img { max-width: 100%;vertical-align: top; }
-.match-thumb .join { position: absolute;bottom: -2px;width: 100%; }
-.match-thumb .join > div { /*margin: 0 2.5%;*/text-align: center; }
+.match-thumb .join { position: absolute;bottom: -2px;width: 100%;text-align: center; }
 .match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -0px;width: 175px;height: 62px;line-height: 62px;border: none;border-radius: 0;padding: 0; }
 .match-info .join { padding-top: 10px; }
-.player-info .join > div { margin: 10px 4px; }
+.player-info .join { margin: 0 4px;padding-top: 10px; }
 .block-page { margin: 10px; font-size: 14px; font-size: 1.4rem; }
 .block-page .row { margin-bottom: 10px;border-radius: 5px;background: #fff;padding: 10px; }
 .block-page .row .dt em,.block-page .row .dt strong { font-weight: bold; }
@@ -248,7 +247,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .search-box input { background: #fff;border: none;line-height: 40px;height: 40px;padding: 2px 0 0 10px;width: 100%;border-radius: 5px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
 .player-info { margin: 20px 6px; }
 #player-list { margin: 10px 0 0; }
-#player-list .emptytip { background: #fff;height: 40px;line-height: 40px;text-align: center; }
+#player-list .emptytip { background: #fff;height: 40px;line-height: 40px;text-align: center;margin:0 5px 5px; }
 #player-list .emptytip a { color: #f60; }
 #player-list .itbox { display: inline-block;width: 50%; }
 #player-list .itcont { display: block;font-size: 12px;font-size: 1.2rem;margin: 0 4px 8px;border-radius: 5px;border-width: 1px 1px 2px;border-style: solid;border-color: #ddd;background: #fff;color: #999; }
@@ -259,6 +258,8 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #player-list .imgc img { width: 100%; display:inline-block;text-align: center;vertical-align: middle; }
 #player-list .fot { padding: 5px; margin-top: 3px;line-height: 18px;border-top: 1px dotted #ccc; }
 #player-list .fot .p { display: inline-block;width: 50%;text-align: left;font-size: 12px;font-size: 1.2rem; }
+.paging { margin: 5px; }
+.paging a { display: inline-block;width: 25%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333; }
 
 /*match join页*/
 .match-join { padding: 10px; }

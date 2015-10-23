@@ -8,7 +8,7 @@
 <div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　<span>投票总数：<em><?=$ninfo['votecnt']?></em></span></div>
 <div class="match-thumb">
   <img src="<?=fixpath($ninfo['thumb_url'])?>" alt="" />
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
+  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 </div>
   
 <div class="block-page match-info">
@@ -27,15 +27,22 @@
   <?php else:?>
   <div class="row"><div class="dt"><?=$ninfo['content_detail']?></div></div>
   <?php endif;?>
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
-</div>  
+  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
+</div>
 <div class="block-page player-info">
 <?php if ($player_num):?>
-  <div class="search-box"><form action="" method="get"><input type="search" name="search" placeholder="请输入“参赛者姓名 或 编号”搜索"/></form></div>
+  <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" placeholder="请输入“参赛者姓名 或 编号”搜索"/></form></div>
 <?php endif;?>  
   <div id="player-list">
+
+<!--{AJAXPART}-->
+<script type="text/javascript">
+window.curpage = myParseInt('<?=$curpage?>');
+window.maxpage = myParseInt('<?=$maxpage?>');
+window.searchkey = '<?=$search?>';
+</script>
   <?php if (!$player_num):?>
-    <div class="emptytip">还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a></div>
+    <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛者<?php else:?>还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
   <?php else:?>
   
   <?php foreach ($player_list AS $it):?>
@@ -46,11 +53,6 @@
       </a>
     </div>
   <?php endforeach;?>
-    
-  <?php endif;?>
-  </div>
-  <div class="join"><div><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div></div>
-</div>
 <script type="text/javascript">
 $(function(){
 	setTimeout(function(){
@@ -58,10 +60,69 @@ $(function(){
 		var w = $ele.width();
 		var h = parseInt(w/0.75); //ratio used by iphone4 w/h ratio
 		$ele.css('height',h+'px');
+		F.set_scroller(false,10);
 	},1);
 });
 </script>
+  <?php endif;?>
+<!--{/AJAXPART}-->
+  </div>
+  
+  <?php if ($player_num):?>
+  <?php if ($maxpage > 1):?>
+  <div class="paging" id="paging">
+  	<a href="javascript:;" rel="begin">首页</a>
+  	<a href="javascript:;" rel="last">上一页</a>
+  	<a href="javascript:;" rel="next">下一页</a>
+  	<a href="javascript:;" rel="end">末页</a>
+  </div>
 <script type="text/javascript">
+$(function(){
+	$('#paging > a').bind('click',function(){
+		var rel = $(this).attr('rel');
+		gopage(rel, curpage, maxpage, searchkey);
+	});
+});
+function gopage(rel, curpage, maxpage, search) {
+	var p = 1;
+	switch(rel) {
+	default:
+		case 'begin': p = 1;break;
+		case 'end':   p = maxpage;break;
+		case 'last':  p = curpage-1;p = p > 0 ? p : 1;break;
+		case 'next':  p = curpage+1;p = p > maxpage ? maxpage : p;break;
+	}
+	if (maxpage<=1) {
+		alert('当前仅有一页');
+		return;
+	}
+	else if (p==curpage) {
+		if (p==1) {
+			alert('已经第一页');
+		}
+		else if (p==maxpage) {
+			alert('已经最后一页');
+		}
+		return;
+	}
+	F.get('<?php echo U('match/'.$the_nid,'_hr=1&isajax=1')?>&s='+search+'&p='+p, function(ret){
+		$('#player-list').html(ret.body);
+	});
+}
+</script>
+<?php endif;/*END if ($maxpage > 1)*/?>
+  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
+  <?php endif;?>
+</div>
+<script type="text/javascript">
+function searchform(obj) {
+	var _act = '<?php echo U('match/'.$the_nid,'_hr=1&isajax=1')?>';
+	var _val = $(obj).find('input').val().trim();
+	F.get(_act+'&s='+_val, function(ret){
+		$('#player-list').html(ret.body);
+	});
+	return false;
+}
 function show_full(obj) {
 	$('.match-info .row.hide').show();
 	$(obj).parent().remove();
