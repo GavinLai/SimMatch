@@ -254,8 +254,8 @@ class Match_Model extends Model {
               ->fetch_array_all();
     if (!empty($list)) {
       foreach($list AS &$it) {
-        $rs = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->select("`img_thumb`")->result();
-        $it['img_thumb'] = $rs ? : '';
+        $row = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->select("`img_thumb`,`img_thumb_cdn`")->get_one();
+        $it['img_thumb'] = empty($row) ? '' : ($row['img_thumb_cdn']!='' ? $row['img_thumb_cdn'] : $row['img_thumb']);
       }
     }
     return $list;
@@ -267,13 +267,14 @@ class Match_Model extends Model {
   }
   
   static function getPlayerGallery($player_id) {
-    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select("`img_std`")->fetch_column('img_std');
+    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select("`img_std`,`img_std_cdn`")->fetch_array_all();
+    $ret= [];
     if (!empty($rs)) {
-      foreach ($rs AS &$it) {
-        $it = fixpath($it);
+      foreach ($rs AS $it) {
+        array_push($ret, fixpath($it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
       }
     }
-    return $rs;
+    return $ret;
   }
   
   static function getRankInfo($match_id, $player_id) {
