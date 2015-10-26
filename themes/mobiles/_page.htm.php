@@ -38,7 +38,13 @@
   <?php include T('_popdlg');?>
 </div>
 <!-- 微信操作提示 -->
-<div id="cover-wxtips" class="wxcover"><img alt="" src="<?=$contextpath;?>themes/mobiles/img/guide.png"/></div>
+<div id="cover-wxtips" class="wxcover">
+<?php if (C('env.usecdn')):?>
+<img alt="" src="http://fcdn.qiniudn.com/img/guide.png"/>
+<?php else:?>
+<img alt="" src="<?=$contextpath;?>themes/mobiles/img/guide.png"/>
+<?php endif;?>
+</div>
 </body>
 <?php footscript();?>
 <?php tplholder('FOOT_JS');?>

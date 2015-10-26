@@ -253,9 +253,10 @@ class Match_Model extends Model {
               ->select("`player_id`,`match_id`,`uid`,`truename`,`slogan`,`votecnt`,`flowercnt`,`kisscnt`")
               ->fetch_array_all();
     if (!empty($list)) {
+    	$usecdn = C('env.usecdn');
       foreach($list AS &$it) {
         $row = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->select("`img_thumb`,`img_thumb_cdn`")->get_one();
-        $it['img_thumb'] = empty($row) ? '' : ($row['img_thumb_cdn']!='' ? $row['img_thumb_cdn'] : $row['img_thumb']);
+        $it['img_thumb'] = empty($row) ? '' : (2==$usecdn&&$row['img_thumb_cdn']!='' ? $row['img_thumb_cdn'] : $row['img_thumb']);
       }
     }
     return $list;
@@ -270,8 +271,9 @@ class Match_Model extends Model {
     $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select("`img_std`,`img_std_cdn`")->fetch_array_all();
     $ret= [];
     if (!empty($rs)) {
+    	$usecdn = C('env.usecdn');
       foreach ($rs AS $it) {
-        array_push($ret, fixpath($it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
+        array_push($ret, fixpath(2==$usecdn&&$it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
       }
     }
     return $ret;
