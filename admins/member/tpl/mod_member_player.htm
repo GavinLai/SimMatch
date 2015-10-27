@@ -1,4 +1,8 @@
 <!--{include_file name="_smenu_member.htm"}-->
+<style type="text/css">
+.coverimgs img { border: 2px solid #fff;max-width: 30px;  }
+.coverimgs img.chked { border-color:#f60;  }
+</style>
 <section id="ifr-main" class="ifr-main">
 <div class="breadcrumb">当前位置：<span>用户管理</span>&nbsp;&gt;&nbsp;<span>参赛者列表</span></div>
 
@@ -69,9 +73,9 @@
     <td class="c0"><input type="checkbox" name="rids[]" value="<!--{$it.player_id}-->" class="chkrid" /></td>
     <td class="c1"><!--{$it.player_id}--></td>
     <td class="c2"><a href="<!--{$mainsite}-->/player/<!--{$it.player_id}-->" target="_blank"><!--{$it.truename}--></a></td>
-    <td class="c3">
+    <td class="c3 coverimgs">
       <!--{foreach from=$it.gallery item=pic}-->
-      <a href="<!--{$pic}-->" target="_blank"><img src="<!--{$pic}-->" alt="" style="max-width:30px;"/></a>&nbsp;
+      <a href="<!--{$pic.img_std}-->" target="_blank"><img src="<!--{$pic.img_thumb}-->" alt="" <!--{if $pic.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
       <!--{/foreach}-->
     </td>
     <td class="c4"><!--{$it.province}--> - <!--{$it.city}--></td>

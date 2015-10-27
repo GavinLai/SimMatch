@@ -36,7 +36,7 @@
     <p class="row"><input name="slogan" id="frm_slogan" type="text" class="inptxt row-ele" value="" placeholder="参赛口号（可不填）" /></p>
     <p class="row"><input name="remark" id="frm_remark" type="text" class="inptxt row-ele" value="" placeholder="备注，附加说明（可不填）" /></p>
     -->
-    <p class="row tips">所有参赛选手请添加官方公众平台：<em>FEOfeel</em>，<br/>以便随时关注赛事进程。</p>
+    <p class="row tips">所有参赛选手请<em style="color:red;">务必</em>添加官方客服微信号：<br/><em style="color:green;font-size:16px;font-size:1.6rem;">choumeikufang</em>，以便随时关注赛事进程。</p>
     <p class="row"><input name="submit" type="submit" class="btn btn-purple" id="frm_submit" value="提 交" /></p>
     <p class="row">&nbsp;</p>
   </form>
@@ -151,11 +151,11 @@ $(function(){
 		post_data.imgs = imgs;
 
 		var _btn = $('#frm_submit');
-		_btn.val('提交中...').attr('disabled',true);
+		_btn.val('图片上传审核中，请等待片刻...').attr('disabled',true);
 		F.post($(this).attr('action'), post_data, function(ret){
 			_btn.val('完成！').removeAttr('disabled');
 			if(ret.flag=='SUC'){
-				alert('恭喜您已报名成功！请关注大赛客服微信：choumeikufang，随时了解获奖情况。');
+				alert('恭喜您已报名成功！请“务必”关注大赛客服微信号：choumeikufang，以便随时了解获奖情况。');
 				window.location.href = '<?php echo U('match/'.$nid)?>';
 			}else{
 				_btn.val('提 交');

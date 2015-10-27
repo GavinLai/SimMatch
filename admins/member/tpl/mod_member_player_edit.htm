@@ -1,4 +1,8 @@
 <!--{include_file name="_smenu_member.htm"}-->
+<style type="text/css">
+.coverimgs img { border: 2px solid #fff;max-height: 100px;  }
+.coverimgs img.chked { border-color:#f60;  }
+</style>
 <section id="ifr-main" class="ifr-main">
 
 <div class="breadcrumb">当前位置：<span>用户管理</span>
@@ -23,6 +27,15 @@
           <td class="c2"><!--{$player_info.truename}--></td>
         </tr>
         <tr>
+          <th class="c1">封面图片设定：</th>
+          <td class="c2 coverimgs">
+          <input type="hidden" name="cover_pic_id" value="<!--{$player_info.cover_pic_id}-->" id="frm_cover_pic_id"/>
+          <!--{foreach from=$player_gallery item=it}-->
+          <a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
+          <!--{/foreach}-->
+          </td>
+        </tr>
+        <tr>
           <th class="c1">增加投票数：</th>
           <td class="c2"><input type="text" name="inc_vote" value="0" class="inptxt" id="frm_inc_vote"  /></td>
         </tr>
@@ -41,6 +54,11 @@
 </div>
 
 <script>
+function changecover(obj) {
+	$('#frm_cover_pic_id').val($(obj).attr('rel'));
+	$(obj).parent().find('img').removeClass('chked');
+	$(obj).find('img').addClass('chked');
+}
 var is_edit = '<!--{$is_edit}-->';
 is_edit = is_edit ? true : false;
 
@@ -54,12 +72,14 @@ F.formPost = function() {
   post_data.player_id = _nid;
 
   // inc value
+  post_data.cover_pic_id = $('#frm_cover_pic_id').val();
   post_data.inc_vote   = $('#frm_inc_vote').val().trim();
   post_data.inc_flower = $('#frm_inc_flower').val().trim();
   post_data.inc_vote   = parseInt(post_data.inc_vote);
   post_data.inc_flower = parseInt(post_data.inc_flower);
+  post_data.cover_pic_id = parseInt(post_data.cover_pic_id);
   
-  if ((post_data.inc_vote || post_data.inc_flower) && confirm('确定增加？')) {
+  if (confirm('确定变更？')) {
 	  // Submit
 	  var $btnsubmit = $('#btnsubmit');
 	  $btnsubmit.prop('disabled',true);

@@ -239,24 +239,29 @@ class Match_Model extends Model {
   	$where = '';
   	if (''!=$search) {
   		if (is_numeric($search)) {
-  			$where .= "AND `player_id`=%d";
+  			$where .= "AND p.`player_id`=%d";
   		}
   		else {
-  			$where .= "AND `truename` like '%%%s%%'";
+  			$where .= "AND p.`truename` like '%%%s%%'";
   		}
   	}
-  	$totalnum = D()->from("player")->where("`match_id`=%d {$where} AND `status`='R'",$match_id, $search)
-  	               ->select("COUNT(`player_id`) AS rcnt")->result();
-  	$maxpage  = ceil($totalnum / $limit);
-    $list = D()->from("player")->where("`match_id`=%d {$where} AND `status`='R'",$match_id, $search)->order_by("votecnt DESC")
-              ->limit($start, $limit)
-              ->select("`player_id`,`match_id`,`uid`,`truename`,`slogan`,`votecnt`,`flowercnt`,`kisscnt`")
-              ->fetch_array_all();
+  	$totalnum = D()->from("{player} p")->where("p.`match_id`=%d {$where} AND p.`status`='R'",$match_id, $search)
+  	               ->select("COUNT(p.`player_id`) AS rcnt")->result();
+  	$maxpage  = ceil($totalnum / ($limit?:10));
+    $list = D()->query("SELECT p.`player_id`,p.`match_id`,p.`uid`,p.`cover_pic_id`,p.`truename`,p.`slogan`,p.`votecnt`,p.`flowercnt`,p.`kisscnt`,IFNULL(pg.img_thumb,'') AS img_thumb,IFNULL(pg.img_thumb_cdn,'') AS img_thumb_cdn
+    		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`votecnt` DESC LIMIT {$start}, {$limit}",
+    		               $match_id, $search)
+               ->fetch_array_all();
     if (!empty($list)) {
     	$usecdn = C('env.usecdn');
       foreach($list AS &$it) {
-        $row = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->select("`img_thumb`,`img_thumb_cdn`")->get_one();
-        $it['img_thumb'] = empty($row) ? '' : (2==$usecdn&&$row['img_thumb_cdn']!='' ? $row['img_thumb_cdn'] : $row['img_thumb']);
+      	if (''==$it['img_thumb']) { //封面图片id未设置
+      		$row = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->limit(0, 1)->select("`img_thumb`,`img_thumb_cdn`")->get_one();
+      		$it['img_thumb'] = empty($row) ? '' : (2==$usecdn&&$row['img_thumb_cdn']!='' ? $row['img_thumb_cdn'] : $row['img_thumb']);
+      	}
+      	else {
+      		$it['img_thumb'] = 2==$usecdn&&$it['img_thumb_cdn']!='' ? $it['img_thumb_cdn'] : $it['img_thumb'];
+      	}
       }
     }
     return $list;
@@ -275,6 +280,16 @@ class Match_Model extends Model {
       foreach ($rs AS $it) {
         array_push($ret, fixpath(2==$usecdn&&$it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
       }
+    }
+    return $ret;
+  }
+  
+  static function getPlayerCover($player_id) {
+  	$row = D()->query("SELECT pg.`img_std`,pg.`img_std_cdn` FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid WHERE p.`player_id`=%d", $player_id)->get_one();
+    $ret = '';
+    if (!empty($row)) {
+    	$usecdn = C('env.usecdn');
+    	$ret = fixpath(2==$usecdn&&$row['img_std_cdn']!=''?$row['img_std_cdn']:$row['img_std']);
     }
     return $ret;
   }

@@ -69,7 +69,7 @@ class Member_Model extends Model {
     	foreach ($result AS &$it) {
     		$it['province'] = self::strip_location($it['province']);
     		$it['city']     = self::strip_location($it['city']);
-    		$it['gallery'] = self::getPlayerGallery($it['player_id']);
+    		$it['gallery'] = self::getPlayerGalleryAll($it['player_id'], $it['cover_pic_id']);
     	}
     }
 	
@@ -81,6 +81,27 @@ class Member_Model extends Model {
 		if(empty($player_id)) return [];
 		$rs = D()->get_one("SELECT * FROM {player} WHERE `player_id`=%d", $player_id);
 		return $rs;
+	}
+	
+	static function getPlayerGalleryAll($player_id, &$cover_pic_id = 0) {
+		$rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select()->fetch_array_all();
+		if (!empty($rs)) {
+			$i = 1;
+			$old_cover_pic_id = $cover_pic_id;
+			foreach ($rs AS &$pic) {
+				if ($old_cover_pic_id && $old_cover_pic_id==$pic['rid'] || !$old_cover_pic_id && 1==$i) {
+					$pic['is_cover'] = 1;
+					$cover_pic_id = $pic['rid'];
+				}
+				else {
+					$pic['is_cover'] = 0;
+				}
+				
+				++$i;
+			}
+			return $rs;
+		}
+		return [];
 	}
 	
 	static function suspendPlayers($ids, $isSuspend = TRUE) {

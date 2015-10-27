@@ -278,13 +278,21 @@ class Match_Controller extends Controller {
         $res['player_id'] = $ret;
         
         //保存图片
+        $i = 1;
+        $cover_pic_id = 0;
         foreach ($imgs AS $img) {
           $imgpaths = Match_Model::saveImgData($img);
           if (is_numeric($imgpaths)) {
             continue;
           }
-          Match_Model::savePlayerGallery($res['player_id'], $imgpaths);
+          $rid = Match_Model::savePlayerGallery($res['player_id'], $imgpaths);
+          if (1==$i++) { //默认第一张为封面图片
+          	$cover_pic_id = $rid;
+          }
         }
+        
+        //更新封面图片id
+        D()->update("player",['cover_pic_id'=>$cover_pic_id],['player_id'=>$res['player_id']]);
       }
       else{
         if (-1==$ret) {
@@ -400,6 +408,11 @@ class Match_Controller extends Controller {
       $this->v->assign('player_gallery', $player_gallery);
       $this->v->assign('player_gallery_num', count($player_gallery));
       
+      $player_cover = Match_Model::getPlayerCover($player_id);
+      if (empty($player_cover)) {
+      	$player_cover = isset($player_gallery[0]) ? $player_gallery[0] : '';
+      }
+      
       $ninfo = Node::getInfo($player_info['match_id']);
       
       //选手“投票数”统计
@@ -421,7 +434,7 @@ class Match_Controller extends Controller {
         'title' => '我是'.$player_info['player_id'].'号'.$player_info['truename'].'，正在参加'.$ninfo['title'].'，快来支持我吧！记得是'.$player_info['player_id'].'号哟~',
         'desc'  => $ninfo['slogan'],
         'link'  => U('player/'.$player_info['player_id'], '', true),
-        'pic'   => isset($player_gallery[0]) ? $player_gallery[0] : '',
+        'pic'   => $player_cover,
       ];
       $this->v->assign('share_info', $share_info);
     }

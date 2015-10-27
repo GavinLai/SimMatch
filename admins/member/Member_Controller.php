@@ -336,33 +336,30 @@ class Member_Controller extends Controller {
   		$player_id   = $request->post('player_id', 0);
   		$inc_vote    = $request->post('inc_vote', 0);
   		$inc_flower  = $request->post('inc_flower', 0);
+  		$cover_pic_id  = $request->post('cover_pic_id', 0);
   		
   		$player_info = Member_Model::getPlayerInfo($player_id);
   		if (empty($player_info)) {
   			$ret['msg'] = '参赛者不存在';
   			$response->sendJSON($ret);
   		}
+
+  		$uid = 10000; //10000 为系统管理员帐号
+  		$ret['flag'] = 'SUC';
+  		$ret['msg'] = '更新成功';
+
+  		//更新pic_cover_id
+  		D()->update("player",['cover_pic_id'=>$cover_pic_id],['player_id'=>$player_id]);
   		
-  		if (empty($inc_vote) && empty($inc_flower)) {
-  			$ret['flag'] = 'SUC';
-  			$ret['msg'] = '数据没变化';
-  			$response->sendJSON($ret);
+  		if ($inc_vote) {
+  			$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE);
+  			$ret['msg'].= '，增加了'.$inc_vote.'票';
   		}
-  		else {
-  			$uid = 10000; //10000 为系统管理员帐号
-  			$ret['flag'] = 'SUC';
-  			$ret['msg'] = '更新成功';
-  			
-  			if ($inc_vote) {
-  				$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE);
-  				$ret['msg'].= '，增加了'.$inc_vote.'票';
-  			}
-  			if ($inc_flower) {
-  				$action_id = Node::action('flower', $player_id, $uid, $inc_flower);
-  				$ret['msg'].= '，增加了'.$inc_flower.'花';
-  			}
-  			$response->sendJSON($ret);
+  		if ($inc_flower) {
+  			$action_id = Node::action('flower', $player_id, $uid, $inc_flower);
+  			$ret['msg'].= '，增加了'.$inc_flower.'花';
   		}
+  		$response->sendJSON($ret);
   		
   	}
   	else { // GET request
@@ -375,8 +372,13 @@ class Member_Controller extends Controller {
   		$player_id = intval($player_id);
   		$is_edit = $player_id ? TRUE : FALSE;
   		$player_info = $is_edit ? Member_Model::getPlayerInfo($player_id) : [];
+  		$player_gallery = [];
+  		if (!empty($player_info)) {
+  			$player_gallery = Member_Model::getPlayerGalleryAll($player_info['player_id'], $player_info['cover_pic_id']);
+  		}
   
   		$this->v->assign('player_info', $player_info)
+  						->assign('player_gallery', $player_gallery)
   		        ->assign('is_edit', $is_edit);
   		$response->send($this->v);
   	}
