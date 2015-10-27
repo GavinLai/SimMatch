@@ -93,13 +93,21 @@ class Member_Model extends Model {
 			 
 			$flag = $isSuspend ? 'S' : 'R';
 			D()->query("UPDATE `{player}` SET `status`='{$flag}' WHERE `player_id` IN (%s)", $idstr);
+			
+			//~ update table {node}
+			$nids = self::getMatchIdsByPlayerIds($idstr);
+			if (!empty($nids)) {
+				foreach ($nids AS $nid) {
+					self::updateNodeStat($nid);
+				}
+			}
 	
 			return $ids;
 		}
 		return [];
 	}
 	
-	public static function deletePlayers($ids) {
+	static function deletePlayers($ids) {
 		if (!is_array($ids)) {
 			$ids = array($ids);
 		}
@@ -111,10 +119,33 @@ class Member_Model extends Model {
 	
 			//~ update table {channel}
 			D()->query("UPDATE `{player}` SET `status`='D' WHERE `player_id` IN (%s)", $idstr);
+			
+			//~ update table {node}
+			$nids = self::getMatchIdsByPlayerIds($idstr);
+			if (!empty($nids)) {
+				foreach ($nids AS $nid) {
+					self::updateNodeStat($nid);
+				}
+			}
 	
 			return $ids;
 		}
 		return [];
+	}
+	
+	static function getMatchIdsByPlayerIds($player_ids_str = '') {
+		if ($player_ids_str) {
+			return D()->from("player")->where("`player_id` IN (%s)", $player_ids_str)->select("DISTINCT `match_id`")->fetch_column("match_id");
+		}
+		return [];
+	}
+	
+	static function updateNodeStat($nid, $field = 'votecnt') {
+		if (!in_array($field, ['votecnt','visitcnt','flowercnt'])) {
+			return false;
+		}
+		D()->query("UPDATE `{node}` SET `{$field}`=(SELECT SUM(`{$field}`) FROM `{player}` WHERE `match_id`=%d AND `status`='R') WHERE `nid`=%d", $nid,$nid);
+		return true;
 	}
 	
 }
