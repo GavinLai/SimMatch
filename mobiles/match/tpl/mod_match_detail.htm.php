@@ -128,12 +128,6 @@ function show_full(obj) {
 	$(obj).parent().remove();
 	F.oIScroll.refresh();
 }
-wxData.share.title= '<?=$share_info['title']?>';
-wxData.share.desc = '<?=$share_info['desc']?>';
-wxData.share.link = '<?=$share_info['link']?>';
-wxData.share.pic  = '<?=$share_info['pic']?>';
-document.title = wxData.share.title;
-wxData.share.refresh();
 </script>
 
 <?php endif;?>

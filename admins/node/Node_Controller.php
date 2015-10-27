@@ -109,6 +109,7 @@ class Node_Controller extends Controller {
       $start_date   = $request->post('start_date','');
       $end_date     = $request->post('end_date','');
       $keyword      = $request->post('keyword','');
+      $slogan       = $request->post('slogan','');
       $content      = $request->post('content','');
       $content_dt   = $request->post('content_detail','');
       $status       = $request->post('status','R');
@@ -169,6 +170,7 @@ class Node_Controller extends Controller {
             case 'match':
               $params_ext['match_type'] = $match_type;
               $params_ext['thumb_url']  = $thumb_url;
+              $params_ext['slogan']     = $slogan;
               $params_ext['start_date'] = $start_date;
               $params_ext['end_date']   = $end_date;
               $params_ext['content_detail'] = $content_dt;
@@ -192,6 +194,7 @@ class Node_Controller extends Controller {
             case 'match':
               $params_ext['match_type'] = $match_type;
               $params_ext['thumb_url']  = $thumb_url;
+              $params_ext['slogan']     = $slogan;
               $params_ext['start_date'] = $start_date;
               $params_ext['end_date']   = $end_date;
               $params_ext['content_detail'] = $content_dt;

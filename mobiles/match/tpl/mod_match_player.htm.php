@@ -90,26 +90,20 @@ $('#slider img').click(function(){
 
 <script type="text/javascript">
 $(function(){
-	
+
 	$('#op-toshare').click(function(){
-		wxData.share.title= '<?=$share_info['title']?>';
-		wxData.share.desc = '<?=$share_info['desc']?>';
-		wxData.share.link = '<?=$share_info['link']?>';
-		wxData.share.pic  = '<?=$share_info['pic']?>';
-		wxData.share.refresh();
-		wxData.share.show_cover();
+		wxData.shareinfo.show_cover();
 	});
 
-	var ajaxing = false, player_id = '<?=$player_info['player_id']?>';
+	var ajaxing = false, player_id = myParseInt('<?=$player_info['player_id']?>');
 	$('#op-tovote').click(function(){
 		if (ajaxing) return false;
 		ajaxing = true;
 		var oThis = this;
-		F.post('<?php echo U('match/vote')?>', {player_id: player_id}, function(ret){
+		F.post('<?php echo U('match/vote')?>', {"player_id": player_id}, function(ret){
 			ajaxing = false;
 			if (ret.flag=='SUC') {
-				//alert(ret.msg);
-				alert('你已投票成功！请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态');
+				alert("你已投票成功！\n请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态");
 				$(oThis).find('em').text(ret.votedcnt_single);
 				$('#op-tokiss em').text(ret.votedcnt);
 			}

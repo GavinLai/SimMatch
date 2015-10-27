@@ -55,6 +55,10 @@
           <td class="c2"><input type="text" name="keyword" value="<!--{$ninfo.keyword}-->" class="inptxt inplong" id="frm_keyword"  /></td>
         </tr>
         <tr>
+          <th class="c1">大赛口号：</th>
+          <td class="c2"><input type="text" name="slogan" value="<!--{$ninfo.slogan}-->" class="inptxt inplong" id="frm_slogan"  /></td>
+        </tr>
+        <tr>
           <th class="c1">赛事详情：</th>
           <td class="c2"><script id="content_detail"  name="content_detail" type="text/plain"></script></td>
         </tr>
@@ -149,6 +153,9 @@ F.formPost = function() {
   _keyword = tickDuplicate(_keyword);
   $keyword.val(_keyword);
   post_data.keyword = _keyword;
+	
+  // node slogan
+  post_data.slogan = $('#frm_slogan').val().trim();
   
 	// node content detail
 	post_data.content_detail = content.getContent();;

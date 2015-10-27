@@ -15,8 +15,6 @@ class Match_Controller extends Controller {
   private $nav_flag3  = '';      //导航标识3
   private $extra_css  = '';      //添加给section.scrollArea的额外css类
   
-  private $share_slogan = '寻找那些独特优秀，却没人捧红的奇女子';
-  
   /**
    * hook init
    *
@@ -108,14 +106,6 @@ class Match_Controller extends Controller {
       		$this->v->assign('content_parsed', $content_parsed);
       		$this->v->assign('content_parsed_num', $content_parsed_num);
       		
-      		//分享信息
-      		$share_info = [
-      				'title' => $ninfo['title'],
-      				'desc'  => $this->share_slogan,
-      				'link'  => U('match/'.$ninfo['nid'], '', true),
-      				'pic'   => fixpath($ninfo['thumb_url']),
-      		];
-      		$this->v->assign('share_info', $share_info);
       	}
   
         //参赛者列表
@@ -140,21 +130,39 @@ class Match_Controller extends Controller {
       $this->v->assign('errmsg', $errmsg)
               ->assign('ninfo', $ninfo);
   
-  
+      if ($isajax) {
+      	$this->v->add_output_filter(function($result){
+      		preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
+      		if (!empty($matches) && !empty($matches[1][0])) {
+      			$result = $matches[1][0];
+      		}
+      		return $result;
+      	});
+      }
+      
     }
     else {
-  
+    	$ninfo = Node::getInfo($nid);
+    	if (!empty($ninfo)) {
+    		//SEO信息
+	      $seo = [
+	        'title'   => $ninfo['title'],
+	        'keyword' => $ninfo['keyword'],
+	        'desc'    => $ninfo['slogan']
+	      ];
+	      $this->v->assign('seo', $seo);
+    	}
+    	
+    	//分享信息
+    	$share_info = [
+    			'title' => $ninfo['title'],
+    			'desc'  => $ninfo['slogan'],
+    			'link'  => U('match/'.$ninfo['nid'], '', true),
+    			'pic'   => fixpath($ninfo['thumb_url']),
+    	];
+    	$this->v->assign('share_info', $share_info);
     }
     
-    if ($isajax) {
-    	$this->v->add_output_filter(function($result){
-    		preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
-    		if (!empty($matches) && !empty($matches[1][0])) {
-    			$result = $matches[1][0];
-    		}
-    		return $result;
-    	});
-    }
     $response->send($this->v);
   }
   
@@ -403,15 +411,15 @@ class Match_Controller extends Controller {
       //SEO信息
       $seo = [
         'title'   => '#'.$player_info['player_id'].' '.$player_info['truename'] . ' - '.$ninfo['title'],
-        'keyword' => $player_info['truename'].$ninfo['keyword'],
-        'desc'    => $ninfo['title'],
+        'keyword' => $player_info['truename'].','.$ninfo['keyword'],
+        'desc'    => $ninfo['slogan'],
       ];
       $this->v->assign('seo', $seo);
       
       //分享信息
       $share_info = [
         'title' => '我是'.$player_info['player_id'].'号'.$player_info['truename'].'，正在参加'.$ninfo['title'].'，快来支持我吧！记得是'.$player_info['player_id'].'号哟~',
-        'desc'  => $this->share_slogan,
+        'desc'  => $ninfo['slogan'],
         'link'  => U('player/'.$player_info['player_id'], '', true),
         'pic'   => isset($player_gallery[0]) ? $player_gallery[0] : '',
       ];

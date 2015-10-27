@@ -16,7 +16,8 @@ use Qiniu\Storage\UploadManager;
 // 作业类
 class QiniuFileUpJob extends CronJob {
 
-	const PATH_DOMAIN = 'http://7xnslp.com1.z0.glb.clouddn.com/';
+	//const PATH_DOMAIN = 'http://7xnslp.com1.z0.glb.clouddn.com/';
+	const PATH_DOMAIN = 'http://fimg.fxmapp.com/';
 	const PATH_PREFIX = 'wxbs';
 	
 	public function job($argc, $argv) {

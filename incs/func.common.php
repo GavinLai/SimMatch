@@ -666,6 +666,110 @@ function ectable( $tbname )
 }
 
 /**
+ * 返回share信息的js数据
+ * 
+ * @param array $data
+ * @return string
+ */
+function shareinfo( Array $data = array() ){
+	$data_js = '';
+	if (empty($data)) {
+		$data_js =<<<HEREDOC_SHARE_JS0
+wxData.shareinfo = {
+  title: document.title,
+  desc : $('html > head > meta[name=description]').attr('content'),
+  link : document.location.href,
+  pic  : '',
+  cover: null
+};
+HEREDOC_SHARE_JS0;
+	}
+	else {
+		$share_title = $data['title'];
+		$share_desc  = $data['desc'];
+		$share_link  = $data['link'];
+		$share_pic   = $data['pic'];
+		$data_js =<<<HEREDOC_SHARE_JS1
+wxData.shareinfo = {
+  title: '{$share_title}',
+  desc : '{$share_desc}',
+  link : '{$share_link}',
+  pic  : '{$share_pic}',
+  cover: null
+};
+HEREDOC_SHARE_JS1;
+	}
+	
+	$func_js = <<<HEREDOC_SHARE_JS3
+wxData.shareinfo.show_cover = function(){ if(typeof(wxData.shareinfo.cover)=='object') wxData.shareinfo.cover.show() };
+wxData.shareinfo.hide_cover = function(){ if(typeof(wxData.shareinfo.cover)=='object') wxData.shareinfo.cover.hide() };
+wxData.shareinfo.refresh = function(){
+  if (typeof(wx)!='object') return;
+  //分享给微信好友
+  wx.onMenuShareAppMessage({
+    title: wxData.shareinfo.title,
+    desc: wxData.shareinfo.desc,
+    link: wxData.shareinfo.link,
+    imgUrl: wxData.shareinfo.pic,
+    success: function (res) {
+        alert('谢谢分享！');
+        wxData.shareinfo.hide_cover();
+    },
+    cancel: function (res) {
+        wxData.shareinfo.hide_cover();
+    }
+  });
+  //分享到朋友圈
+  wx.onMenuShareTimeline({
+    title: wxData.shareinfo.title,
+    link: wxData.shareinfo.link,
+    imgUrl: wxData.shareinfo.pic,
+    success: function (res) {
+      alert('谢谢分享！');
+      wxData.shareinfo.hide_cover();
+    },
+    cancel: function (res) {
+      wxData.shareinfo.hide_cover();
+    }
+  });
+  //分享到QQ
+  wx.onMenuShareQQ({
+    title: wxData.shareinfo.title,
+    desc: wxData.shareinfo.desc,
+    link: wxData.shareinfo.link,
+    imgUrl: wxData.shareinfo.pic,
+    success: function (res) {
+      alert('谢谢分享！');
+      wxData.shareinfo.hide_cover();
+    },
+    cancel: function (res) {
+      wxData.shareinfo.hide_cover();
+    }
+  });
+  //分享到微博
+  wx.onMenuShareWeibo({
+    title: wxData.shareinfo.title,
+    desc: wxData.shareinfo.desc,
+    link: wxData.shareinfo.link,
+    imgUrl: wxData.shareinfo.pic,
+    success: function (res) {
+      alert('谢谢分享！');
+      wxData.shareinfo.hide_cover();
+    },
+    cancel: function (res) {
+      wxData.shareinfo.hide_cover();
+    }
+  });
+};
+$(function(){
+wxData.shareinfo.cover = $('#cover-wxtips');
+wxData.shareinfo.cover.click(function(){ $(this).hide() });
+});
+HEREDOC_SHARE_JS3;
+	echo "<script type=\"text/javascript\">{$data_js}{$func_js}</script>";
+}
+
+/**
  * 返回weixin全局js
  * @return string
  */
@@ -673,104 +777,9 @@ function weixin_js() {
   
   $wx = new Weixin([Weixin::PLUGIN_JSSDK]);
   
-  $base_url  = C('env.site.mobile');
-  $resjs     = '';
-  $wxjs_init = '';
-  $wxjs_api  = '';
   $wxapi_list= ['onMenuShareTimeline','onMenuShareAppMessage','onMenuShareQQ','onMenuShareWeibo','previewImage'];
   
-  $wxjs_init = $wx->jssdk->js($wxapi_list);
-  
-  //API接口
-  $wxjs_api  =<<<HEREDOC_1
-wxData.share = {
-  title: document.title,
-  desc: $('meta[name=description]').attr('content'),
-  link: document.location.href,
-  pic: '{$base_url}/misc/images/napp/touch-icon-144.png',
-  cover: null
-};
-wxData.share.show_cover = function(){wxData.share.cover.show();};
-wxData.share.hide_cover = function(){wxData.share.cover.hide();};
-wxData.share.refresh = function(){
-if (typeof(wx)=='object') {
-  //分享给微信好友
-  wx.onMenuShareAppMessage({
-    title: wxData.share.title,
-    desc: wxData.share.desc,
-    link: wxData.share.link,
-    imgUrl: wxData.share.pic,
-    success: function (res) {
-        alert('谢谢分享！');
-        wxData.share.hide_cover();
-    },
-    cancel: function (res) {
-        //alert('已取消');
-        wxData.share.hide_cover();
-    }
-  });
-  //分享到朋友圈
-  wx.onMenuShareTimeline({
-    title: wxData.share.title,
-    link: wxData.share.link,
-    imgUrl: wxData.share.pic,
-    success: function (res) {
-      alert('谢谢分享！');
-      wxData.share.hide_cover();
-    },
-    cancel: function (res) {
-      //alert('已取消');
-      wxData.share.hide_cover();
-    }
-  });
-  //分享到QQ
-  wx.onMenuShareQQ({
-    title: wxData.share.title,
-    desc: wxData.share.desc,
-    link: wxData.share.link,
-    imgUrl: wxData.share.pic,
-    success: function (res) {
-      alert('谢谢分享！');
-      wxData.share.hide_cover();
-    },
-    cancel: function (res) {
-      //alert('已取消');
-      wxData.share.hide_cover();
-    }
-  });
-  //分享到微博
-  wx.onMenuShareWeibo({
-    title: wxData.share.title,
-    desc: wxData.share.desc,
-    link: wxData.share.link,
-    imgUrl: wxData.share.pic,
-    success: function (res) {
-      alert('谢谢分享！');
-      wxData.share.hide_cover();
-    },
-    cancel: function (res) {
-      //alert('已取消');
-      wxData.share.hide_cover();
-    }
-  });
-}    
-};
-$(function(){
-  wxData.share.cover = $('#cover-wxtips');
-  wxData.share.cover.click(function(){
-    $(this).hide();
-  });
-  wxData.share.refresh();
-});
-
-
-HEREDOC_1;
-  
-    if (''!=$wxjs_init) {
-      $resjs = "{$wxjs_init}\n<script>if (typeof(wx)=='object') {\n{$wxjs_api}\n}</script>";
-    }
-  
-    return $resjs;
+	return $wx->jssdk->js($wxapi_list, "wxData.shareinfo.refresh();");
 }
 
 /**
@@ -800,8 +809,9 @@ function headscript()
   }
   $script .= '</script>';
   
-  // Weixin js
-  $script .= weixin_js();
+  // Share info js
+
+
   
   echo $script;
 }
@@ -812,6 +822,10 @@ function headscript()
 function footscript()
 {
   $resjs  = '';
+  
+  // Weixin js
+  $resjs .= weixin_js();
+  
   echo $resjs;
 }
 

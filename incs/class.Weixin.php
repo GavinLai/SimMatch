@@ -897,9 +897,10 @@ class WeixinJSSDK {
    * 获取前端html Weinxin JS-SDK引入代码及初始配置
    *
    * @param array $jsApiList
+   * @param string $readyJs wx.ready 函数中执行的js字串
    * @return string
    */
-  public function js(Array $jsApiList = array()) {
+  public function js(Array $jsApiList = array(), $readyJs = '') {
     if (empty($jsApiList)) {
       $jsApiList = [
       'onMenuShareTimeline',
@@ -939,7 +940,7 @@ if (typeof(wx)=='object') {
     signature: '{$signPackage["signature"]}',
     jsApiList: [{$jsApiStr}]
   });
-  wx.ready(function(){wxData.isReady=true});
+  wx.ready(function(){wxData.isReady=true;{$readyJs}});
 }
 </script>
 HEREDOC;

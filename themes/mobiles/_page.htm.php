@@ -12,17 +12,16 @@
 <meta name="apple-mobile-web-app-capable" content="yes">
 <!-- <meta name="apple-mobile-web-app-status-bar-style" content="black"> -->
 <meta name="format-detection" content="telephone=no">
-<link rel="dns-prefetch" href="fp.xurl.cn" />
 <link rel="dns-prefetch" href="res.wx.qq.com" />
 <?php if (C('env.usecdn')):?>
 <link rel="dns-prefetch" href="fcdn.qiniudn.com" />
+<link rel="dns-prefetch" href="fimg.fxmapp.com" />
 <?php endif;?>
 <link rel="shortcut icon" href="<?=$contextpath;?>favicon.ico" type="image/x-icon" />
-<link rel="apple-touch-icon" sizes="114x114" href="<?=$contextpath;?>misc/images/napp/touch-icon-114.png" />
-<link rel="apple-touch-icon" sizes="144x144" href="<?=$contextpath;?>misc/images/napp/touch-icon-144.png" />
 <?php tplholder('HEAD_CSS');?>
 <?php tplholder('HEAD_JS');?>
 <?php headscript();?>
+<?php shareinfo(isset($share_info) ? $share_info : array());?>
 </head>
 <body>
 <div id="rtWrap">
