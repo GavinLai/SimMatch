@@ -399,8 +399,11 @@ class Match_Controller extends Controller {
     }
     else {
 
-      //更新访问次数
+      //更新Player访问次数
       Match_Model::addVisitCnt($player_id);
+      
+      //更新Node访问次数
+      Node::addVisitCnt($player_info['match_id']);
 
       //获取选手图片信息
       $rs = Match_Model::getPlayerGallery($player_id);

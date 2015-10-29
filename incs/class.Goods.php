@@ -550,9 +550,8 @@ class Goods {
    * @return array
    */
   static function getPaymentInfo($pay_id) {
-    $ectb = ectable('payment');
-    $sql  = "SELECT * FROM {$ectb} WHERE `pay_id`=%d AND `enabled`=1";
-    $row  = D()->raw_query($sql,$pay_id)->get_one();
+    $sql  = "SELECT * FROM {payment} WHERE `pay_id`=%d AND `enabled`=1";
+    $row  = D()->query($sql,$pay_id)->get_one();
     return !empty($row) ? $row : [];
   }
   
