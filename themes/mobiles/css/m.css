@@ -229,8 +229,8 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .slidnav a.active{background:#b5359d;border:1px solid #b5359d;}
 
 /*match页*/
-.match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #fff;padding: 0 2.5%;background: #00B8D1/*#44b549*//*#b5359d*/;opacity:.8;z-index: 100; }
-.match-top > span { text-align: right;width: 50%;float: right; }
+.match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #b5359d;padding: 0 2.5%;background: #141414;opacity: .75;z-index: 1000; }
+.match-top > span { float: right; }
 .match-thumb { position: relative; }
 .match-thumb img { max-width: 100%;vertical-align: top; }
 .match-thumb .join { position: absolute;bottom: -2px;width: 100%;text-align: center; }
@@ -243,8 +243,10 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .block-page .row .dt img { max-width: 100%; }
 .block-page .row .dtmore { margin-top: 15px; }
 .block-page .row .dtmore .btn-orange {  background-color:#f4e1ab;border-color:#f4e1ab;color:#c76f3f;border-radius: 0; }
-.search-box { margin: 0 4px; }
-.search-box input { background: #fff;border: none;line-height: 40px;height: 40px;padding: 2px 0 0 10px;width: 100%;border-radius: 5px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
+.search-box { margin: 0 4px;position: relative; }
+.search-box input { border: none;line-height: 40px;height: 40px; }
+.search-box input.stext { background: #fff;padding: 2px 0 0 10px;width: 100%;border-radius: 5px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
+.search-box input.sbtn { position: absolute;right: 0;background: transparent url(../img/s.png) no-repeat scroll 14px 14px;padding: 0;margin: 0;width: 40px;}
 .player-info { margin: 20px 6px; }
 #player-list { margin: 10px 0 0; }
 #player-list .emptytip { background: #fff;height: 40px;line-height: 40px;text-align: center;margin:0 5px 5px; }
@@ -258,7 +260,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #player-list .imgc img { width: 100%; display:inline-block;text-align: center;vertical-align: middle; }
 #player-list .fot { padding: 5px; margin-top: 3px;line-height: 18px;border-top: 1px dotted #ccc; }
 #player-list .fot .p { display: inline-block;width: 50%;text-align: left;font-size: 12px;font-size: 1.2rem; }
-.paging { margin: 5px; }
+.paging { margin: 5px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);-moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);box-shadow: 0 0 10px rgba(0, 0, 0, .4); }
 .paging a { display: inline-block;width: 25%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333; }
 
 /*match join页*/

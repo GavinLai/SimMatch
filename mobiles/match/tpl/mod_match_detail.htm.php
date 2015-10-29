@@ -5,7 +5,55 @@
 
 <?php else:?>
 
-<div class="bbsizing match-top">访问人数：<em><?=$ninfo['visitcnt']?></em>　　<span>投票总数：<em><?=$ninfo['votecnt']?></em></span></div>
+<script type="text/html" id="matchtop-html">
+访问数：<em><?=$ninfo['visitcnt']?></em>&nbsp;&nbsp;总票数：<em><?=$ninfo['votecnt']?></em><span>日期：<em><?php echo date('Y-m-d') ?></em></span>
+</script>
+<script type="text/javascript">
+function showtopbar(target, show) {
+	if(typeof(show)=='undefined') {
+		show = true;
+	}
+	if (show) {
+		if (!F.event.flag.showtop) {
+			F.event.flag.showtop = true;
+			target.fadeIn();
+		}
+	}
+	else {
+		if (F.event.flag.showtop) {
+			F.event.flag.showtop = false;
+			target.hide();
+		}
+	}
+};
+$(function(){
+	var $_mtop = $('#match-top');
+	$_mtop.html($('#matchtop-html').text());
+	F.onScrollStart(function(){
+		if (typeof(F.event.flag.showtop)=='undefined') {
+			F.event.flag.showtop = true;
+		}
+	});
+	F.onScrolling(function(){
+		if (F.scrollDirection < 0) { //向上滑动(滚动条向下走)，隐藏topbar
+			if (this.y < -150) {
+				showtopbar($_mtop, false);
+			}
+			else {
+				showtopbar($_mtop, true);
+			}
+		}
+		else if (F.scrollDirection > 0) { //向下滑动(滚动条向上走)，则需分情况处理
+			if (this.y > -150 && this.y <= 0) {
+				showtopbar($_mtop, true);
+			}
+			else {
+				showtopbar($_mtop, false);
+			}
+		}
+	});
+});
+</script>
 <div class="match-thumb">
   <img src="<?=fixpath($ninfo['thumb_url'])?>" alt="" />
   <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
@@ -31,7 +79,7 @@
 </div>
 <div class="block-page player-info">
 <?php if ($player_num):?>
-  <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" placeholder="请输入“参赛者姓名 或 编号”搜索"/></form></div>
+  <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“参赛者姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
 <?php endif;?>  
   <div id="player-list">
 

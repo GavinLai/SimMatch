@@ -37,8 +37,8 @@ return [
   //版权声明
   'copyright' => 'fxmapp',
   //debug白名单uid
-  'debug_white_list' => ['10001'],
-  //'debug_white_list' => [],
+  //'debug_white_list' => ['10001'],
+  'debug_white_list' => [],
   //上传文件保存目录 
   'picsavedir'=>'/a/',
   //平台币兑人民币比率,1元=10平台币

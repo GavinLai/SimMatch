@@ -6,7 +6,6 @@
 (function( $, F, w, UNDEF ) {
 	
 	F.isTouch = "createTouch" in document;
-	F.isDownpullDisplay = true;
 	//gData.page_render_mode = 2; //1: general一般请求页面；2: hash请求页面 (不能在这个位置设置该值，放这里是提醒有这么一个全局变量)
 	
 	// Set dom constants
@@ -19,6 +18,8 @@
 	
 	// Scroll cookie initialization
 	F.scroll2old = false;
+	F.scrollYold = 0; // 记录上一个滚动位置
+	F.scrollDirection = 0; // <0:向上滚动(滚动条下移); >0:向下滚动(滚动条上移); 0: 位置不变
 	F.scroll_cookie_key = function(){
 		return 'LS'+gData.currURI.replace(/(\/|\?|\&|\=|\%|\-)/g,'_');
 	};
@@ -144,35 +145,42 @@
 	};
 	//outcall: F.onScrollStart
 	F._scrollStart = function() {
-		F.event.flag.downpull = (0===this.y ? true :false);
+		F.event.flag.downpull = (0==this.y ? true : false);
+		if (typeof(F.event.flag.showbg)=='undefined') {
+			F.event.flag.showbg = false;
+		}
 		F.event.execEvent('scrollStart',this);
 	};
 	//outcall: F.onScrolling
 	F._scrolling = function() {
+		F.scrollDirection = this.y - F.scrollYold;
+		F.scrollYold = this.y;
+		
 		var dp_type = 'downPull';
 		if (this.y > 20) {
 			
-			if(F.isDownpullDisplay) F.pagebg.show();
-			else F.pagebg.hide();
+			if (!F.event.flag.showbg) {
+				F.event.flag.showbg = true;
+				F.pagebg.show();
+			}
 			
-			if(F.event.flag.downpull
-		       && (typeof(F.event._events[dp_type])=='object')
-		       && F.event._events[dp_type].length>0)
-			{
-				if (this.y > 50) {
-					F.event.flag.downpull = false;
+			if(this.y > 50 && F.event.flag.downpull) {
+				F.event.flag.downpull = false; //保证仅触发一次
+				if ((typeof(F.event._events[dp_type])=='object') && F.event._events[dp_type].length>0) {
 					F.event.execEvent(dp_type,this);
 				}
 			}
 		}
-		else { //avoiding too many calling
-			F.pagebg.hide();
+		else {
+			if (F.event.flag.showbg) {
+				F.event.flag.showbg = false;
+				F.pagebg.hide();
+			}
 		}
 		F.event.execEvent('scrolling',this);
 	};
 	//outcall: F.onScrollEnd
 	F._scrollEnd = function() {
-		F.event.flag.downpull = false;
 		F.event.execEvent('scrollEnd',this);
 	};
 	F._flick = function() {

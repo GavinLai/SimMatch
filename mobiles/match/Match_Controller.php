@@ -75,7 +75,8 @@ class Match_Controller extends Controller {
   function detail(Request $request, Response $response)
   {
     $this->v->set_tplname('mod_match_detail');
-  
+    $this->nav_flag1 = 'match_detail';
+    
     $nid = $request->arg(1);
     $isajax = $request->get('isajax', 0);
     $this->v->assign('the_nid', $nid)->assign("isajax", $isajax);
@@ -383,6 +384,7 @@ class Match_Controller extends Controller {
     $this->v->set_tplname('mod_match_player');
     $this->v->set_page_render_mode(View::RENDER_MODE_GENERAL); //改变默认的hashreq请求模式，改为普通页面请求(一次过render页面所有内容)
     $this->extra_css = 'fixmaxheight';
+    $this->nav_flag1 = 'match_player';
   
     $player_id = $request->arg(2);
     $this->v->assign('player_id', $player_id);
