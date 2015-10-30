@@ -145,8 +145,13 @@ class Node_Controller extends Controller {
         }
       }
       
-      $now = simphp_time();
       $uid = $_SESSION['logined_uid'];
+      if (empty($uid)) {
+      	$ret['msg'] = "未登录，请重新登录";
+      	$response->sendJSON($ret);
+      }
+      
+      $now = simphp_time();
       $params = [
         'ntype'        => $ntype,
         'title'        => $title,

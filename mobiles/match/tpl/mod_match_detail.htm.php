@@ -6,7 +6,7 @@
 <?php else:?>
 
 <script type="text/html" id="matchtop-html">
-访问数：<em><?=$ninfo['visitcnt']?></em>&nbsp;&nbsp;总票数：<em><?=$ninfo['votecnt']?></em><span>日期：<em><?php echo date('Y-m-d') ?></em></span>
+访问数：<em><?=$ninfo['visitcnt']?></em>&nbsp;&nbsp;总票数：<em><?=$ninfo['votecnt']?></em>&nbsp;&nbsp;参赛人数：<em><?=$totalnum?></em>
 </script>
 <script type="text/javascript">
 function showtopbar(target, show) {

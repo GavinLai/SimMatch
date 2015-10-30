@@ -70,17 +70,14 @@ $(function(){
 			return;
 		}
 
-		//alert('微信支付稍候接入，请稍等待');
-		//return;
-
 		var _this = this;
 		$(this).text('支付中...').attr('disabled',true);
 		F.post('<?php echo U('trade/order/submit')?>',{"player_id":player_id,"goods_type":goods_type,"amount":amount},function(ret){
-			$(_this).text('确定赠送').removeAttr('disabled');
   			if (ret.flag=='SUC') {
   				jsApiCall(ret.js_api_params, '<?php echo U('player/'.$player_id)?>');
   			}
   			else{
+  				$(_this).text('确定赠送').removeAttr('disabled');
   				alert(ret.msg);
   			}
 	  });
