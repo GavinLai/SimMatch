@@ -14,7 +14,7 @@
 <meta name="format-detection" content="telephone=no">
 <link rel="dns-prefetch" href="res.wx.qq.com" />
 <?php if (C('env.usecdn')):?>
-<link rel="dns-prefetch" href="fcdn.qiniudn.com" />
+<link rel="dns-prefetch" href="fcdn.fxmapp.com" />
 <link rel="dns-prefetch" href="fimg.fxmapp.com" />
 <?php endif;?>
 <link rel="shortcut icon" href="<?=$contextpath;?>favicon.ico" type="image/x-icon" />
@@ -39,7 +39,7 @@
 <!-- 微信操作提示 -->
 <div id="cover-wxtips" class="wxcover">
 <?php if (C('env.usecdn')):?>
-<img alt="" src="http://fcdn.qiniudn.com/img/guide.png"/>
+<img alt="" src="http://fcdn.fxmapp.com/img/guide.png"/>
 <?php else:?>
 <img alt="" src="<?=$contextpath;?>themes/mobiles/img/guide.png"/>
 <?php endif;?>
@@ -53,9 +53,9 @@
 
 //: add css & js files
 if (C('env.usecdn')):
-add_css('http://fcdn.qiniudn.com/css/c.min.css',['scope'=>'global','ver'=>'none']);
-add_js('http://fcdn.qiniudn.com/js/jquery-2.1.3.min.js',['pos'=>'head','ver'=>'none']);
-add_js('http://fcdn.qiniudn.com/js/fm.min.js',['pos'=>'foot','ver'=>'none']);
+add_css('http://fcdn.fxmapp.com/css/c.min.css',['scope'=>'global','ver'=>'none']);
+add_js('http://fcdn.fxmapp.com/js/jquery-2.1.3.min.js',['pos'=>'head','ver'=>'none']);
+add_js('http://fcdn.fxmapp.com/js/fm.min.js',['pos'=>'foot','ver'=>'none']);
 else:
 add_css('c.min.css',['scope'=>'global','ver'=>'none']);
 add_js('ext/jquery-2.1.3.min.js',['pos'=>'head','ver'=>'none']);

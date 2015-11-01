@@ -234,7 +234,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .match-thumb { position: relative; }
 .match-thumb img { max-width: 100%;vertical-align: top; }
 .match-thumb .join { position: absolute;bottom: -2px;width: 100%;text-align: center; }
-.match-thumb .btn-purple { background: transparent url(../img/icon_color_btn.png) no-repeat scroll 0 -0px;width: 175px;height: 62px;line-height: 62px;border: none;border-radius: 0;padding: 0; }
+.match-thumb .btn-purple { background: transparent url("http://fimg.fxmapp.com/img/icon_color_btn.png") no-repeat scroll 0 0;width: 175px;height: 62px;line-height: 62px;border: none;border-radius: 0;padding: 0; }
 .match-info .join { padding-top: 10px; }
 .player-info .join { margin: 0 4px;padding-top: 10px; }
 .block-page { margin: 10px; font-size: 14px; font-size: 1.4rem; }
