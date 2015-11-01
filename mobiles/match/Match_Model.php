@@ -62,14 +62,14 @@ class Match_Model extends Model {
   
     // 检查是否已经注册过
     if (isset($data['mobile']) && !empty($data['mobile'])) {
-      $rs = D()->from("player")->where("`match_id`=%d AND `mobile`='%s'", $match_id, $data['mobile'])->select("player_id")->result();
+      $rs = D()->from("player")->where("`match_id`=%d AND `mobile`='%s' AND `status`<>'D'", $match_id, $data['mobile'])->select("player_id")->result();
       if ($rs) {
         $existed = true;
         return -3;
       }
     }
     if (isset($data['weixin']) && !empty($data['weixin'])) {
-      $rs = D()->from("player")->where("`match_id`=%d AND `weixin`='%s'", $match_id, $data['weixin'])->select("player_id")->result();
+      $rs = D()->from("player")->where("`match_id`=%d AND `weixin`='%s' AND `status`<>'D'", $match_id, $data['weixin'])->select("player_id")->result();
       if ($rs) {
         $existed = true;
         return -4;

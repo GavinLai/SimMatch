@@ -161,6 +161,10 @@ function gopage(rel, curpage, maxpage, search) {
 <?php endif;/*END if ($maxpage > 1)*/?>
   <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
   <?php endif;?>
+  
+<?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
+<div style="padding: 4px;margin-top: 10px;color: #666;"><span>送花数：<em><?=$ninfo['flowercnt']?></em></span></div>
+<?php endif;?>
 </div>
 <script type="text/javascript">
 function searchform(obj) {

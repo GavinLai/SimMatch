@@ -148,7 +148,7 @@ $(function(){
 			alert('最多只能上传'+maxuploadnum+'张图片，请删除'+(imgs.length-maxuploadnum)+'张再提交');
 			return false;
 		}
-		post_data.imgs = imgs;
+		post_data['imgs[]'] = imgs;
 
 		var _btn = $('#frm_submit');
 		_btn.val('图片上传审核中，请等待片刻...').attr('disabled',true);
