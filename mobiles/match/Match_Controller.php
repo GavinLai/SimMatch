@@ -110,7 +110,7 @@ class Match_Controller extends Controller {
       	}
   
         //参赛者列表
-        $limit = 10;
+        $limit = 20;
         $page  = $request->get('p', 1);
         $search= $request->get('s', '');
         $search= trim($search);
