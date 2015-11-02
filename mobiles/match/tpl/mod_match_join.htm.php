@@ -27,7 +27,9 @@
       <div id="match-preview"></div>
       <div class="uparea">
         <input type="file" name="upfile" id="frm_upfile" />
-        <p>请上传您的照片，至少<em style="color:red;">1</em>张，最多可上传<em style="color:red;"><?=$maxuploadnum?></em>张<br/><span>(第一张默认为封面，最好选用竖版图片；图片越多越容易受人关注哟)</span></p>
+        <p>请上传您的照片，至少<em style="color:red;">1</em>张，最多可上传<em style="color:red;"><?=$maxuploadnum?></em>张<br/><span>(第一张默认为封面，最好选用竖版图片；图片越多越容易受人关注哟)</span>
+        	<br/><em style="color:red;">如无法上传照片,请联系微信: </em><em style="color:green;">choumeikufang</em>
+        </p>
       </div>
     </div>
     <p class="row"><input name="idcard" id="frm_idcard" type="text" class="inptxt row-ele" value="" placeholder="身份证号（可不填）" /></p>
