@@ -53,6 +53,7 @@ class Upload_Controller extends Controller {
 	  if ($request->has_files()) {
 	    $upfile = $request->files('upfile');
 	    $dbsave = $request->get('dbsave', 0);
+	    $isplayer = $request->get('isplayer', 0);
 	    
 	    $extpart  = strtolower(strrchr($upfile['name'],'.'));
 	    $fileext  = substr($extpart, 1);
@@ -74,13 +75,19 @@ class Upload_Controller extends Controller {
 	    }elseif (in_array($fileext, array('mp3'))){
 	      $filetype = 'audio';
 	    }
+	    if ($isplayer) {
+	    	$filetype = 'player';
+	    }
 	  
 	    //~ create directory
 	    $targetfilecode = date('d_His').'_'.randchar();
 	    $targetfile = $targetfilecode.$extpart;
 	    $targetdir  = ltrim($this->_uproot_dir,'/')."{$filetype}/".date('Ym').'/';
-	    if(!is_dir($targetdir)) {
-	      mkdirs($targetdir, 0777, FALSE);
+	    if ($isplayer) {
+	    	$targetdir .= 'original/';
+	    }
+	    if (!is_dir($targetdir)) {
+	      mkdirs($targetdir, 0777, TRUE);
 	    }
 	  
 	    //~ move upload file to target dir
@@ -105,6 +112,15 @@ class Upload_Controller extends Controller {
   	        'path'     => $filepath_site
 	        ];
 	        $mid = Media::save($data);
+	      }
+	      if ($isplayer) {
+	      	$rt = Upload_Model::makeImgThumb($filepath_site);
+	      	if (is_numeric($rt)) {
+	      		$response->sendJSON(['flag'=>'ERR', 'msg'=>'make thumb fail']);
+	      	}
+	      	else {
+	      		$mid = Upload_Model::savePlayerGallery(0, $rt);
+	      	}
 	      }
 	      $response->sendJSON(['flag'  => 'OK',
 	                           'msg'   => 'upload file success',

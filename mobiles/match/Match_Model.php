@@ -93,9 +93,12 @@ class Match_Model extends Model {
    */
   static function saveImgData($img_data) {
   
-    $b = explode(',', $img_data); //$img_data like 'data:image/jpeg;base64,/9j/4AAQSk...'
+    $pos = strpos($img_data, ','); //$img_data like 'data:image/jpeg;base64,/9j/4AAQSk...'
+    if (false===$pos) {
+    	return -1;
+    }
   
-    $file_data = $b[1];
+    $file_data = substr($img_data, $pos+1);
     $file_data = base64_decode($file_data);
     $img_info  = getimagesizefromstring($file_data);
     if(FALSE===$img_info){

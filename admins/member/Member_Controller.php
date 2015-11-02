@@ -337,6 +337,7 @@ class Member_Controller extends Controller {
   		$inc_vote    = $request->post('inc_vote', 0);
   		$inc_flower  = $request->post('inc_flower', 0);
   		$cover_pic_id  = $request->post('cover_pic_id', 0);
+  		$imgs        = $request->post('imgs', []);
   		
   		$player_info = Member_Model::getPlayerInfo($player_id);
   		if (empty($player_info)) {
@@ -350,6 +351,18 @@ class Member_Controller extends Controller {
 
   		//更新pic_cover_id
   		D()->update("player",['cover_pic_id'=>$cover_pic_id],['player_id'=>$player_id]);
+  		
+  		//更新图片
+  		if (!empty($imgs) && is_array($imgs)) { //! 务必检查严格
+  			$imgs_idstr = implode(',', $imgs);
+  			$existed_rids = D()->from("player_gallery")->where("`rid` IN(%s)", $imgs_idstr)->select("`rid`")->fetch_array_all();
+  			if (!empty($existed_rids)) { //! 务必检查严格，否则容易出现丢失图片数据
+  				//先将原有的记录的player_id设为0
+  				D()->query("UPDATE `{player_gallery}` SET `player_id`=0 WHERE `player_id`=%d",$player_id);
+  				//紧接着重新关联新的记录
+  				D()->query("UPDATE `{player_gallery}` SET `player_id`=%d WHERE `rid` IN(%s)", $player_id, $imgs_idstr);
+  			}
+  		}
   		
   		if ($inc_vote) {
   			$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE);

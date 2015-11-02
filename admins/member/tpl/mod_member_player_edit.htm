@@ -1,7 +1,8 @@
 <!--{include_file name="_smenu_member.htm"}-->
 <style type="text/css">
-.coverimgs img { border: 2px solid #fff;max-height: 100px;  }
-.coverimgs img.chked { border-color:#f60;  }
+#picslist a.imga { margin-right: 2px; }
+#picslist img { border: 2px solid #fff;max-height: 100px;  }
+#picslist img.chked { border-color:#f60;  }
 </style>
 <section id="ifr-main" class="ifr-main">
 
@@ -30,9 +31,12 @@
           <th class="c1">封面图片设定：</th>
           <td class="c2 coverimgs">
           <input type="hidden" name="cover_pic_id" value="<!--{$player_info.cover_pic_id}-->" id="frm_cover_pic_id"/>
+          <p class="picslist" id="picslist">
           <!--{foreach from=$player_gallery item=it}-->
-          <a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
+          <a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)" class="imga"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
           <!--{/foreach}-->
+          </p>
+          <p><a href="javascript:;" class="asslink" onclick="return popUpload('上传图片','/upload/upfile?isplayer=1',pop_cb_succ,pop_cb_fail);">上传图片</a></p>
           </td>
         </tr>
         <tr>
@@ -45,7 +49,7 @@
         </tr>
         <tr class="rbtn">
          <th class="c1"></th>
-         <td class="c2"><input type="submit" name="btnsubmit" value="提交" class="frmbtn" id="btnsubmit" />&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="oplink undl" title="返回列表页" onclick="return F.hashRefer();">返回</a></td>
+         <td class="c2"><input type="submit" name="btnsubmit" value="提交" class="frmbtn" id="btnsubmit" />&nbsp;&nbsp;&nbsp;<a href="javascript:;" class="oplink undl" title="返回列表页" onclick="return F.hashRefer('#/member/player');">返回</a></td>
         </tr>
       </tbody>
     </table>
@@ -54,6 +58,20 @@
 </div>
 
 <script>
+function pop_cb_succ(data,status){
+	if (data.flag=='OK') {
+		showTopPrompt('上传成功！', 'ok');
+		var _html = '<a onclick="changecover(this)" rel="'+data.mid+'" href="javascript:;" class="imga"><img alt="" src="'+data.path+'"></a>';
+		$('#picslist').append(_html);
+	}
+	else {
+		showTopPrompt('上传失败！', 'error');
+	}
+	closePopup();
+}
+function pop_cb_fail(xhr,status,e){
+  closePopup();
+}
 function changecover(obj) {
 	$('#frm_cover_pic_id').val($(obj).attr('rel'));
 	$(obj).parent().find('img').removeClass('chked');
@@ -70,6 +88,15 @@ F.formPost = function() {
   var _nid = $('#frm_id').val();
   _nid = ''==_nid ? 0 : parseInt(_nid);
   post_data.player_id = _nid;
+  
+  // new image id
+  var _imgs = new Array();
+  var $newimgs = $('#picslist a.imga');
+  if ($newimgs.size()>0) {
+	  $newimgs.each(function(){
+		  _imgs.push($(this).attr('rel'));
+	  });
+  }
 
   // inc value
   post_data.cover_pic_id = $('#frm_cover_pic_id').val();
@@ -78,6 +105,7 @@ F.formPost = function() {
   post_data.inc_vote   = parseInt(post_data.inc_vote);
   post_data.inc_flower = parseInt(post_data.inc_flower);
   post_data.cover_pic_id = parseInt(post_data.cover_pic_id);
+  post_data['imgs[]'] = _imgs;
   
   if (confirm('确定变更？')) {
 	  // Submit
@@ -88,7 +116,7 @@ F.formPost = function() {
 	    if (data.flag=='SUC') {
 	      F.clearCacheAll();      
 	      showTopPrompt(data.msg, 'ok', 3, function(){
-	        F.hashRefer();
+	        F.hashRefer('#/member/player');
 	      });
 	    }
 	    else {
