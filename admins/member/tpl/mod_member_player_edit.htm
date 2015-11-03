@@ -1,6 +1,6 @@
 <!--{include_file name="_smenu_member.htm"}-->
 <style type="text/css">
-#picslist a.imga { margin-right: 2px; }
+#picslist li { float: left;margin-right: 2px; }
 #picslist img { border: 2px solid #fff;max-height: 100px;  }
 #picslist img.chked { border-color:#f60;  }
 </style>
@@ -31,11 +31,11 @@
           <th class="c1">封面图片设定：</th>
           <td class="c2 coverimgs">
           <input type="hidden" name="cover_pic_id" value="<!--{$player_info.cover_pic_id}-->" id="frm_cover_pic_id"/>
-          <p class="picslist" id="picslist">
+          <ul class="picslist clearfix" id="picslist">
           <!--{foreach from=$player_gallery item=it}-->
-          <a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)" class="imga"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
+          <li><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)" class="imga"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a><br/><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="deletepic(this)">删除</a></li>
           <!--{/foreach}-->
-          </p>
+          </ul>
           <p><a href="javascript:;" class="asslink" onclick="return popUpload('上传图片','/upload/upfile?isplayer=1',pop_cb_succ,pop_cb_fail);">上传图片</a></p>
           </td>
         </tr>
@@ -61,7 +61,7 @@
 function pop_cb_succ(data,status){
 	if (data.flag=='OK') {
 		showTopPrompt('上传成功！', 'ok');
-		var _html = '<a onclick="changecover(this)" rel="'+data.mid+'" href="javascript:;" class="imga"><img alt="" src="'+data.path+'"></a>';
+		var _html = '<li><a onclick="changecover(this)" rel="'+data.mid+'" href="javascript:;" class="imga"><img alt="" src="'+data.path+'"></a><br/><a href="javascript:;" rel="'+data.mid+'" onclick="deletepic(this)">删除</a></li>';
 		$('#picslist').append(_html);
 	}
 	else {
@@ -74,8 +74,18 @@ function pop_cb_fail(xhr,status,e){
 }
 function changecover(obj) {
 	$('#frm_cover_pic_id').val($(obj).attr('rel'));
-	$(obj).parent().find('img').removeClass('chked');
+	$(obj).parents('#picslist').find('img').removeClass('chked');
 	$(obj).find('img').addClass('chked');
+}
+function deletepic(obj) {
+	var rel = $(obj).attr('rel');
+	if (rel==$('#frm_cover_pic_id').val()) {
+		alert('封面图片不能删除!');
+		return;
+	}
+	if(confirm('确定删除？')) {
+		$(obj).parent().remove();
+	}
 }
 var is_edit = '<!--{$is_edit}-->';
 is_edit = is_edit ? true : false;
