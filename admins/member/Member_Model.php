@@ -84,7 +84,7 @@ class Member_Model extends Model {
 	}
 	
 	static function getPlayerGalleryAll($player_id, &$cover_pic_id = 0) {
-		$rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->order_by("`rid` ASC")->select()->fetch_array_all();
+		$rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->order_by("`sortorder` ASC,`rid` ASC")->select()->fetch_array_all();
 		if (!empty($rs)) {
 			$i = 1;
 			$old_cover_pic_id = $cover_pic_id;

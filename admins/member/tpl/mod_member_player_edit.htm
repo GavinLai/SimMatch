@@ -3,6 +3,9 @@
 #picslist li { float: left;margin-right: 2px; }
 #picslist img { border: 2px solid #fff;max-height: 100px;  }
 #picslist img.chked { border-color:#f60;  }
+#picslist .oprt { float: right;  }
+#picslist .oprt a { color: #666; }
+.frmTable .asslink { margin-left: 0; }
 </style>
 <section id="ifr-main" class="ifr-main">
 
@@ -33,9 +36,12 @@
           <input type="hidden" name="cover_pic_id" value="<!--{$player_info.cover_pic_id}-->" id="frm_cover_pic_id"/>
           <ul class="picslist clearfix" id="picslist">
           <!--{foreach from=$player_gallery item=it}-->
-          <li><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)" class="imga"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a><br/><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="deletepic(this)">删除</a></li>
+          <li class="picit"><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="changecover(this)" class="imga"><img src="<!--{$it.img_thumb}-->" alt="" <!--{if $it.is_cover}-->class="chked" title="封面图片"<!--{/if}-->/></a>
+          <p><a href="javascript:;" rel="<!--{$it.rid}-->" onclick="deletepic(this)">删除</a><span class="oprt"><a href="javascript:;" onclick="moveleft(this)" title="左移">←</a>|<a href="javascript:;" onclick="moveright(this)" title="右移">→</a></span></p>
+          </li>
           <!--{/foreach}-->
           </ul>
+          <p>&nbsp;</p>
           <p><a href="javascript:;" class="asslink" onclick="return popUpload('上传图片','/upload/upfile?isplayer=1',pop_cb_succ,pop_cb_fail);">上传图片</a></p>
           </td>
         </tr>
@@ -61,7 +67,7 @@
 function pop_cb_succ(data,status){
 	if (data.flag=='OK') {
 		showTopPrompt('上传成功！', 'ok');
-		var _html = '<li><a onclick="changecover(this)" rel="'+data.mid+'" href="javascript:;" class="imga"><img alt="" src="'+data.path+'"></a><br/><a href="javascript:;" rel="'+data.mid+'" onclick="deletepic(this)">删除</a></li>';
+		var _html = '<li class="picit"><a onclick="changecover(this)" rel="'+data.mid+'" href="javascript:;" class="imga"><img alt="" src="'+data.path+'"></a><p><a href="javascript:;" rel="'+data.mid+'" onclick="deletepic(this)">删除</a><span class="oprt"><a href="javascript:;" onclick="moveleft(this)" title="左移">←</a>|<a href="javascript:;" onclick="moveright(this)" title="右移">→</a></span></p></li>';
 		$('#picslist').append(_html);
 	}
 	else {
@@ -84,8 +90,22 @@ function deletepic(obj) {
 		return;
 	}
 	if(confirm('确定删除？')) {
-		$(obj).parent().remove();
+		$(obj).parents('.picit').remove();
 	}
+}
+function moveleft(obj) {
+	var $this = $(obj).parents('.picit');
+	var $prev = $this.prev();
+	if ($prev.size()>0) {
+		$this.insertBefore($prev);
+	}
+}
+function moveright(obj) {
+	var $this = $(obj).parents('.picit');
+	var $next = $this.next();
+	if ($next.size()>0) {
+		$this.insertAfter($next);
+  }
 }
 var is_edit = '<!--{$is_edit}-->';
 is_edit = is_edit ? true : false;

@@ -355,12 +355,18 @@ class Member_Controller extends Controller {
   		//更新图片
   		if (!empty($imgs) && is_array($imgs)) { //! 务必检查严格
   			$imgs_idstr = implode(',', $imgs);
-  			$existed_rids = D()->from("player_gallery")->where("`rid` IN(%s)", $imgs_idstr)->select("`rid`")->fetch_array_all();
+  			$existed_rids = D()->from("player_gallery")->where("`rid` IN(%s)", $imgs_idstr)->select("`rid`")->fetch_column('rid');
   			if (!empty($existed_rids)) { //! 务必检查严格，否则容易出现丢失图片数据
   				//先将原有的记录的player_id设为0
   				D()->query("UPDATE `{player_gallery}` SET `old_player_id`=`player_id`,`player_id`=0 WHERE `player_id`=%d",$player_id);
   				//紧接着重新关联新的记录
   				D()->query("UPDATE `{player_gallery}` SET `player_id`=%d,`old_player_id`=%d WHERE `rid` IN(%s)", $player_id, $player_id, $imgs_idstr);
+  				//更新排序
+  				$o = 1;
+  				foreach ($imgs AS $rid) {
+  					D()->query("UPDATE `{player_gallery}` SET `sortorder`=%d WHERE `rid`=%d", $o, $rid);
+  					$o++;
+  				}
   			}
   		}
   		

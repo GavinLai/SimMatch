@@ -276,7 +276,7 @@ class Match_Model extends Model {
   }
   
   static function getPlayerGallery($player_id) {
-    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->select("`img_std`,`img_std_cdn`")->fetch_array_all();
+    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->order_by("`sortorder` ASC,`rid` ASC")->select("`img_std`,`img_std_cdn`")->fetch_array_all();
     $ret= [];
     if (!empty($rs)) {
     	$usecdn = C('env.usecdn');
