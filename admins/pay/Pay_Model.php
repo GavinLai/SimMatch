@@ -8,16 +8,19 @@ defined('IN_SIMPHP') or die('Access Denied');
 
 class Pay_Model extends Controller {
 	
-	static function getPayList($orderby='order_id', $order='DESC', $limit=30, Array $search_cond=array(), &$statinfo=array()) {
+	static function getPayList($orderby='order_id', $order='DESC', $limit=30, Array $query_conds=array(), &$statinfo=array()) {
 	
-		$where  = '';
-		$sql    = "SELECT o.*,u.nickname,p.truename AS player_name
+		$where  = "AND `pay_status`=2";
+		if (isset($query_conds['seeall']) && $query_conds['seeall']) {
+			$where = "";
+		}
+		$sql    = "SELECT o.*,u.nickname,u.logo,p.truename AS player_name
 								FROM `{order_info}` o INNER JOIN `{member}` u ON o.user_id=u.uid
 								     INNER JOIN `{player}` p ON o.player_id=p.player_id
-				       WHERE 1{$where}
+				       WHERE 1 {$where}
 		           ORDER BY `%s` %s";
 	
-    $sqlcnt = "SELECT COUNT(order_id) AS rcnt FROM {order_info} WHERE 1{$where}";
+    $sqlcnt = "SELECT COUNT(o.order_id) AS rcnt FROM {order_info} o WHERE 1 {$where}";
 	
     $result = D()->pager_query($sql,$limit,$sqlcnt,0,$orderby,$order)->fetch_array_all();
     $statinfo = ['total_pay'=>0, 'current_pay'=>0];

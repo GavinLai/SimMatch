@@ -1,4 +1,7 @@
 <!--{include_file name="_smenu_pay.htm"}-->
+<style type="text/css">
+.withlogo img{width: 28px;}
+</style>
 <section id="ifr-main" class="ifr-main">
 
 <div class="breadcrumb">当前位置：<span>充值查询</span>&nbsp;&gt;&nbsp;<span>充值明细</span></div>
@@ -17,6 +20,7 @@
   <div class="listbtn-grp">
     <div class="listbtn">
       <span>总记录数:&nbsp;<!--{$totalNum}-->&nbsp;&nbsp;当前记录数:&nbsp;<!--{$recordNum}--></span>
+      &nbsp;&nbsp;&nbsp;&nbsp;<input type="checkbox" name="seeall" value="1" id="seeall" <!--{if $seeall}-->checked="checked"<!--{/if}-->/>&nbsp;<label for="seeall">查看所有明细</label>
     </div>
   </div>
   
@@ -24,15 +28,15 @@
 <div class="listContent">
   <table class="listTable">
   <tr class="rh">
-    <th class="c1 sortfield" data-rel="<!--{$qparturl}-->,orderby=order_id">订单ID<!--{sortfield field='order_id'}--></th>
+    <th class="c1 sortfield" data-rel="<!--{$qparturl}-->,seeall=<!--{$seeall}-->&orderby=order_id">订单ID<!--{sortfield field='order_id'}--></th>
     <th class="c2">订单号</th>
     <th class="c3">支付方订单号</th>
     <th class="c4">支付方式</th>
-    <th class="c5">充值者</th>
-    <th class="c6 sortfield" data-rel="<!--{$qparturl}-->,orderby=player_id">充值目标<!--{sortfield field='player_id'}--></th>
+    <th class="c5 sortfield" data-rel="<!--{$qparturl}-->,seeall=<!--{$seeall}-->&orderby=user_id">充值者<!--{sortfield field='user_id'}--></th>
+    <th class="c6 sortfield" data-rel="<!--{$qparturl}-->,seeall=<!--{$seeall}-->&orderby=player_id">充值目标<!--{sortfield field='player_id'}--></th>
     <th class="c7">充值类型</th>
-    <th class="c8 sortfield" data-rel="<!--{$qparturl}-->,orderby=order_amount">充值金额<!--{sortfield field='order_amount'}--></th>
-    <th class="c9 sortfield" data-rel="<!--{$qparturl}-->,orderby=add_time">下单时间<!--{sortfield field='add_time'}--></th>
+    <th class="c8 sortfield" data-rel="<!--{$qparturl}-->,seeall=<!--{$seeall}-->&orderby=goods_amount">充值金额<!--{sortfield field='goods_amount'}--></th>
+    <th class="c9 sortfield" data-rel="<!--{$qparturl}-->,seeall=<!--{$seeall}-->&orderby=add_time">下单时间<!--{sortfield field='add_time'}--></th>
     <th class="c10">订单状态</th>
     <th class="c11">支付状态</th>
   </tr>
@@ -42,13 +46,13 @@
     <td class="c2"><!--{$it.order_sn}--></td>
     <td class="c3"><!--{$it.pay_trade_no}--></td>
     <td class="c4"><!--{$it.pay_name}--></td>
-    <td class="c5"><!--{$it.nickname}--></td>
+    <td class="c5 withlogo"><!--{if $it.logo<>''}--><a href="<!--{$it.logo}-->" target="_blank"><img src="<!--{$it.logo}-->" alt=""/></a>&nbsp;<!--{/if}--><!--{$it.nickname}--></td>
     <td class="c6">[<!--{$it.player_id}-->号]<!--{$it.player_name}--></td>
     <td class="c7"><!--{if $it.goods_type eq 'flower'}-->送花<!--{elseif $it.goods_type eq 'kiss'}-->送吻<!--{else}-->其他<!--{/if}--></td>
     <td class="c8"><!--{$it.goods_amount}--></td>
     <td class="c9"><!--{trans_time time=$it.add_time is_real=1}--></td>
-    <td class="c10"><!--{if $it.order_status eq 1}--><em style="color: green"><!--{$it.order_status_name}--></em><!--{else}--><!--{$it.order_status_name}--><!--{/if}--></td>
-    <td class="c11"><!--{if $it.pay_status eq 2}--><em style="color: green"><!--{$it.pay_status_name}--></em><!--{else}--><!--{$it.pay_status_name}--><!--{/if}--></td>
+    <td class="c10"><!--{if $it.order_status eq 1}--><em style="color: green"><!--{$it.order_status_name}--></em><!--{else}--><em style="color: red"><!--{$it.order_status_name}--></em><!--{/if}--></td>
+    <td class="c11"><!--{if $it.pay_status eq 2}--><em style="color: green"><!--{$it.pay_status_name}--></em><!--{else}--><em style="color: red"><!--{$it.pay_status_name}--></em><!--{/if}--></td>
   </tr>
   <!--{foreachelse}-->
   <tr class="rn"><td colspan="11">暂没有相应的记录</td></tr>
@@ -61,3 +65,19 @@
 </div>
 
 </section>
+<script type="text/javascript">
+$(function(){
+	$('#seeall').click(function(){
+		var hash = '';
+		if ($(this).is(':checked')) {
+			hash = '#/pay,seeall=1';
+		}
+		else {
+			hash = '#/pay,seeall=0';
+		}
+		window.location.hash = hash;
+		return true;
+	});
+});
+</script>
+

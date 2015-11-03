@@ -56,15 +56,18 @@ class Pay_Controller extends Controller {
 			$_SESSION['_query_node'] = $_query_node;
 		}
 		*/
-		
+		$seeall = $request->get('seeall',0);
+		$seeall = $seeall ? 1 : 0;
+		$this->v->assign('seeall', $seeall);
 		$this->v->assign('nav_second', '');
+		$query_conds['seeall'] = $seeall;
 	
 		//BEGIN list order
 		$orderinfo = $this->v->set_listorder('order_id', 'desc');
-		$extraurl  = '';
+		$extraurl  = "seeall={$seeall}&";
 		$extraurl .= $orderinfo[2];
 		$this->v->assign('extraurl', $extraurl);
-		$this->v->assign('qparturl', "#/pay");
+		$this->v->assign('qparturl', '#/pay');
 		//END list order
 	
 		// Game List
