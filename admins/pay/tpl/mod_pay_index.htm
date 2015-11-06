@@ -18,7 +18,7 @@
   </form>
 <script type="text/javascript">
 function listsearch(form) {
-  window.location.hash = '#/pay?seeall=<!--{$seeall}-->&target='+$('#search_target').val().trim()+'&sdate='+$('#search_start_date').val().trim()+'&edate='+$('#search_end_date').val().trim();
+  window.location.hash = '#/pay,seeall=<!--{$seeall}-->&target='+$('#search_target').val().trim()+'&sdate='+$('#search_start_date').val().trim()+'&edate='+$('#search_end_date').val().trim();
   return false;
 }
 $(document).ready(function(){

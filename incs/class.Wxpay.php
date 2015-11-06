@@ -54,7 +54,7 @@ class Wxpay {
       $openId = $tools->GetOpenid();      
     }
     
-    $wx_order_body = '女神送花';
+    $wx_order_body = '女神送花('.$order['player_id'].'号)';
     $order_detail  = ($order['goods_type']=='flower' ? "送花(" : "送吻(") . $order['goods_amount'] . ")";
     /*
     if (!empty($order['order_goods'])) {
