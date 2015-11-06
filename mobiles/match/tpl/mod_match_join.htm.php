@@ -161,7 +161,7 @@ $(function(){
 		F.post($(this).attr('action'), post_data, function(ret){
 			_btn.val('完成！').removeAttr('disabled');
 			if(ret.flag=='SUC'){
-				myAlert('恭喜您已报名成功！请<em style="color:red">务必</em>关注大赛客服微信号：<em style="color:green">choumeikufang</em>，以便随时了解获奖情况。',function(gourl){
+				myAlert('恭喜您已报名成功！请<em style="color:red">务必</em>关注大赛客服微信号：<em style="color:green">choumeikufang</em>，以随时了解获奖情况。',function(gourl){
 					window.location.href = gourl;
 				},'<?php echo U('player/')?>'+ret.player_id);
 			}else{

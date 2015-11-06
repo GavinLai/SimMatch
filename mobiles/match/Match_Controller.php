@@ -428,7 +428,7 @@ class Match_Controller extends Controller {
       
       //SEO信息
       $seo = [
-        'title'   => '#'.$player_info['player_id'].' '.$player_info['truename'] . ' - '.$ninfo['title'],
+        'title'   => $player_info['player_id'].'号 '.$player_info['truename'] . ' - '.$ninfo['title'],
         'keyword' => $player_info['truename'].','.$ninfo['keyword'],
         'desc'    => $ninfo['slogan'],
       ];
