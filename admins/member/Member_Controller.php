@@ -299,17 +299,20 @@ class Member_Controller extends Controller {
   	$this->_nav_second = 'player';
   	$this->v->set_tplname('mod_member_player');
   	
+  	$kw = $request->get('kw','');
+  	$this->v->assign('kw', $kw);
+  	
   	//BEGIN list order
   	$orderinfo = $this->v->set_listorder('player_id', 'desc');
-  	$extraurl  = '';
+  	$extraurl  = 'kw='.$kw.'&';
   	$extraurl .= $orderinfo[2];
   	$this->v->assign('extraurl', $extraurl);
   	$this->v->assign('qparturl', "#/member/player");
   	//END list order
   	
   	// Record List
-  	$limit = 20;
-  	$recordList = Member_Model::getPlayerList($orderinfo[0],$orderinfo[1],$limit);
+  	$limit = 30;
+  	$recordList = Member_Model::getPlayerList($orderinfo[0],$orderinfo[1],$limit,['kw'=>$kw]);
   	$recordNum  = count($recordList);
   	$totalNum   = $GLOBALS['pager_totalrecord_arr'][0];
   	

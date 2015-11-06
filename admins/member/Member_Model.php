@@ -59,10 +59,20 @@ class Member_Model extends Model {
 		return $rs;
 	}
 	
-	static function getPlayerList($orderby='player_id', $order='DESC', $limit=30 , $where=[]) {
+	static function getPlayerList($orderby='player_id', $order='DESC', $limit=30 , $where_cond=[]) {
 		
-		$sql    = "SELECT * FROM {player} WHERE `status`<>'D' ORDER BY `%s` %s";
-    $sqlcnt = "SELECT COUNT(player_id) AS rcnt FROM {player} WHERE `status`<>'D'";
+		$where = '';
+		if (!empty($where_cond) && !empty($where_cond['kw'])) {
+			if (is_numeric($where_cond['kw'])) {
+				$where .= "AND `player_id`=".$where_cond['kw'];
+			}
+			else {
+				$where .= "AND `truename` like '%%".D()->escape_string($where_cond['kw'])."%%'";
+			}
+		}
+		
+		$sql    = "SELECT * FROM {player} WHERE 1 {$where} AND `status`<>'D' ORDER BY `%s` %s";
+    $sqlcnt = "SELECT COUNT(player_id) AS rcnt FROM {player} WHERE 1 {$where} AND `status`<>'D'";
 	
     $result = D()->pager_query($sql,$limit,$sqlcnt,0,$orderby,$order)->fetch_array_all();
     if (!empty($result)) {

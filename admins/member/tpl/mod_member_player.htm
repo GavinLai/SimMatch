@@ -6,6 +6,19 @@
 <section id="ifr-main" class="ifr-main">
 <div class="breadcrumb">当前位置：<span>用户管理</span>&nbsp;&gt;&nbsp;<span>参赛者列表</span></div>
 
+<div class="boxSearch">
+  <form name="searchform" id="searchform" action="/member/player" method="post" onsubmit="return listsearch(this);">
+    <input type="text" name="kw" value="<!--{$kw}-->" class="inptxt" id="searchkw" placeholder="请输入“参赛者姓名 或 编号”搜索"/>
+    &nbsp;&nbsp;<input type="submit" name="btnsubmit" value="搜 索" class="frmbtn" />
+  </form>
+<script type="text/javascript">
+function listsearch(form) {
+	window.location.hash = '#/member/player?kw='+$('#searchkw').val().trim();
+	return false;
+}
+</script>
+</div>
+
 <div class="listnav">
   <div class="listbtn-grp listbtn-grp-pager"><!--{include_pager url=$qparturl extraurl=$extraurl}--></div>
   <div class="listbtn-grp">
@@ -41,6 +54,15 @@
         <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
         <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
         <span>刷新</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="http://bs.fxmapp.com/match/100/join?token=qqdcoqr7azjaib0eucnr0kk3r7kk5dje" target="_blank" class="listbtn-link listbtn-hlink">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>添加选手</span>
       </a>
     </div>
   </div>
