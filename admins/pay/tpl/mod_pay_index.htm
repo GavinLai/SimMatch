@@ -2,9 +2,31 @@
 <style type="text/css">
 .withlogo img{width: 28px;}
 </style>
+<script type="text/javascript" src="/misc/js/ext/date/jquery.calendar.js"></script>
+<link href="/misc/js/ext/date/calendars.css" rel="stylesheet" type="text/css" />
+
 <section id="ifr-main" class="ifr-main">
 
 <div class="breadcrumb">当前位置：<span>充值查询</span>&nbsp;&gt;&nbsp;<span>充值明细</span></div>
+
+<div class="boxSearch">
+  <form name="searchform" id="searchform" action="/pay" method="post" onsubmit="return listsearch(this);">
+    <input type="text" name="search_target" value="<!--{$searchinfo.target}-->" class="inptxt inpshort" id="search_target" placeholder="充值目标(编号或姓名)"/>
+    &nbsp;&nbsp;<input type="text" name="start_date" value="<!--{$searchinfo.start_date}-->" class="inptxt inpshort" id="search_start_date" placeholder="开始日期" bj="cBj" />&nbsp;&nbsp;-
+     &nbsp;&nbsp;<input type="text" name="end_date" value="<!--{$searchinfo.end_date}-->" class="inptxt inpshort" id="search_end_date" placeholder="结束日期" bj="cBj" />
+     &nbsp;&nbsp;<input type="submit" name="btnsubmit" value="搜 索" class="frmbtn" />
+  </form>
+<script type="text/javascript">
+function listsearch(form) {
+  window.location.hash = '#/pay?seeall=<!--{$seeall}-->&target='+$('#search_target').val().trim()+'&sdate='+$('#search_start_date').val().trim()+'&edate='+$('#search_end_date').val().trim();
+  return false;
+}
+$(document).ready(function(){
+	$("#search_start_date").cld();
+	$("#search_end_date").cld();
+});
+</script>
+</div>
 
 <div class="listnav">
   <div class="listbtn-grp listbtn-grp-pager"><!--{include_pager url=$qparturl extraurl=$extraurl}--></div>
@@ -70,10 +92,10 @@ $(function(){
 	$('#seeall').click(function(){
 		var hash = '';
 		if ($(this).is(':checked')) {
-			hash = '#/pay,seeall=1';
+			hash = '#/pay,seeall=1&<!--{$searchstr}-->';
 		}
 		else {
-			hash = '#/pay,seeall=0';
+			hash = '#/pay,seeall=0&<!--{$searchstr}-->';
 		}
 		window.location.hash = hash;
 		return true;

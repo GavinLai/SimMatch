@@ -6,6 +6,10 @@
  */
 defined('IN_SIMPHP') or die('Access Denied');
 
+define('DAY_SEP', ' ');
+define('DAY_BEGIN', DAY_SEP.'00:00:00');
+define('DAY_END',   DAY_SEP.'23:59:59');
+
 class Pay_Controller extends Controller {
 	
 	private $_nav = 'cz';
@@ -56,22 +60,44 @@ class Pay_Controller extends Controller {
 			$_SESSION['_query_node'] = $_query_node;
 		}
 		*/
+		$this->v->assign('nav_second', '');
+		
 		$seeall = $request->get('seeall',0);
 		$seeall = $seeall ? 1 : 0;
 		$this->v->assign('seeall', $seeall);
-		$this->v->assign('nav_second', '');
+		
+		$searchinfo = ['target' => '', 'start_date'=>'', 'end_date'=>''];
+		$searchinfo['target']      = $request->get('target','');
+		$searchinfo['start_date']  = $request->get('sdate','');
+		$searchinfo['end_date']    = $request->get('edate','');
+		if (strlen($searchinfo['start_date'])!=10) { //format: 'YYYY-MM-DD'
+			$searchinfo['start_date'] = '';
+		}
+		if (strlen($searchinfo['end_date'])!=10) { //format: 'YYYY-MM-DD'
+			$searchinfo['end_date'] = '';
+		}
+		if (!empty($searchinfo['start_date']) && !empty($searchinfo['end_date']) &&  $searchinfo['start_date'] > $searchinfo['end_date']) { //交换
+			$t = $searchinfo['start_date'];
+			$searchinfo['start_date'] = $searchinfo['end_date'];
+			$searchinfo['end_date'] = $t;
+		}
+		$searchstr  = 'target='.$searchinfo['target'].'&sdate='.$searchinfo['start_date'].'&edate='.$searchinfo['end_date'];
+		$this->v->assign('searchinfo', $searchinfo);
+		$this->v->assign('searchstr', $searchstr);
+		
 		$query_conds['seeall'] = $seeall;
+		$query_conds = array_merge($query_conds, $searchinfo);
 	
 		//BEGIN list order
 		$orderinfo = $this->v->set_listorder('order_id', 'desc');
-		$extraurl  = "seeall={$seeall}&";
+		$extraurl  = "seeall={$seeall}&".$searchstr.'&';
 		$extraurl .= $orderinfo[2];
 		$this->v->assign('extraurl', $extraurl);
 		$this->v->assign('qparturl', '#/pay');
 		//END list order
 	
 		// Game List
-		$limit = 20;
+		$limit = 30;
 		$recordList = Pay_Model::getPayList($orderinfo[0],$orderinfo[1],$limit,$query_conds,$statinfo);
 		$recordNum  = count($recordList);
 		$totalNum   = $GLOBALS['pager_totalrecord_arr'][0];

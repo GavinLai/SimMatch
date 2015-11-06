@@ -368,8 +368,8 @@ a.listbtn-hlink {color:#ff6600;}
 .popUploadWrap .upbtn {padding:2px 5px;width:50px;height:27px;}
 
 /* 搜索栏  */
-.boxSearch {padding:10px 0 20px;}
-.boxSearch .inptxt { font-size: 13px; }
+.boxSearch {padding:5px 0 10px;}
+.boxSearch .inptxt { font-size: 12px; }
 
 
 /* 排序 */
