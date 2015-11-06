@@ -470,7 +470,7 @@ class Match_Controller extends Controller {
       
       $uid = $GLOBALS['user']->uid;
       if (empty($uid)) {
-        $res['msg'] = '你没登录，请先在微信端登录';
+        $res['msg'] = '您没登录，请先在微信端登录';
         $response->sendJSON($res);
       }
       
@@ -484,23 +484,24 @@ class Match_Controller extends Controller {
         $votedcnt_single = Node::getActionNum($player_id, 'vote');
         
         $res['flag'] = 'SUC';
-        $res['msg']  = "投票成功";
+        $res['msg']  = "投票成功！";
         $res['votedcnt']  = $votedcnt;
         $res['votedcnt_single']  = $votedcnt_single;
         if ($ret > 0) {
-          $res['msg']  .= "，您今天还可以投{$ret}票！";
+          $res['msg']  .= "您今天还可以投<em style=\"color:red\">{$ret}</em>票！";
         }
         else {
-          $res['msg']  .= "，您今天的票数已用完，明天再来，还可以给女神送花或者看看其他女神哦~";
+        	//您已投票成功！请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态
+          $res['msg']  .= '您今天的票数已用完，明天再来，还可以给女神<em style="color:red">送花</em>或为其他女神投票哦~';
         }
         $response->sendJSON($res);
       }
       else {
         if (-11==$ret) {
-          $res['msg']  = '票数已用完，明天再来，还可以给女神送花或者看看其他女神哦~';
+          $res['msg']  = '票数已用完，明天再来，还可以给女神<em style="color:red">送花</em>或为其他女神投票哦~';
         }
         elseif (-12==$ret) {
-          $res['msg']  = '连续投票时间间隔要在120分钟以上';
+          $res['msg']  = '连续投票时间间隔要在2小时以上';
         }
         else {
           $res['msg']  = '发生未知错误';

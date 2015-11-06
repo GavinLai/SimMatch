@@ -141,15 +141,15 @@ function gopage(rel, curpage, maxpage, search) {
 		case 'next':  p = curpage+1;p = p > maxpage ? maxpage : p;break;
 	}
 	if (maxpage<=1) {
-		alert('当前仅有一页');
+		myAlert('当前仅有一页');
 		return;
 	}
 	else if (p==curpage) {
 		if (p==1) {
-			alert('已经第一页');
+			myAlert('已经第一页');
 		}
 		else if (p==maxpage) {
-			alert('已经最后一页');
+			myAlert('已经最后一页');
 		}
 		return;
 	}

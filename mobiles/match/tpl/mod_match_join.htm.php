@@ -92,29 +92,33 @@ $(function(){
 		var _truename = $('#frm_truename');
 		post_data.truename = _truename.val().trim();
 		if(''==post_data.truename){
-			alert('请输入真实姓名');
-			_truename.val('').focus();
+			myAlert('请输入真实姓名',function(target){
+				target.val('').focus();
+			},_truename);
 			return false;
 		}
 
 		var _mobile = $('#frm_mobile');
 		post_data.mobile = _mobile.val().trim();
 		if(''==post_data.mobile){
-			alert('请输入手机号');
-			_mobile.val('').focus();
+			myAlert('请输入手机号',function(target){
+				target.val('').focus();
+			},_mobile);
 			return false;
 		}
 		else if (!/^\d{11,14}$/.test(post_data.mobile)) {
-			alert('手机号非法');
-			_mobile.get(0).select();
+			myAlert('手机号非法',function(target){
+				target.get(0).select();
+			},_mobile);
 			return false;
 		}
 
 		var _weixin = $('#frm_weixin');
 		post_data.weixin = _weixin.val().trim();
 		if(''==post_data.weixin){
-			alert('请输入微信号');
-			_weixin.val('').focus();
+			myAlert('请输入微信号',function(target){
+				target.val('').focus();
+			},_weixin);
 			return false;
 		}
 		
@@ -128,13 +132,13 @@ $(function(){
 		post_data.remark = $('#frm_remark').val().trim();
 		if (''!==post_data.video && !/^http:\/\//i.test(post_data.video)) {
 			$('#frm_video').get(0).select();
-			alert('视频地址不合法');
+			myAlert('视频地址不合法');
 			return false;
 		}
 		*/
 		if ( ''!==post_data.idcard && post_data.idcard.length != 18 && post_data.idcard.length != 15 ) {
 			$('#frm_idcard').get(0).select();
-			alert('身份证号不合法');
+			myAlert('身份证号不合法');
 			return false;
 		}
 
@@ -143,25 +147,26 @@ $(function(){
 			imgs.push($(this).attr('src'));
 		});
 		if (0===imgs.length) {
-			alert('请至少上传一张图片');
+			myAlert('请至少上传一张图片');
 			return false;
 		}
 		else if (imgs.length > maxuploadnum) {
-			alert('最多只能上传'+maxuploadnum+'张图片，请删除'+(imgs.length-maxuploadnum)+'张再提交');
+			myAlert('最多只能上传'+maxuploadnum+'张图片，请删除'+(imgs.length-maxuploadnum)+'张再提交');
 			return false;
 		}
 		post_data['imgs[]'] = imgs;
 
 		var _btn = $('#frm_submit');
-		_btn.val('图片上传审核中，请等待片刻...').attr('disabled',true);
+		_btn.val('图片上传中，请耐心等待...').attr('disabled',true);
 		F.post($(this).attr('action'), post_data, function(ret){
 			_btn.val('完成！').removeAttr('disabled');
 			if(ret.flag=='SUC'){
-				alert('恭喜您已报名成功！请“务必”关注大赛客服微信号：choumeikufang，以便随时了解获奖情况。');
-				window.location.href = '<?php echo U('match/'.$nid)?>';
+				myAlert('恭喜您已报名成功！请<em style="color:red">务必</em>关注大赛客服微信号：<em style="color:green">choumeikufang</em>，以便随时了解获奖情况。',function(gourl){
+					window.location.href = gourl;
+				},'<?php echo U('player/')?>'+ret.player_id);
 			}else{
 				_btn.val('提 交');
-				alert(ret.msg);
+				myAlert(ret.msg);
 			}
 		});
 

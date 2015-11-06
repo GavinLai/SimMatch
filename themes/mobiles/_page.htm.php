@@ -34,7 +34,8 @@
   <div id="loadingCanvas" class="useTopNav-<?=$topnav_no?> useNav-<?=$nav_no?>"></div>
   <div class="hide"><img src="<?php echo ploadingimg()?>" alt=""/></div>
   <?php include T('_nav');?>
-  <?php include T('_popdlg');?>
+  <?php include T('inc/popdlg');?>
+  <?php include T('inc/popalert');?>
 </div>
 <!-- 微信操作提示 -->
 <div id="cover-wxtips" class="wxcover">

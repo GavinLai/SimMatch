@@ -36,19 +36,20 @@ function jsApiCall(jsApiParams, back_url)
 				'getBrandWCPayRequest',
 				jsApiParams,
 				function (res){
+					  var _msg = '';
 				  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
-				  	  alert('你已送花成功！请关注大赛微信公众平台帐号：FEOfeel，随时关注比赛动态');
+				  		_msg = '您已送花成功！请关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
 				  	}
 				  	else if ("get_brand_wcpay_request:cancel" == res.err_msg) {
-				  	  alert('取消支付');
+				  		_msg = '您已取消支付';
 				  	}
 				  	else {
-				  	  alert('支付失败！');
+				  		_msg = '支付失败！';
 				  	}
-				  	if (typeof(back_url)!='undefined' && ''!=back_url) window.location.href = back_url;
-				  	else {
-				  	  setTimeout(function(){ WeixinJSBridge.invoke("closeWindow"); },1000);
-				  	}
+				  	myAlert(_msg,function(backurl){
+					  	if (typeof(backurl)!='undefined' && ''!=backurl) window.location.href = backurl;
+					  	else setTimeout(function(){ WeixinJSBridge.invoke("closeWindow"); },1000);
+					  },back_url);
 				}
 			);
 	}
@@ -66,7 +67,7 @@ $(function(){
 
 		$('#money').text(amount);
 		if (amount < amount_start) {
-			alert('亲，好闺蜜亲男友应该大气一点，'+amount_start+'个起送噢~');
+			myAlert('亲，好闺蜜亲男友应该大气一点，'+amount_start+'个起送哦~');
 			return;
 		}
 
@@ -78,7 +79,7 @@ $(function(){
   			}
   			else{
   				$(_this).text('确定赠送').removeAttr('disabled');
-  				alert(ret.msg);
+  				myAlert(ret.msg);
   			}
 	  });
 		
