@@ -92,33 +92,25 @@ $(function(){
 		var _truename = $('#frm_truename');
 		post_data.truename = _truename.val().trim();
 		if(''==post_data.truename){
-			myAlert('请输入真实姓名',function(target){
-				target.val('').focus();
-			},_truename);
+			myAlert('请输入真实姓名');
 			return false;
 		}
 
 		var _mobile = $('#frm_mobile');
 		post_data.mobile = _mobile.val().trim();
 		if(''==post_data.mobile){
-			myAlert('请输入手机号',function(target){
-				target.val('').focus();
-			},_mobile);
+			myAlert('请输入手机号');
 			return false;
 		}
 		else if (!/^\d{11,14}$/.test(post_data.mobile)) {
-			myAlert('手机号非法',function(target){
-				target.get(0).select();
-			},_mobile);
+			myAlert('手机号非法');
 			return false;
 		}
 
 		var _weixin = $('#frm_weixin');
 		post_data.weixin = _weixin.val().trim();
 		if(''==post_data.weixin){
-			myAlert('请输入微信号',function(target){
-				target.val('').focus();
-			},_weixin);
+			myAlert('请输入微信号');
 			return false;
 		}
 		
@@ -137,7 +129,7 @@ $(function(){
 		}
 		*/
 		if ( ''!==post_data.idcard && post_data.idcard.length != 18 && post_data.idcard.length != 15 ) {
-			$('#frm_idcard').get(0).select();
+			/*$('#frm_idcard').get(0).select();*/
 			myAlert('身份证号不合法');
 			return false;
 		}

@@ -352,7 +352,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #popalert .btm button { color: #007cf7;border: none;padding: 0;margin: 0;background: none;font-size: 16px;font-size: 1.6rem;width: 80%;height: 100%; }
 #popalert .line { border: none;padding: 0;margin: 0;height: 1px;line-height: 1px;font-size: 0; }
 #popalert .alert-tit { font-size: 16px;font-size: 1.6rem;font-weigth: bold;color: #000;padding: 5px 0 0; }
-#popalert .alert-cont { padding: 5px 10px 10px;font-size: 13px;font-size: 1.3rem;min-height: 20px; }
+#popalert .alert-cont { padding: 13px 10px 18px;font-size: 13px;font-size: 1.3rem;min-height: 20px; }
 #popalert .alert-cont em { font-weight: bold; }
 
 /* List empty */
