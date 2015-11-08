@@ -77,6 +77,7 @@ $(function(){
   <?php endif;?>
   <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 </div>
+
 <div class="block-page player-info">
 <?php if ($player_num):?>
   <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“参赛者姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
@@ -84,11 +85,6 @@ $(function(){
   <div id="player-list">
 
 <!--{AJAXPART}-->
-<script type="text/javascript">
-window.curpage = myParseInt('<?=$curpage?>');
-window.maxpage = myParseInt('<?=$maxpage?>');
-window.searchkey = '<?=$search?>';
-</script>
   <?php if (!$player_num):?>
     <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛者<?php else:?>还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
   <?php else:?>
@@ -126,34 +122,47 @@ $(function(){
 	},1);
 });
 </script>
+
+	<!-- BEGIN pager -->
+  <div class="paging" id="paging" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>" data-search="<?=$search?>">
+  	<a href="javascript:;" rel="begin" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">首页</a>
+  	<a href="javascript:;" rel="last" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">上一页</a>
+  	<a href="javascript:;" rel="next" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">下一页</a>
+  	<a href="javascript:;" rel="end" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">末页</a>
+  	<select name="pgsel" rel="select" class="pgbtn" onchange="gopage(this)">
+  	<?php for($i=1; $i<=$maxpage; $i++):?>
+  		<option value="<?=$i?>"<?php if($i==$curpage):?> selected="selected"<?php endif;?>>&nbsp;<?=$i?>/<?=$maxpage?></option>
+  	<?php endfor;?>
+  	</select>
+  </div>
+  <!-- END pager -->
+  
   <?php endif;?>
 <!--{/AJAXPART}-->
   </div>
   
-  <?php if ($player_num):?>
-  <?php if ($maxpage > 1):?>
-  <div class="paging" id="paging">
-  	<a href="javascript:;" rel="begin">首页</a>
-  	<a href="javascript:;" rel="last">上一页</a>
-  	<a href="javascript:;" rel="next">下一页</a>
-  	<a href="javascript:;" rel="end">末页</a>
-  </div>
+<?php if ($player_num):?>
+<div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 <script type="text/javascript">
-$(function(){
-	$('#paging > a').bind('click',function(){
-		var rel = $(this).attr('rel');
-		gopage(rel, curpage, maxpage, searchkey);
-	});
-});
-function gopage(rel, curpage, maxpage, search) {
-	var p = 1;
+function gopage(obj) {
+	if ($(obj).hasClass('disable')) {
+		return;
+	}
+	var _parent = $(obj).parent();
+	var curpage = myParseInt(_parent.attr('data-curpage'));
+	var maxpage = myParseInt(_parent.attr('data-maxpage'));
+	var search  = _parent.attr('data-search');
+	var p = 1, rel = $(obj).attr('rel');
+	
 	switch(rel) {
 	default:
 		case 'begin': p = 1;break;
 		case 'end':   p = maxpage;break;
 		case 'last':  p = curpage-1;p = p > 0 ? p : 1;break;
 		case 'next':  p = curpage+1;p = p > maxpage ? maxpage : p;break;
+		case 'select': p=$(obj).val();break;
 	}
+	
 	if (maxpage<=1) {
 		myAlert('当前仅有一页');
 		return;
@@ -171,16 +180,6 @@ function gopage(rel, curpage, maxpage, search) {
 		$('#player-list').html(ret.body);
 	});
 }
-</script>
-<?php endif;/*END if ($maxpage > 1)*/?>
-  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
-  <?php endif;?>
-  
-<?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
-<div style="padding: 4px;margin-top: 10px;color: #666;"><span>送花数：<em><?=$ninfo['flowercnt']?></em></span></div>
-<?php endif;?>
-</div>
-<script type="text/javascript">
 function searchform(obj) {
 	var _act = '<?php echo U('match/'.$the_nid,'_hr=1&isajax=1')?>';
 	var _val = $(obj).find('input').val().trim();
@@ -189,6 +188,15 @@ function searchform(obj) {
 	});
 	return false;
 }
+</script>
+<?php endif;/*if ($player_num)*/?>
+  
+<?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
+<div style="padding: 4px;margin-top: 10px;color: #666;"><span>送花数：<em><?=$ninfo['flowercnt']?></em></span></div>
+<?php endif;?>
+
+</div><!-- END DIV.block-page.player-info -->
+<script type="text/javascript">
 function show_full(obj) {
 	$('.match-info .row.hide').show();
 	$(obj).parent().remove();
@@ -196,4 +204,4 @@ function show_full(obj) {
 }
 </script>
 
-<?php endif;?>
+<?php endif;/*END if(''!==$errmsg) else*/?>

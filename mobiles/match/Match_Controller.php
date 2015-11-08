@@ -122,7 +122,10 @@ class Match_Controller extends Controller {
         $maxpage  = 1;
         
         //检查周排名信息
-        $see_weekinfo = Match_Model::getRankWeekInfo($nid);
+        $see_weekinfo = [];
+        if ($search=='') { //搜索时不检查
+        	$see_weekinfo = Match_Model::getRankWeekInfo($nid);
+        }
         $ceil_player_ids  = [];
         $ceil_player_list = [];
         if (!empty($see_weekinfo)) {

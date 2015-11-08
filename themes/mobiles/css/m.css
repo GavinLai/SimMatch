@@ -266,7 +266,8 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #player-list .fot { padding: 5px; margin-top: 3px;line-height: 18px;border-top: 1px dotted #ccc; }
 #player-list .fot .p { display: inline-block;width: 50%;text-align: left;font-size: 12px;font-size: 1.2rem; }
 .paging { margin: 5px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);-moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);box-shadow: 0 0 10px rgba(0, 0, 0, .4); }
-.paging a { display: inline-block;width: 25%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333; }
+.paging .pgbtn { display: inline-block;width: 20%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333;border: none;padding: 0;margin: 0; }
+.paging .pgbtn.disable { color: #ccc; }
 
 /*match join页*/
 .match-join { padding: 10px; }
