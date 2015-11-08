@@ -195,7 +195,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 /*顶部导航*/
 .micon { background:url(../img/2x/micon.png) no-repeat;background-size: 250px; }
 .topnav { height: 40px;line-height: 40px;border-style: solid;border-color: #ddd;border-width: 0 0 1px;color: #5f646e;background: #fff;position: relative; }
-.topnav a { color: #5f646e;font-size: 16px;font-size: 1.6rem; }
+.topnav a { color: #5f646e;font-size: 16px;font-size: 1.6rem;text-align: center; }
 .topnav .on { color: #ff6600; }
 .topnav .listyle { float: right;width: 60px;height: 100%;text-align: center; }
 .topnav .listyle a { display: block;width: 100%;height: 100%;text-align: center; }
@@ -208,8 +208,9 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .triangle-up { border-color: transparent transparent #5f646e;border-width: 0 5px 5px; }
 .on .triangle { border-color: #ff6600 transparent transparent; }
 .on .triangle-up { border-color: transparent transparent #ff6600; }
-.topnav-cart { text-align: center;line-height: 38px; }
-.topnav-cart .on { color: #f15a0c;border-bottom: 2px solid #f15a0c; }
+.topnav-rank { text-align: center;line-height: 38px; }
+.topnav-rank .on { color: #b5359d;border-bottom: 2px solid #b5359d; }
+.topnav-rank .prompt { text-align: center;font-size: 16px;font-size: 1.6rem;font-weight: bold; }
 
 .downmenu { display: none;width: 100%;padding-left: 15px;position: absolute; z-index: 1001;background: #fff;line-height: 40px; }
 .downmenu .mit { border-bottom: 1px solid #ddd;height: 40px; }
@@ -253,10 +254,14 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 #player-list .emptytip a { color: #f60; }
 #player-list .itbox { display: inline-block;width: 50%; }
 #player-list .itcont { display: block;font-size: 12px;font-size: 1.2rem;margin: 0 4px 8px;border-radius: 5px;border-width: 1px 1px 2px;border-style: solid;border-color: #ddd;background: #fff;color: #999; }
+#player-list .itcont.hl1,#player-list .itcont.hl2 { border-color: #ff6600;border-width: 2px;border-style: dotted;-webkit-box-shadow: 0 0 10px rgba(255, 102, 0, .4);-moz-box-shadow: 0 0 10px rgba(255, 102, 0, .4);box-shadow: 0 0 10px rgba(255, 102, 0, .4); }
+#player-list .itcont.hl2 { border-color: #b5359d;-webkit-box-shadow: 0 0 10px rgba(181, 53, 157, .4);-moz-box-shadow: 0 0 10px rgba(181, 53, 157, .4);box-shadow: 0 0 10px rgba(181, 53, 157, .4); }
 #player-list .cot { padding: 2px 5px 5px; }
 #player-list .cot .rt { float: right;width: 50%; }
-#player-list .imgc { width: 100%;overflow: hidden;text-align: center;vertical-align: middle; }
+#player-list .imgc { width: 100%;overflow: hidden;text-align: center;vertical-align: middle;position: relative; }
 #player-list .imgc .edge { width: 0;height: 100%;display:inline-block;vertical-align:middle; }
+.hl1 .ranktip,.hl2 .ranktip { color: #ff0000;font-weight: bold; }
+.hl2 .ranktip { color: #b5359d; }
 #player-list .imgc img { width: 100%; display:inline-block;text-align: center;vertical-align: middle; }
 #player-list .fot { padding: 5px; margin-top: 3px;line-height: 18px;border-top: 1px dotted #ccc; }
 #player-list .fot .p { display: inline-block;width: 50%;text-align: left;font-size: 12px;font-size: 1.2rem; }
@@ -318,6 +323,17 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .box-payamount .frmbox .r3 { color: #b5359d; }
 .match-topay .box-topay { position: absolute;bottom: 0;left: 0;width: 100%;height: 60px;line-height: 60px;background: #b5359d;text-align: center; }
 .match-topay .box-topay .btn { width: 100%;height: 100%;border: none;border-radius: 0;background: transparent;color: #fff;font-size: 20px;font-size: 2rem; }
+
+/*rank页面*/
+#ranklist { width: 94%;margin: 10px auto; }
+#ranklist li { width: 100%;overflow: auto;zoom: 1;margin-bottom: 5px; }
+#ranklist li.h { margin-bottom: 10px;font-weight: bold; }
+#ranklist li.e { margin: 20px 0; }
+#ranklist li.e a { display: block;text-align: center;border-radius: 5px;background: #fff;color: #5f646e;height: 40px;line-height: 40px;font-size: 16px;font-size: 1.6rem; }
+#ranklist li.e a.none { color: #666; }
+#ranklist .c2 { text-align: center; }
+#ranklist .c3 { padding-left: 15px; }
+#ranklist img.ulogo { max-width: 30px;vertical-align: middle; }
 
 /*about页*/
 .about { position: absolute;top: 0;bottom: 0;width: 100%;background: #fff;padding: 5%; }

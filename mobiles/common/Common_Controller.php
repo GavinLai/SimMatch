@@ -26,8 +26,8 @@ class Common_Controller extends Controller {
    */
   public static function menu_init() {
     return [
-      '!^player/(\d+)$!i'     => 'match/player/$1',
-      '!^about$!i'           => 'default/about',
+      '!^player/(\d+)$!i'  => 'match/player/$1',
+      '!^about$!i'         => 'default/about',
     ];
   }
   

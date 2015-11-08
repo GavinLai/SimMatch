@@ -44,6 +44,7 @@ class Node {
   }
   
   static function getInfo($nid) {
+  	if (empty($nid)) return false;
     $row = D()->get_one("SELECT n.* FROM {node} n WHERE n.`nid`=%d",$nid);
     if (!empty($row) && $row['ntype']!='base') {
       $tb_node = '{node_'.$row['ntype'].'}';

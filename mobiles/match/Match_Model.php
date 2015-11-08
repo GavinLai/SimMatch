@@ -238,16 +238,25 @@ class Match_Model extends Model {
     return $rid ? : false;
   }
   
-  static function getPlayerList($match_id, $search = '', $start = 0, $limit = 20, &$totalnum = 0, &$maxpage = 0) {
+  static function getPlayerList($match_id, $search = '', $start = 0, $limit = 20, &$totalnum = 0, &$maxpage = 0, $exclude_player_ids = array()) {
   	$where = '';
-  	if (''!=$search) {
+  	if (!empty($search)) {
   		if (is_numeric($search)) {
-  			$where .= "AND p.`player_id`=%d";
+  			$where .= " AND p.`player_id`=%d";
+  		}
+  		elseif (is_array($search)) { //内部查询，格式: '16,38' 等等
+  			$search = implode(',', $search);
+  			$where .= " AND p.`player_id` IN(%s)";
   		}
   		else {
-  			$where .= "AND p.`truename` like '%%%s%%'";
+  			$where .= " AND p.`truename` like '%%%s%%'";
   		}
   	}
+  	if (!empty($exclude_player_ids)) {
+  		$exclude_ids_str = implode(',', $exclude_player_ids); 
+  		$where .= " AND p.`player_id` NOT IN({$exclude_ids_str})";
+  	}
+  	
   	$totalnum = D()->from("{player} p")->where("p.`match_id`=%d {$where} AND p.`status`='R'",$match_id, $search)
   	               ->select("COUNT(p.`player_id`) AS rcnt")->result();
   	$maxpage  = ceil($totalnum / ($limit?:10));
@@ -271,6 +280,7 @@ class Match_Model extends Model {
   }
   
   static function getPlayerInfo($player_id) {
+  	if (empty($player_id)) return false;
     $rs = D()->from("player")->where("`player_id`=%d", $player_id)->select("*")->get_one();
     return $rs;
   }
@@ -322,6 +332,70 @@ class Match_Model extends Model {
       return true;
     }
     return false;
+  }
+  
+  static function getRankList($type, $start=0, $limit=20, Array $extra = array(), &$hasmore = false) {
+  	if ($type=='') {
+  		$type = 'most_vote';
+  	}
+  	if (!in_array($type, ['most_vote','most_flower','week_rank'])) {
+  		return [];
+  	}
+  	if ($type!='week_rank' && empty($extra['player_id'])) {
+  		return [];
+  	}
+  	
+  	$result = [];
+  	$limit_true = $limit+1; //多去一个为了判断是否还有下一页
+  	if ($type=='most_vote' || $type=='most_flower') {
+  		$sql = "SELECT a.`uid` AS user_id,m.nickname,m.logo,SUM(a.`inc`) AS action_amount,MAX(a.`timeline`) AS lasttime
+  				    FROM `{action}` a INNER JOIN `{member}` m ON a.`player_id`=%d AND a.`action`='%s' AND a.`uid`=m.`uid`
+  				    WHERE a.`uid` <> 10000
+  				    GROUP BY user_id
+  				    ORDER BY action_amount DESC
+  				    LIMIT %d,%d";
+  		$result = D()->query($sql, $extra['player_id'], str_replace('most_', '', $type), $start, $limit_true)->fetch_array_all();
+  	}
+  	elseif ($type=='week_rank') {
+  		
+  	}
+  	
+  	$hasmore = false;
+  	$resnum  = count($result);
+  	if ($resnum > $limit) {
+  		$hasmore = true;
+  	}
+  	
+  	return $result;
+  	
+  }
+  
+  /**
+   * 获取待显示周次信息
+   * 
+   * @param integer $match_id
+   * @return integer
+   */
+  static function getRankWeekInfo($match_id) {
+  	$minfo = D()->from("node_match")->where("enid=%d",$match_id)->select()->get_one();
+  	if (!empty($minfo)) {
+  		
+  		$now_dt = date('Y-m-d H:i:s');
+  		$see_weekinfo = false;
+  		
+  		//获取当前比赛周次
+  		$cur_week = D()->from("rank_week")->where("match_id=%d AND match_type='%s' AND '%s'>=start_time AND '%s'<=end_time", $match_id, $minfo['match_type'], $now_dt, $now_dt)->select('weekno')->get_one();
+  		if (!empty($cur_week)) {
+  			if ($cur_week['weekno'] > 1) {
+  				$see_weekinfo = D()->from("rank_week")->where("match_id=%d AND match_type='%s' AND weekno=%d", $match_id, $minfo['match_type'],$cur_week['weekno']-1)->select()->get_one();
+  			}
+  		}
+  		else { //不存在时间窗口，则表明当前时间已经超过竞赛最大时间
+  			$see_weekinfo = D()->from("rank_week")->where("match_id=%d AND match_type='%s'", $match_id, $minfo['match_type'])->order_by("weekno DESC")->limit(0, 1)->select()->get_one();
+  		}
+  		return $see_weekinfo;
+  	}
+  	return false;
   }
   
 }

@@ -44,6 +44,7 @@ class Match_Controller extends Controller {
     return [
       'match/%d'        => 'detail', 
       'match/%d/join'   => 'join',
+      'match/%d/rank'   => 'rank',
       'match/player/%d' => 'player',
     ];
   }
@@ -119,7 +120,32 @@ class Match_Controller extends Controller {
         $start = ($page-1) * $limit;
         $totalnum = 0;
         $maxpage  = 1;
-        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage);
+        
+        //检查周排名信息
+        $see_weekinfo = Match_Model::getRankWeekInfo($nid);
+        $ceil_player_ids  = [];
+        $ceil_player_list = [];
+        if (!empty($see_weekinfo)) {
+        	array_push($ceil_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
+        	$ceil_player_list = Match_Model::getPlayerList($nid, $ceil_player_ids);
+        	if (!empty($ceil_player_list)) {
+        		foreach ($ceil_player_list AS &$it) {
+        			$it['rankflag'] = 0;
+        			$it['ranktxt']  = '';
+        			if ($it['player_id'] == $see_weekinfo['player_id1']) {
+        				$it['rankflag']= 1;
+        				$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
+        			}
+        			if ($it['player_id'] == $see_weekinfo['player_id2']) {
+        				$it['rankflag']= 2;
+        				$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+        			}
+        		}
+        	}
+        }
+        $this->v->assign('ceil_player_list', $ceil_player_list);
+        
+        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $ceil_player_ids);
         $this->v->assign('player_list', $player_list);
         $this->v->assign('player_num', count($player_list));
         $this->v->assign('totalnum', $totalnum);
@@ -372,7 +398,6 @@ class Match_Controller extends Controller {
     $response->sendJSON($res);
   }
   
-
   /**
    * 参赛者详情页
    *
@@ -447,6 +472,103 @@ class Match_Controller extends Controller {
     $this->v->assign('errmsg', $errmsg)
             ->assign('player_info', $player_info)
             ;
+    
+    $response->send($this->v);
+  }
+
+  /**
+   * 参赛者详情页
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function rank(Request $request, Response $response)
+  {
+    $this->v->set_tplname('mod_match_rank');
+    $this->v->set_page_render_mode(View::RENDER_MODE_GENERAL); //改变默认的hashreq请求模式，改为普通页面请求(一次过render页面所有内容)
+    $this->nav_flag1 = 'match_rank';
+    $this->topnav_no = 1;
+  
+    $match_id  = $request->arg(1);
+    $player_id = $request->get('player_id', 0);
+    $isajax    = $request->get('isajax',0);
+    $type      = $request->get('t','');
+    $page      = $request->get('p',1);
+    $this->v->assign('match_id',  $match_id);
+    $this->v->assign('player_id', $player_id);
+    $this->v->assign('type', $type);
+    if ($page<1 || !is_int($page)) {
+    	$page = 1;
+    }
+
+    $errmsg   = '';
+    $ranklist = [];
+    $limit    = 30;
+    $start    = ($page-1) * $limit;
+    $hasmore  = false;
+    
+    //~ 获取match信息及player信息
+    $ninfo = Node::getInfo($match_id);
+    $player_info = Match_Model::getPlayerInfo($player_id);
+    
+    //~ 设置SEO信息
+    if (!empty($ninfo)) {
+    	
+    	if (!$isajax) {
+    		$seo = [
+    				'title'   => $ninfo['title'],
+    				'keyword' => $ninfo['keyword'],
+    				'desc'    => $ninfo['slogan'],
+    		];
+    		if ($type=='week_rank') {
+    			$seo['title'] = '全场周冠军 - '.$seo['title'];
+    		}
+    		else {
+    			if (empty($player_info)) {
+    				$seo['title'] = '错误提示 - '.$seo['title'];
+    			}
+    			else {
+    				$seo['title'] = $player_info['player_id'].'号 '.$player_info['truename'].' 贡献榜';
+    			}
+    		}
+    		$this->v->assign('seo', $seo);
+    	}
+    	
+    	//~ 获取列表
+    	if ($type=='week_rank') { //不需要检查参赛者是否存在
+    		$ranklist = Match_Model::getRankList($type, $start, $limit, ['match_id'=>$match_id], $hasmore);
+    	}
+    	else { //需要检查参赛者是否存在
+    		if (empty($player_info)) {
+    			$errmsg = "该参赛者不存在(参赛号：{$player_id})";
+    		}
+    		elseif ($player_info['status']<>'R') {
+    			$errmsg = "该参赛者被冻结(参赛号：{$player_id})";
+    		}
+    		else {
+    			$ranklist = Match_Model::getRankList($type, $start, $limit, ['player_id'=>$player_id], $hasmore);
+    		}
+    	}
+    	
+    	if ($isajax) {
+    		$this->v->add_output_filter(function($result){
+    			preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
+    			if (!empty($matches) && !empty($matches[1][0])) {
+    				$result = $matches[1][0];
+    			}
+    			return $result;
+    		});
+    	}
+    }
+    else {
+    	$errmsg = "该比赛不存在(nid：{$match_id})";
+    }
+		
+		$this->v->assign('errmsg', $errmsg);
+		$this->v->assign('ranklist', $ranklist);
+		$this->v->assign('listnum', count($ranklist));
+		$this->v->assign('hasmore', $hasmore);
+		$this->v->assign('nextpage', $page+1);
     
     $response->send($this->v);
   }
