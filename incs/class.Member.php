@@ -370,6 +370,9 @@ class Member{
 	  //设置登录session uid
 	  $user->uid = $uid;
 	  
+	  //设置首页分页起始页
+	  $_SESSION['mark_pageno'] = 1;
+	  
 	  //更新登录记录
 	  self::updateUser(['lastip'=>Request::ip(), 'lasttime'=>simphp_time()], $uid);
 	  

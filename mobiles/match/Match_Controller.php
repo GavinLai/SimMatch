@@ -112,11 +112,25 @@ class Match_Controller extends Controller {
   
         //参赛者列表
         $limit = 20;
-        $page  = $request->get('p', 1);
+        $page  = $request->get('p', 0);
         $search= $request->get('s', '');
         $search= trim($search);
         $this->v->assign('search', $search);
         
+        //检查是否启用记录的页码
+        if (!$page) {
+        	if (''==$search) {
+        		$page = isset($_SESSION['mark_pageno']) ? $_SESSION['mark_pageno'] : 1;
+        	}
+        	else {
+        		$page = 1;
+        	}
+        }
+        else {
+        	if (''==$search) {
+        		$_SESSION['mark_pageno'] = $page;
+        	}
+        }
         $start = ($page-1) * $limit;
         $totalnum = 0;
         $maxpage  = 1;
