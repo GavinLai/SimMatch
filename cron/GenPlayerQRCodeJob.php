@@ -54,7 +54,7 @@ class GenPlayerQRCodeJob extends CronJob {
 				$locfile = SIMPHP_ROOT . $path;
 				
 				//生成二维码
-				QRcode::png($qrinfo, $locfile, QR_ECLEVEL_M, 7, 4);
+				QRcode::png($qrinfo, $locfile, QR_ECLEVEL_L, 7, 3);
 				
 				//更新qrcode字段
 				$this->updateFields($id, ['qrcode' => $path]);
@@ -65,7 +65,7 @@ class GenPlayerQRCodeJob extends CronJob {
 				// 上传文件
 				list($ret, $err) = $uploadMgr->putFile($token, $key, $locfile);
 				if ($err !== null) { //失败
-					$this->log("[FAIL]player_id={$id},locpath={$locfile}");
+					$this->log("[FAIL]player_id={$id},locpath={$locfile},err=".$err->message());
 				} else { //成功
 					$path_qn = $this->qiniu_filepath($ret['key']);
 					//更新qrcode字段
