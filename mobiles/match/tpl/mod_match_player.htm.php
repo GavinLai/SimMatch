@@ -21,7 +21,7 @@
      </div>
      <?php endif;?>
   </div>
-  <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p></div>
+  <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p><?php if($player_info['qrcode']!=''):?><p class="qrcode"><img src="<?=$player_info['qrcode']?>" alt="qrcode"/></p><?php endif;?></div>
   <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">主页</a>
   <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
   <a class="match-pos torank" href="javascript:;">

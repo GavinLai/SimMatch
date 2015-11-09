@@ -468,6 +468,9 @@ class Match_Controller extends Controller {
       //排名信息
       $player_info['rank_info'] = Match_Model::getRankInfo($player_info['match_id'], $player_id);
       
+      $usecdn = C('env.usecdn');
+      $player_info['qrcode'] = 2==$usecdn&&$player_info['qrcode_cdn']!='' ? $player_info['qrcode_cdn'] : $player_info['qrcode'];
+      
       //SEO信息
       $seo = [
         'title'   => $player_info['player_id'].'号 '.$player_info['truename'] . ' - '.$ninfo['title'],
