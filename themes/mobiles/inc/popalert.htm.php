@@ -12,7 +12,7 @@
 	</div>
 </div>
 <script>
-function myAlert(msg, okcall) {
+function myAlert(msg, okcall, title, oktext, contentcss) {
 	if (typeof (myAlert._popbg)=='undefined') myAlert._popbg = $('#popalert-bg');
 	if (typeof (myAlert._popdlg)=='undefined') myAlert._popdlg = $('#popalert');
 	if (typeof (myAlert._cont)=='undefined') myAlert._cont = $('#alertcont');
@@ -25,7 +25,25 @@ function myAlert(msg, okcall) {
 			myAlert._okargs.push(arguments[i]);
 	  }
 	}
-	myAlert._cont.html(msg);
+	var _tit = myAlert._popdlg.find('.alert-tit');
+	_tit.html('提示').show();
+	if (typeof(title)!='undefined') {
+		if (title===false) {
+			_tit.hide();
+		}
+		else {
+			_tit.html(title);
+		}
+	}
+	var _ok = $('#alertok');
+	_ok.text('好的');
+	if (typeof(oktext)!='undefined') {
+		_ok.text(oktext);
+	}
+	myAlert._cont.attr('style','').html(msg);
+	if (typeof(contentcss)=='object') {
+		myAlert._cont.css(contentcss);
+	}
 	var _h = myAlert._wrap.height();
 	var _t = parseInt((myAlert._rtwrap.height()-_h)/2) - 30;
 	myAlert._popdlg.css('top',_t+'px');

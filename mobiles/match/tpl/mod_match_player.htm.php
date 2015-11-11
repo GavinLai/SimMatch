@@ -21,7 +21,7 @@
      </div>
      <?php endif;?>
   </div>
-  <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p><?php if($player_info['qrcode']!=''):?><p class="qrcode"><img src="<?=$player_info['qrcode']?>" alt="qrcode"/></p><?php endif;?></div>
+  <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p><?php if($player_info['qrcode']!=''):?><p class="qrcode"><a href="javascript:;" onclick="showqrcode(this)"><img src="<?=$player_info['qrcode']?>" alt="qrcode"/></a></p><?php endif;?></div>
   <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">主页</a>
   <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
   <a class="match-pos torank" href="javascript:;">
@@ -89,6 +89,9 @@ $('#slider img').click(function(){
 </script>
 
 <script type="text/javascript">
+function showqrcode(obj) {
+	myAlert($(obj).html(),null,'微信扫此二维码可直接进入该页面','关闭',{'padding':'0'});
+}
 $(function(){
 
 	$('#op-toshare').click(function(){
