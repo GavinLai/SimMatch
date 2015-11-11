@@ -93,6 +93,29 @@ class Match_Controller extends Controller {
       }
       else {
   
+      	//参赛者列表
+      	$limit = 20;
+      	$page  = $request->get('p', 0);
+      	$search= $request->get('s', '');
+      	$search= trim($search);
+      	$this->v->assign('search', $search);
+      	
+      	//检查周排名信息
+      	$stick = config_get('stick'); // 是否置顶
+      	$see_weekinfo = [];
+      	if ($search=='') { //搜索时不检查
+      		$see_weekinfo = Match_Model::getRankWeekInfo($nid);
+      	}
+      	$ceil_player_ids  = [];
+      	$ceil_player_list = []; //置顶参数者列表
+      	if ($stick && !empty($see_weekinfo)) {
+      		array_push($ceil_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
+      		$ceil_player_list = Match_Model::getPlayerList($nid, $ceil_player_ids);
+      	}
+      	
+      	//晋级参赛者列表
+      	$player_pass_list = [];
+      	
       	if (!$isajax) {
       		
       		//更新访问次数
@@ -108,14 +131,26 @@ class Match_Controller extends Controller {
       		$this->v->assign('content_parsed', $content_parsed);
       		$this->v->assign('content_parsed_num', $content_parsed_num);
       		
+      		//获取“晋级”参赛这列表
+      		$player_pass_list = Match_Model::getPlayerList($nid, '5000+', 0, 200);
+      		if (!empty($player_pass_list)) {
+      			foreach ($player_pass_list AS &$it) {
+      				$it['rankflag'] = 0;
+      				$it['ranktxt']  = '';
+      				if (!empty($see_weekinfo)) {
+      					if ($it['player_id'] == $see_weekinfo['player_id1']) {
+      						$it['rankflag']= 1;
+      						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
+      					}
+      					if ($it['player_id'] == $see_weekinfo['player_id2']) {
+      						$it['rankflag']= 2;
+      						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+      					}
+      				}
+      			}
+      		}
       	}
-  
-        //参赛者列表
-        $limit = 20;
-        $page  = $request->get('p', 0);
-        $search= $request->get('s', '');
-        $search= trim($search);
-        $this->v->assign('search', $search);
+      	$this->v->assign('player_pass_list', $player_pass_list);
         
         //检查是否启用记录的页码
         if (!$page) {
@@ -134,19 +169,6 @@ class Match_Controller extends Controller {
         $start = ($page-1) * $limit;
         $totalnum = 0;
         $maxpage  = 1;
-        
-        //检查周排名信息
-        $stick = config_get('stick'); // 是否置顶
-        $see_weekinfo = [];
-        if ($search=='') { //搜索时不检查
-        	$see_weekinfo = Match_Model::getRankWeekInfo($nid);
-        }
-        $ceil_player_ids  = [];
-        $ceil_player_list = [];
-        if ($stick && !empty($see_weekinfo)) {
-        	array_push($ceil_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
-        	$ceil_player_list = Match_Model::getPlayerList($nid, $ceil_player_ids);
-        }
         
         $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $ceil_player_ids);
         $player_list = array_merge($ceil_player_list, $player_list); //合并

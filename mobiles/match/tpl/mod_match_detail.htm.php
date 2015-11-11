@@ -78,11 +78,12 @@ $(function(){
   <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 </div>
 
-<div class="block-page player-info">
+<div class="block-page-title"><a href="javascript:;" rel="all" class="on" onclick="showlist(this)">所有参赛者</a><a href="javascript:;" rel="pass" onclick="showlist(this)">晋级参赛者</a></div>
+<div class="block-page player-info" id="player-all">
 <?php if ($player_num):?>
   <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“参赛者姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
-<?php endif;?>  
-  <div id="player-list">
+<?php endif;?>
+  <div id="player-list" class="player-list">
 
 <!--{AJAXPART}-->
   <?php if (!$player_num):?>
@@ -105,7 +106,7 @@ $(function(){
 <script type="text/javascript">
 $(function(){
 	setTimeout(function(){
-		var $ele = $('#player-list .imgc');
+		var $ele = $('.player-list .imgc');
 		var w = $ele.width();
 		var h = parseInt(w/0.75); //ratio used by iphone4 w/h ratio
 		$ele.css('height',h+'px');
@@ -130,10 +131,32 @@ $(function(){
   
   <?php endif;?>
 <!--{/AJAXPART}-->
+  </div><!-- END DIV#player-list -->
+  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
+  <?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
+	<div class="lastrow"><span>送花数：</span><em><?=$ninfo['flowercnt']?></em></div>
+	<?php endif;?>
+</div><!-- END DIV#player-all -->
+
+<div class="block-page player-info hide" id="player-pass">
+	<div class="player-list">
+  <?php foreach ($player_pass_list AS $it):?>
+    <div class="itbox">
+      <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont hl<?=$it['rankflag']?>">
+        <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span>
+        <?php if($it['ranktxt']!=''):?>
+        <br/><span class="ranktip"><?php if($it['rankflag']==1):?>👑<?php else:?>🌺<?php endif;?>&nbsp;<?=$it['ranktxt']?></span>
+        <?php endif;?>
+        	<p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p>
+        </div>
+        <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
+      </a>
+    </div>
+  <?php endforeach;?>
   </div>
-  
+</div><!-- END DIV#player-pass -->
+
 <?php if ($player_num):?>
-<div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 <script type="text/javascript">
 function gopage(obj) {
 	if ($(obj).hasClass('disable')) {
@@ -179,14 +202,16 @@ function searchform(obj) {
 	});
 	return false;
 }
+function showlist(obj) {
+	var rel = $(obj).attr('rel');
+	$(obj).parent().find('a').removeClass('on');
+	$(obj).addClass('on');
+	$('.player-info').hide();
+	$('#player-'+rel).show();
+	F.oIScroll.refresh();
+}
 </script>
 <?php endif;/*if ($player_num)*/?>
-  
-<?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
-<div style="padding: 4px;margin-top: 10px;color: #666;"><span>送花数：<em><?=$ninfo['flowercnt']?></em></span></div>
-<?php endif;?>
-
-</div><!-- END DIV.block-page.player-info -->
 <script type="text/javascript">
 function show_full(obj) {
 	$('.match-info .row.hide').show();

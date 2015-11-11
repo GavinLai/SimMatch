@@ -248,6 +248,10 @@ class Match_Model extends Model {
   			$search = implode(',', $search);
   			$where .= " AND p.`player_id` IN(%s)";
   		}
+  		elseif (($pos=strrpos($search, '+'))!==false) {
+  			$search = substr($search, 0, $pos);
+  			$where .= " AND p.`votecnt`>=%d";
+  		}
   		else {
   			$where .= " AND p.`truename` like '%%%s%%'";
   		}
