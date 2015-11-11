@@ -89,7 +89,7 @@ $(function(){
     <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛者<?php else:?>还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
   <?php else:?>
   
-  <?php foreach ($ceil_player_list AS $it):?>
+  <?php foreach ($player_list AS $it):?>
     <div class="itbox">
       <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont hl<?=$it['rankflag']?>">
         <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span>
@@ -98,15 +98,6 @@ $(function(){
         <?php endif;?>
         	<p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p>
         </div>
-        <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
-      </a>
-    </div>
-  <?php endforeach;?>
-  
-  <?php foreach ($player_list AS $it):?>
-    <div class="itbox">
-      <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont">
-        <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span><p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p></div>
         <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
       </a>
     </div>

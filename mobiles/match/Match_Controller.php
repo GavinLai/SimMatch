@@ -136,19 +136,25 @@ class Match_Controller extends Controller {
         $maxpage  = 1;
         
         //检查周排名信息
+        $stick = config_get('stick'); // 是否置顶
         $see_weekinfo = [];
         if ($search=='') { //搜索时不检查
         	$see_weekinfo = Match_Model::getRankWeekInfo($nid);
         }
         $ceil_player_ids  = [];
         $ceil_player_list = [];
-        if (!empty($see_weekinfo)) {
+        if ($stick && !empty($see_weekinfo)) {
         	array_push($ceil_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
         	$ceil_player_list = Match_Model::getPlayerList($nid, $ceil_player_ids);
-        	if (!empty($ceil_player_list)) {
-        		foreach ($ceil_player_list AS &$it) {
-        			$it['rankflag'] = 0;
-        			$it['ranktxt']  = '';
+        }
+        
+        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $ceil_player_ids);
+        $player_list = array_merge($ceil_player_list, $player_list); //合并
+        if (!empty($player_list)) {
+        	foreach ($player_list AS &$it) {
+        		$it['rankflag'] = 0;
+        		$it['ranktxt']  = '';
+        		if (!empty($see_weekinfo)) {
         			if ($it['player_id'] == $see_weekinfo['player_id1']) {
         				$it['rankflag']= 1;
         				$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
@@ -160,9 +166,6 @@ class Match_Controller extends Controller {
         		}
         	}
         }
-        $this->v->assign('ceil_player_list', $ceil_player_list);
-        
-        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $ceil_player_ids);
         $this->v->assign('player_list', $player_list);
         $this->v->assign('player_num', count($player_list));
         $this->v->assign('totalnum', $totalnum);
