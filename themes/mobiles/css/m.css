@@ -254,7 +254,8 @@ a.alink { color: #b5359d; }
 .search-box input { border: none;line-height: 40px;height: 40px; }
 .search-box input.stext { background: #fff;padding: 2px 0 0 10px;width: 100%;border-radius: 5px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
 .search-box input.sbtn { position: absolute;right: 0;background: transparent url(../img/s.png) no-repeat scroll 14px 14px;padding: 0;margin: 0;width: 40px;}
-.linkbtn-box { margin-top: 15px;padding: 0 5px; }
+.linkbtn-box { margin-bottom: 15px;padding: 0 4px; }
+.linkbtn-box a.btn { font-size: 14px;font-size: 1.4rem; }
 .player-info { margin: 15px 6px; }
 .player-list { margin-top: 15px; }
 .player-list .emptytip { background: #fff;height: 40px;line-height: 40px;text-align: center;margin:0 5px 5px; }
@@ -277,7 +278,7 @@ a.alink { color: #b5359d; }
 .paging .pgbtn.disable { color: #ccc; }
 .player-pass-tip { font-size: 13px;font-size: 1.3rem;color: #999;text-align: center; }
 .player-pass-tip em { font-weight: bold; }
-.player-pass-tip .alink { font-size: 13px;font-size: 1.3rem; }
+.player-pass-tip .alink { font-size: 13px;font-size: 1.3rem;color: /*#44b549*/#06bf04;font-weight: bold; }
 
 /*match join页*/
 .match-join { padding: 10px; }
@@ -338,14 +339,23 @@ a.alink { color: #b5359d; }
 
 /*rank页面*/
 #ranklist { width: 94%;margin: 10px auto; }
-#ranklist li { width: 100%;overflow: auto;zoom: 1;margin-bottom: 5px; }
-#ranklist li.h { margin-bottom: 10px;font-weight: bold; }
+#ranklist li { width: 100%;overflow: auto;zoom: 1;margin-bottom: 10px; }
+#ranklist li.h { font-weight: bold; }
 #ranklist li.e { margin: 20px 0; }
-#ranklist li.e a { display: block;text-align: center;border-radius: 5px;background: #fff;color: #5f646e;height: 40px;line-height: 40px;font-size: 16px;font-size: 1.6rem; }
-#ranklist li.e a.none { color: #666; }
-#ranklist .c2 { text-align: center; }
-#ranklist .c3 { padding-left: 15px; }
-#ranklist img.ulogo { max-width: 30px;vertical-align: middle; }
+#ranklist li.e a { display: block;text-align: center;border-radius: 5px;background: #ddd;color: #5f646e;height: 40px;line-height: 40px;font-size: 16px;font-size: 1.6rem; }
+#ranklist li.e a.none { color: #999; }
+#ranklist li.holder { margin: 0;height: 5px; }
+#ranklist .cl { text-align: left; }
+#ranklist .cc { text-align: center; }
+#ranklist .cr { text-align: right; }
+#ranklist .cimg { line-height: 20px;display: block;color: #5f646e; }
+#ranklist img.ulogo { width: 32px;vertical-align: middle;float: left;margin-right:4px; }
+#ranklist .zgj { font-size: 13px;font-size: 1.3rem; }
+#ranklist .zgj em { margin-right: 2px; }
+#ranklist .weektxt { color: #999; }
+#ranklist .zhouci { color: #06bf04; }
+#ranklist .renqi { color: #f00; }
+#ranklist .xianhua { color: #b5359d; }
 
 /*about页*/
 .about { position: absolute;top: 0;bottom: 0;width: 100%;background: #fff;padding: 5%; }

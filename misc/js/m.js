@@ -6,6 +6,7 @@
 (function( $, F, w, UNDEF ) {
 	
 	F.isTouch = "createTouch" in document;
+	//gData.downpull_display = true; //允许下拉显示标志位，默认允许，页面可改变此变量以改变其默认行为 (不能在这个位置设置该值，放这里是提醒有这么一个全局变量)
 	//gData.page_render_mode = 2; //1: general一般请求页面；2: hash请求页面 (不能在这个位置设置该值，放这里是提醒有这么一个全局变量)
 	
 	// Set dom constants
@@ -157,9 +158,10 @@
 		F.scrollYold = this.y;
 		
 		var dp_type = 'downPull';
+		var can_dpshow = (typeof(gData.downpull_display)=='undefined' || gData.downpull_display) ? true : false;
 		if (this.y > 20) {
 			
-			if (!F.event.flag.showbg) {
+			if (can_dpshow && !F.event.flag.showbg) {
 				F.event.flag.showbg = true;
 				F.pagebg.show();
 			}

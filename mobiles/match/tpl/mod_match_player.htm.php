@@ -24,7 +24,7 @@
   <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p><?php if($player_info['qrcode']!=''):?><p class="qrcode"><a href="javascript:;" onclick="showqrcode(this)"><img src="<?=$player_info['qrcode']?>" alt="qrcode"/></a></p><?php endif;?></div>
   <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">主页</a>
   <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
-  <a class="match-pos torank" href="javascript:;">
+  <a class="match-pos torank" href="<?php echo U('match/'.$player_info['match_id'].'/rank',['player_id' =>$player_info['player_id'] ])?>">
   当前排名：<em><?=$player_info['rank_info']['rank']?></em><br/>选手总数：<em><?=$player_info['rank_info']['total']?></em>
   <!-- 
     <span>排名</span>
@@ -33,7 +33,7 @@
   <div class="match-pos btmnav">
     <a class="navit" href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt_single']?></em>票)</span></a>
     <a class="navit" href="<?php echo U('trade/order/confirm',['goods'=>'flower','player_id'=>$player_info['player_id']])?>" id="op-toflower">送花<br><span>(<em><?=$player_info['flowercnt']?></em>花)</span></a>
-    <a class="navit" href="javascript:;" id="op-tokiss">总票数<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a>
+    <a class="navit" href="<?php echo U('match/'.$player_info['match_id'].'/rank',['player_id' =>$player_info['player_id'] ])?>" id="op-tokiss">总票数<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a>
     <a class="navit" href="javascript:;" id="op-toshare">分享给<br><span>朋友</span></a>
   </div>
 <script type="text/javascript">

@@ -553,65 +553,46 @@ class Match_Controller extends Controller {
     $this->topnav_no = 1;
   
     $match_id  = $request->arg(1);
-    $player_id = $request->get('player_id', 0);
+    $player_id = $request->get('player_id',0);
     $isajax    = $request->get('isajax',0);
     $type      = $request->get('t','');
     $page      = $request->get('p',1);
+    $return_url= U('match/'.$match_id);
+    if (!empty($player_id)) {
+    	$return_url= U('player/'.$player_id);
+    }
     $this->v->assign('match_id',  $match_id);
     $this->v->assign('player_id', $player_id);
+    $this->v->assign('return_url', $return_url);
     $this->v->assign('type', $type);
-    if ($page<1 || !is_int($page)) {
+    $this->v->assign('isajax', $isajax);
+    if ($page<1 || !is_numeric($page)) {
     	$page = 1;
     }
 
     $errmsg   = '';
     $ranklist = [];
-    $limit    = 30;
+    $limit    = 20;
     $start    = ($page-1) * $limit;
     $hasmore  = false;
     
     //~ 获取match信息及player信息
     $ninfo = Node::getInfo($match_id);
-    $player_info = Match_Model::getPlayerInfo($player_id);
     
     //~ 设置SEO信息
     if (!empty($ninfo)) {
     	
     	if (!$isajax) {
     		$seo = [
-    				'title'   => $ninfo['title'],
+    				'title'   => '排名 - ' . $ninfo['title'],
     				'keyword' => $ninfo['keyword'],
     				'desc'    => $ninfo['slogan'],
     		];
-    		if ($type=='week_rank') {
-    			$seo['title'] = '全场周冠军 - '.$seo['title'];
-    		}
-    		else {
-    			if (empty($player_info)) {
-    				$seo['title'] = '错误提示 - '.$seo['title'];
-    			}
-    			else {
-    				$seo['title'] = $player_info['player_id'].'号 '.$player_info['truename'].' 贡献榜';
-    			}
-    		}
     		$this->v->assign('seo', $seo);
     	}
     	
     	//~ 获取列表
-    	if ($type=='week_rank') { //不需要检查参赛者是否存在
-    		$ranklist = Match_Model::getRankList($type, $start, $limit, ['match_id'=>$match_id], $hasmore);
-    	}
-    	else { //需要检查参赛者是否存在
-    		if (empty($player_info)) {
-    			$errmsg = "该参赛者不存在(参赛号：{$player_id})";
-    		}
-    		elseif ($player_info['status']<>'R') {
-    			$errmsg = "该参赛者被冻结(参赛号：{$player_id})";
-    		}
-    		else {
-    			$ranklist = Match_Model::getRankList($type, $start, $limit, ['player_id'=>$player_id], $hasmore);
-    		}
-    	}
+    	$ranklist = Match_Model::getRankList($type, $start, $limit, ['match_id'=>$match_id], $hasmore);
     	
     	if ($isajax) {
     		$this->v->filter_output_part();

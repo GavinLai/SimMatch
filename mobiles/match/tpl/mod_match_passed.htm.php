@@ -6,7 +6,7 @@
 
 <?php else:?>
 
-<p class="player-pass-tip">当前<em><?=$totalnum?></em>名选手晋级(5000票以上晋级)&nbsp;&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
+<p class="player-pass-tip">当前<em><?=$totalnum?></em>名选手晋级复赛(5000票以上晋级)&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
 <div class="player-list" id="player-pass-list">
 	<!--{AJAXPART}-->
   <?php foreach ($player_pass_list AS $it):?>

@@ -80,8 +80,8 @@ $(function(){
 
 <div class="block-page player-info" id="player-wrap">
 <?php if ($player_num):?>
+  <div class="linkbtn-box"><a href="javascript:;" onclick="see_passplayers(this)" class="btn btn-block btn-green">点击查看已晋级复赛选手(总票数5000以上)</a></div>
   <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“选手姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
-  <div class="linkbtn-box"><a href="javascript:;" onclick="see_passplayers(this)" class="alink" name="golink" id="golink">☞已晋级选手(总票数5000以上)</a></div>
 <?php endif;?>
   <div id="player-list" class="player-list">
 

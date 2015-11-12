@@ -309,12 +309,15 @@ class Match_Model extends Model {
     return $ret;
   }
   
-  static function getPlayerCover($player_id) {
-  	$row = D()->query("SELECT pg.`img_std`,pg.`img_std_cdn` FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid WHERE p.`player_id`=%d", $player_id)->get_one();
+  static function getPlayerCover($player_id, $version = 'std') {
+  	if (!in_array($version, ['std','thumb'])) {
+  		$version = 'std';
+  	}
+  	$row = D()->query("SELECT pg.`img_{$version}`,pg.`img_{$version}_cdn` FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid WHERE p.`player_id`=%d", $player_id)->get_one();
     $ret = '';
     if (!empty($row)) {
     	$usecdn = C('env.usecdn');
-    	$ret = fixpath(2==$usecdn&&$row['img_std_cdn']!=''?$row['img_std_cdn']:$row['img_std']);
+    	$ret = fixpath(2==$usecdn&&$row["img_{$version}_cdn"]!=''?$row["img_{$version}_cdn"]:$row["img_{$version}"]);
     }
     return $ret;
   }
@@ -347,16 +350,18 @@ class Match_Model extends Model {
   }
   
   static function getRankList($type, $start=0, $limit=20, Array $extra = array(), &$hasmore = false) {
+  	$hasmore = false;
   	if ($type=='') {
-  		$type = 'most_vote';
+  		$type = 'total_rank';
   	}
-  	if (!in_array($type, ['most_vote','most_flower','week_rank'])) {
+  	if (!in_array($type, ['total_rank','pass_rank','week_rank','most_vote','most_flower'])) {
   		return [];
   	}
-  	if ($type!='week_rank' && empty($extra['player_id'])) {
+  	if (in_array($type, ['most_vote','most_flower']) && empty($extra['player_id'])) {
   		return [];
   	}
   	
+  	$usecdn = C('env.usecdn');
   	$result = [];
   	$limit_true = $limit+1; //多去一个为了判断是否还有下一页
   	if ($type=='most_vote' || $type=='most_flower') {
@@ -367,15 +372,56 @@ class Match_Model extends Model {
   				    ORDER BY action_amount DESC
   				    LIMIT %d,%d";
   		$result = D()->query($sql, $extra['player_id'], str_replace('most_', '', $type), $start, $limit_true)->fetch_array_all();
+  		if (count($result) > $limit) {
+  			$hasmore = true;
+  			array_pop($result); //去掉多出的一个
+  		}
+  	}
+  	elseif ($type=='total_rank' || $type=='pass_rank') {
+  		$where_extra = '';
+  		if ($type=='pass_rank') {
+  			$where_extra = 'AND p.`votecnt`>=5000';
+  		}
+  	  $sql = "SELECT p.*,pg.img_thumb,pg.img_thumb_cdn
+  	  		    FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid
+  	  		    WHERE p.`match_id`=%d {$where_extra} AND p.`status`='R'
+  	  		    ORDER BY votecnt DESC
+  	  		    LIMIT %d,%d";
+  		$result = D()->query($sql, $extra['match_id'], $start, $limit_true)->fetch_array_all();
+  		if (!empty($result)) {
+  			if (count($result) > $limit) {
+  				$hasmore = true;
+  				array_pop($result); //去掉多出的一个
+  			}
+  			$i = 1;
+  			foreach ($result AS &$it) {
+  				$it['rankno'] = $start + $i; //添加"排名"字段
+  				$it['votecnt_single'] = Node::getActionNum($it['player_id']);
+  				$it['img_thumb'] = fixpath(2==$usecdn&&$it['img_thumb_cdn']!=''?$it['img_thumb_cdn']:$it['img_thumb']);
+  				$i++;
+  			}
+  		}
   	}
   	elseif ($type=='week_rank') {
-  		
-  	}
-  	
-  	$hasmore = false;
-  	$resnum  = count($result);
-  	if ($resnum > $limit) {
-  		$hasmore = true;
+  		$match_info = Node::getInfo($extra['match_id']);
+  		$now_dt = date('Y-m-d H:i:s');
+  		$sql = "SELECT * FROM `{rank_week}` WHERE `match_id`=%d AND `match_type`='%s' ORDER BY `weekno` ASC";
+  		$result = D()->query($sql, $extra['match_id'], $match_info['match_type'])->fetch_array_all();
+  		$true_rs = [];
+  		foreach ($result AS &$it) {
+  			$it['weekno_txt'] = '第' . Fn::to_cnnum($it['weekno']) . '周';
+  			if (!empty($it['player_id1']) && !empty($it['player_id2'])) {
+  				$it['player1_dt'] = self::getPlayerInfo($it['player_id1']);
+  				$it['player1_dt']['cover_pic'] = self::getPlayerCover($it['player_id1'], 'thumb');
+  				$it['player2_dt'] = self::getPlayerInfo($it['player_id2']);
+  				$it['player2_dt']['cover_pic'] = self::getPlayerCover($it['player_id2'], 'thumb');
+  			}
+  			array_push($true_rs, $it);
+  			if (empty($it['player_id1']) || empty($it['player_id2'])) {
+  				break;
+  			}
+  		}
+  		$result = $true_rs;
   	}
   	
   	return $result;
