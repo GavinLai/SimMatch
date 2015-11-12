@@ -90,7 +90,7 @@ $('#slider img').click(function(){
 
 <script type="text/javascript">
 function showqrcode(obj) {
-	myAlert($(obj).html(),null,'微信扫此二维码可直接进入该页面','关闭',{'padding':'0'});
+	myAlert($(obj).html(),null,'<span style="font-size: 14px;font-size:1.4rem;font-weight: normal;">微信扫此二维码可直接进入该页面</span>','关闭',{'padding':'0'});
 }
 $(function(){
 

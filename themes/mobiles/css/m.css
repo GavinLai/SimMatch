@@ -108,8 +108,9 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .check.checked { background-position:0 -20px; }
 .check.delete { background-position:-20px 0; }
 .error { text-align: center;padding-top: 100px;font-size: 16px;font-size: 1.6rem; }
-.themore {-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;margin:20px 0;}
-.themore a{display:block;height:45px;line-height:45px;color:#000;text-align:center;font-size:16px;font-size:1.6rem;}
+.themore {margin:15px 0;}
+.themore a{display:block;height:40px;line-height:40px;color:#5f646e;text-align:center;font-size:16px;font-size:1.6rem;background: #ddd;-webkit-border-radius:5px;-moz-border-radius:5px;border-radius:5px;}
+.themore a.disable { color: #999; }
 
 /*主体页面dom*/
 #rtWrap { width: 100%;height: 100%;margin: 0 auto;position: relative;background: #f1f1f1;overflow: hidden; }
@@ -230,6 +231,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .slidnav a.active{background:#b5359d;border:1px solid #b5359d;}
 
 /*match页*/
+a.alink { color: #b5359d; }
 .match-top { position: absolute;width: 100%;line-height: 30px;height: 30px;font-size: 13px;font-size: 1.3rem;color: #b5359d;padding: 0 2.5%;background: #141414;opacity: .75;z-index: 1000; }
 .match-top > span { float: right; }
 .match-thumb { position: relative; }
@@ -252,6 +254,7 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .search-box input { border: none;line-height: 40px;height: 40px; }
 .search-box input.stext { background: #fff;padding: 2px 0 0 10px;width: 100%;border-radius: 5px;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box;}
 .search-box input.sbtn { position: absolute;right: 0;background: transparent url(../img/s.png) no-repeat scroll 14px 14px;padding: 0;margin: 0;width: 40px;}
+.linkbtn-box { margin-top: 15px;padding: 0 5px; }
 .player-info { margin: 15px 6px; }
 .player-list { margin-top: 15px; }
 .player-list .emptytip { background: #fff;height: 40px;line-height: 40px;text-align: center;margin:0 5px 5px; }
@@ -272,6 +275,9 @@ a.op { color: #00a0f8;font-size: 14px;font-size: 1.4rem; }
 .paging { margin: 5px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);-moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);box-shadow: 0 0 10px rgba(0, 0, 0, .4); }
 .paging .pgbtn { display: inline-block;width: 20%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333;border: none;padding: 0;margin: 0; }
 .paging .pgbtn.disable { color: #ccc; }
+.player-pass-tip { font-size: 13px;font-size: 1.3rem;color: #999;text-align: center; }
+.player-pass-tip em { font-weight: bold; }
+.player-pass-tip .alink { font-size: 13px;font-size: 1.3rem; }
 
 /*match join页*/
 .match-join { padding: 10px; }

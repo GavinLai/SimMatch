@@ -238,6 +238,11 @@ class Match_Model extends Model {
     return $rid ? : false;
   }
   
+  static function getPlayersNum($match_id) {
+  	$total_player_num = D()->from("player")->where("`match_id`=%d AND `status`='R'", $match_id)->select("COUNT(`player_id`) AS rcnt")->result();
+  	return $total_player_num ? : 0;
+  }
+  
   static function getPlayerList($match_id, $search = '', $start = 0, $limit = 20, &$totalnum = 0, &$maxpage = 0, $exclude_player_ids = array()) {
   	$where = '';
   	if (!empty($search)) {
@@ -255,6 +260,9 @@ class Match_Model extends Model {
   		else {
   			$where .= " AND p.`truename` like '%%%s%%'";
   		}
+  	}
+  	else {
+  		$where .= " AND p.`votecnt`<5000";
   	}
   	if (!empty($exclude_player_ids)) {
   		$exclude_ids_str = implode(',', $exclude_player_ids); 
@@ -400,6 +408,26 @@ class Match_Model extends Model {
   		return $see_weekinfo;
   	}
   	return false;
+  }
+  
+  static function parsePlayerList($player_list, $see_weekinfo = array()) {
+  	if (!empty($player_list)) {
+  		foreach ($player_list AS &$it) {
+  			$it['rankflag'] = 0;
+  			$it['ranktxt']  = '';
+  			if (!empty($see_weekinfo)) {
+  				if ($it['player_id'] == $see_weekinfo['player_id1']) {
+  					$it['rankflag']= 1;
+  					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
+  				}
+  				if ($it['player_id'] == $see_weekinfo['player_id2']) {
+  					$it['rankflag']= 2;
+  					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+  				}
+  			}
+  		}
+  	}
+  	return $player_list;
   }
   
 }

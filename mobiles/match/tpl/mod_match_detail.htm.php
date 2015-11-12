@@ -6,7 +6,7 @@
 <?php else:?>
 
 <script type="text/html" id="matchtop-html">
-访问数：<em><?=$ninfo['visitcnt']?></em>&nbsp;&nbsp;总票数：<em><?=$ninfo['votecnt']?></em>&nbsp;&nbsp;参赛人数：<em><?=$totalnum?></em>
+访问数：<em><?=$ninfo['visitcnt']?></em>&nbsp;&nbsp;总票数：<em><?=$ninfo['votecnt']?></em>&nbsp;&nbsp;参赛人数：<em><?=$total_player_num?></em>
 </script>
 <script type="text/javascript">
 function showtopbar(target, show) {
@@ -78,16 +78,16 @@ $(function(){
   <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
 </div>
 
-<div class="block-page-title"><a href="javascript:;" rel="all" class="on" onclick="showlist(this)">所有参赛者</a><a href="javascript:;" rel="pass" onclick="showlist(this)">晋级参赛者</a></div>
-<div class="block-page player-info" id="player-all">
+<div class="block-page player-info" id="player-wrap">
 <?php if ($player_num):?>
-  <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“参赛者姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
+  <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“选手姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
+  <div class="linkbtn-box"><a href="javascript:;" onclick="see_passplayers(this)" class="alink" name="golink" id="golink">☞已晋级选手(总票数5000以上)</a></div>
 <?php endif;?>
   <div id="player-list" class="player-list">
 
 <!--{AJAXPART}-->
   <?php if (!$player_num):?>
-    <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛者<?php else:?>还没有参赛者，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
+    <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛选手<?php else:?>还没有参赛选手，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
   <?php else:?>
   
   <?php foreach ($player_list AS $it):?>
@@ -136,25 +136,7 @@ $(function(){
   <?php if(!empty($GLOBALS['user']->uid) && in_array($GLOBALS['user']->uid,[10001])): ?>
 	<div class="lastrow"><span>送花数：</span><em><?=$ninfo['flowercnt']?></em></div>
 	<?php endif;?>
-</div><!-- END DIV#player-all -->
-
-<div class="block-page player-info hide" id="player-pass">
-	<div class="player-list">
-  <?php foreach ($player_pass_list AS $it):?>
-    <div class="itbox">
-      <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont hl<?=$it['rankflag']?>">
-        <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span>
-        <?php if($it['ranktxt']!=''):?>
-        <br/><span class="ranktip"><?php if($it['rankflag']==1):?>👑<?php else:?>🌺<?php endif;?>&nbsp;<?=$it['ranktxt']?></span>
-        <?php endif;?>
-        	<p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p>
-        </div>
-        <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
-      </a>
-    </div>
-  <?php endforeach;?>
-  </div>
-</div><!-- END DIV#player-pass -->
+</div><!-- END DIV#player-wrap -->
 
 <?php if ($player_num):?>
 <script type="text/javascript">
@@ -202,13 +184,12 @@ function searchform(obj) {
 	});
 	return false;
 }
-function showlist(obj) {
-	var rel = $(obj).attr('rel');
-	$(obj).parent().find('a').removeClass('on');
-	$(obj).addClass('on');
-	$('.player-info').hide();
-	$('#player-'+rel).show();
-	F.oIScroll.refresh();
+function see_passplayers(obj) {
+	var _url = '<?php echo U('match/'.$the_nid.'/passed','_hr=1')?>';
+	F.get(_url, function(ret){
+		$('#player-wrap').html(ret.body);
+	});
+	return false;
 }
 </script>
 <?php endif;/*if ($player_num)*/?>

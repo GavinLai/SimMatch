@@ -17,6 +17,8 @@ class Common_Controller extends Controller {
     'user/oauth/%s',
     'wxpay/notify',
     'match/%d',
+    'match/%d/passed',
+    'match/%d/rank',
   ];
   
   /**

@@ -283,6 +283,22 @@ class View extends CBase {
   }
   
   /**
+   * filter partial output, like <!--{AJAXPART}--> xxx <!--{/AJAXPART}-->
+   * @param string $filter_tag, default to 'AJAXPART'
+   * @return View
+   */
+  public function filter_output_part($filter_tag = 'AJAXPART') {
+  	$this->add_output_filter(function($result) use($filter_tag){
+  		preg_match_all('/<!\-\-\{'.$filter_tag.'\}\-\->(.*)<!\-\-\{\/'.$filter_tag.'\}\-\->/s', $result, $matches);
+  		if (!empty($matches) && !empty($matches[1][0])) {
+  			$result = $matches[1][0];
+  		}
+  		return $result;
+  	});
+  	return $this;
+  }
+  
+  /**
    * Set list order parameters
    *
    * @param String $default_field

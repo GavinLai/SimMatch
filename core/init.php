@@ -258,7 +258,7 @@ class SimPHP {
    * 
    */
   public function dispatch(Request $request=NULL, Response $response=NULL) {
-    
+  	
     $request  = isset($request)  ? $request  : new Request();
     $response = isset($response) ? $response : new Response();
     

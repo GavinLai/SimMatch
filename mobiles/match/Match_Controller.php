@@ -43,6 +43,7 @@ class Match_Controller extends Controller {
   {
     return [
       'match/%d'        => 'detail', 
+      'match/%d/passed' => 'passed',
       'match/%d/join'   => 'join',
       'match/%d/rank'   => 'rank',
       'match/player/%d' => 'player',
@@ -89,11 +90,11 @@ class Match_Controller extends Controller {
       //获取Node信息
       $ninfo = Node::getInfo($nid);
       if (empty($ninfo)) {
-        $errmsg = "Node不存在(nid={$nid})";
+        $errmsg = "比赛不存在(nid={$nid})";
       }
       else {
   
-      	//参赛者列表
+      	//获取页面参数
       	$limit = 20;
       	$page  = $request->get('p', 0);
       	$search= $request->get('s', '');
@@ -106,15 +107,12 @@ class Match_Controller extends Controller {
       	if ($search=='') { //搜索时不检查
       		$see_weekinfo = Match_Model::getRankWeekInfo($nid);
       	}
-      	$ceil_player_ids  = [];
-      	$ceil_player_list = []; //置顶参数者列表
+      	$stick_player_ids  = [];
+      	$stick_player_list = []; //置顶参数者列表
       	if ($stick && !empty($see_weekinfo)) {
-      		array_push($ceil_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
-      		$ceil_player_list = Match_Model::getPlayerList($nid, $ceil_player_ids);
+      		array_push($stick_player_ids, $see_weekinfo['player_id1'], $see_weekinfo['player_id2']);
+      		$stick_player_list = Match_Model::getPlayerList($nid, $stick_player_ids);
       	}
-      	
-      	//晋级参赛者列表
-      	$player_pass_list = [];
       	
       	if (!$isajax) {
       		
@@ -131,26 +129,9 @@ class Match_Controller extends Controller {
       		$this->v->assign('content_parsed', $content_parsed);
       		$this->v->assign('content_parsed_num', $content_parsed_num);
       		
-      		//获取“晋级”参赛这列表
-      		$player_pass_list = Match_Model::getPlayerList($nid, '5000+', 0, 200);
-      		if (!empty($player_pass_list)) {
-      			foreach ($player_pass_list AS &$it) {
-      				$it['rankflag'] = 0;
-      				$it['ranktxt']  = '';
-      				if (!empty($see_weekinfo)) {
-      					if ($it['player_id'] == $see_weekinfo['player_id1']) {
-      						$it['rankflag']= 1;
-      						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
-      					}
-      					if ($it['player_id'] == $see_weekinfo['player_id2']) {
-      						$it['rankflag']= 2;
-      						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
-      					}
-      				}
-      			}
-      		}
+      		$total_player_num = Match_Model::getPlayersNum($nid);
+      		$this->v->assign('total_player_num', $total_player_num);
       	}
-      	$this->v->assign('player_pass_list', $player_pass_list);
         
         //检查是否启用记录的页码
         if (!$page) {
@@ -170,27 +151,12 @@ class Match_Controller extends Controller {
         $totalnum = 0;
         $maxpage  = 1;
         
-        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $ceil_player_ids);
-        $player_list = array_merge($ceil_player_list, $player_list); //合并
-        if (!empty($player_list)) {
-        	foreach ($player_list AS &$it) {
-        		$it['rankflag'] = 0;
-        		$it['ranktxt']  = '';
-        		if (!empty($see_weekinfo)) {
-        			if ($it['player_id'] == $see_weekinfo['player_id1']) {
-        				$it['rankflag']= 1;
-        				$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
-        			}
-        			if ($it['player_id'] == $see_weekinfo['player_id2']) {
-        				$it['rankflag']= 2;
-        				$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
-        			}
-        		}
-        	}
-        }
+        $player_list = Match_Model::getPlayerList($nid, $search, $start, $limit, $totalnum, $maxpage, $stick_player_ids);
+        $player_list = array_merge($stick_player_list, $player_list); //合并
+        $player_list = Match_Model::parsePlayerList($player_list, $see_weekinfo);
+        
         $this->v->assign('player_list', $player_list);
         $this->v->assign('player_num', count($player_list));
-        $this->v->assign('totalnum', $totalnum);
         $this->v->assign('curpage', $page);
         $this->v->assign('maxpage', $maxpage);
         
@@ -200,13 +166,7 @@ class Match_Controller extends Controller {
               ->assign('ninfo', $ninfo);
   
       if ($isajax) {
-      	$this->v->add_output_filter(function($result){
-      		preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
-      		if (!empty($matches) && !empty($matches[1][0])) {
-      			$result = $matches[1][0];
-      		}
-      		return $result;
-      	});
+      	$this->v->filter_output_part();
       }
       
     }
@@ -230,6 +190,64 @@ class Match_Controller extends Controller {
     			'pic'   => fixpath($ninfo['thumb_url']),
     	];
     	$this->v->assign('share_info', $share_info);
+    }
+    
+    $response->send($this->v);
+  }
+  
+  /**
+   * 获取晋级选手列表
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function passed(Request $request, Response $response)
+  {
+    $this->v->set_tplname('mod_match_passed');
+    $this->nav_flag1 = 'match_pass';
+    
+    $match_id = $request->arg(1);
+    $this->v->assign('the_nid', $match_id);
+    
+    if ($request->is_hashreq()) {
+  
+      $errmsg   = '';
+  
+      //获取Node信息
+      $ninfo = Node::getInfo($match_id);
+      if (empty($ninfo)) {
+        $errmsg = "比赛不存在(nid={$match_id})";
+      }
+      else {
+  
+      	//参赛者列表
+      	$limit = 20;
+      	$isajax= $request->get('isajax', 0);
+      	$page  = $request->get('p', 1);
+      	$start = ($page-1) * $limit;
+      	$totalnum = 0;
+      	$maxpage  = 1;
+      	
+      	//检查周排名信息
+      	$stick = config_get('stick'); // 是否置顶
+      	$see_weekinfo = Match_Model::getRankWeekInfo($match_id);
+      	
+				//获取“晋级”参赛这列表
+				$player_pass_list = Match_Model::getPlayerList($match_id, '5000+', $start, $limit, $totalnum, $maxpage);
+				$player_pass_list = Match_Model::parsePlayerList($player_pass_list, $see_weekinfo);
+      	$this->v->assign('player_pass_list', $player_pass_list);
+      	$this->v->assign('totalnum', $totalnum);
+      	$this->v->assign('maxpage', $maxpage);
+      	$this->v->assign('curpage', $page);
+      	
+      	if ($isajax) {
+      		$this->v->filter_output_part();
+      	}
+      }
+      $this->v->assign('errmsg', $errmsg);
+    }
+    else {
+    	
     }
     
     $response->send($this->v);
@@ -596,13 +614,7 @@ class Match_Controller extends Controller {
     	}
     	
     	if ($isajax) {
-    		$this->v->add_output_filter(function($result){
-    			preg_match_all('/<!\-\-\{AJAXPART\}\-\->(.*)<!\-\-\{\/AJAXPART\}\-\->/s', $result, $matches);
-    			if (!empty($matches) && !empty($matches[1][0])) {
-    				$result = $matches[1][0];
-    			}
-    			return $result;
-    		});
+    		$this->v->filter_output_part();
     	}
     }
     else {
