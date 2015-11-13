@@ -3,7 +3,7 @@
 <script type="text/javascript">
 $(function(){
 	$('#rank-top').html($('#ranktop-html').text());
-	F.onScrollDownPull(function(){
+	F.onScrollStart(function(){
 		F.oIScroll.refresh();
 	});
 });
@@ -45,7 +45,7 @@ function gorank(obj) {
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'):?>
 		<li>
 			<div class="c-12-2 cc"><?=$it['rankno']?></div>
-			<div class="c-12-4 cl"><a href="<?php echo U('player/'.$it['player_id'])?>" class="cimg"><img src="<?=$it['img_thumb']?>" alt="" class="ulogo"/><span><?=$it['truename']?><br/><?=$it['player_id']?>号</span></a></div>
+			<div class="c-12-4 cl"><a href="<?php echo U('player/'.$it['player_id'])?>" class="cimg"><img src="<?=$it['img_thumb']?>" alt="" class="ulogo"/><span><?=$it['truename']?></span><br/><span class="plno"><?=$it['player_id']?>号</span></a></div>
 			<div class="c-12-2 cc"><?=$it['votecnt_single']?></div>
 			<div class="c-12-2 cc"><?=$it['flowercnt']?></div>
 			<div class="c-12-2 cc"><?=$it['votecnt']?></div>
@@ -57,14 +57,14 @@ function gorank(obj) {
 			<?php if(empty($it['player_id1'])):?>
 				<span class="weektxt">虚位以待...</span>
 			<?php else:?>
-				<a href="<?php echo U('player/'.$it['player_id1'])?>" class="cimg"><img src="<?=$it['player1_dt']['cover_pic']?>" alt="" class="ulogo"/><span><?=$it['player1_dt']['truename']?><br/><?=$it['player_id1']?>号</span></a>
+				<a href="<?php echo U('player/'.$it['player_id1'])?>" class="cimg"><img src="<?=$it['player1_dt']['cover_pic']?>" alt="" class="ulogo"/><span><?=$it['player1_dt']['truename']?></span><br/><span class="plno"><?=$it['player_id1']?>号</span></a>
 			<?php endif;?>
 			</div>
 			<div class="c-10-4 cl">
 			<?php if(empty($it['player_id2'])):?>
 				<span class="weektxt">虚位以待...</span>
 			<?php else:?>
-				<a href="<?php echo U('player/'.$it['player_id2'])?>" class="cimg"><img src="<?=$it['player2_dt']['cover_pic']?>" alt="" class="ulogo"/><span><?=$it['player2_dt']['truename']?><br/><?=$it['player_id2']?>号</span></a>
+				<a href="<?php echo U('player/'.$it['player_id2'])?>" class="cimg"><img src="<?=$it['player2_dt']['cover_pic']?>" alt="" class="ulogo"/><span><?=$it['player2_dt']['truename']?></span><br/><span class="plno"><?=$it['player_id2']?>号</span></a>
 			<?php endif;?>
 			</div>
 		</li>

@@ -350,6 +350,7 @@ a.alink { color: #b5359d; }
 #ranklist .cr { text-align: right; }
 #ranklist .cimg { line-height: 20px;display: block;color: #5f646e; }
 #ranklist img.ulogo { width: 32px;vertical-align: middle;float: left;margin-right:4px; }
+#ranklist .plno { font-size: 12px;font-size: 1.2rem;color: #999; }
 #ranklist .zgj { font-size: 13px;font-size: 1.3rem; }
 #ranklist .zgj em { margin-right: 2px; }
 #ranklist .weektxt { color: #999; }
