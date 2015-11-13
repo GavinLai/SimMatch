@@ -1,6 +1,13 @@
 <?php defined('IN_SIMPHP') or die('Access Denied');?>
 
-<script type="text/javascript">$(function(){$('#rank-top').html($('#ranktop-html').text())});</script>
+<script type="text/javascript">
+$(function(){
+	$('#rank-top').html($('#ranktop-html').text());
+	F.onScrollDownPull(function(){
+		F.oIScroll.refresh();
+	});
+});
+</script>
 <?php if(''!==$errmsg):?>
 
 <div class="error"><?=$errmsg?></div>
@@ -55,7 +62,7 @@ function gorank(obj) {
 			</div>
 			<div class="c-10-4 cl">
 			<?php if(empty($it['player_id2'])):?>
-				<span class="weektxt">虚伪以待...</span>
+				<span class="weektxt">虚位以待...</span>
 			<?php else:?>
 				<a href="<?php echo U('player/'.$it['player_id2'])?>" class="cimg"><img src="<?=$it['player2_dt']['cover_pic']?>" alt="" class="ulogo"/><span><?=$it['player2_dt']['truename']?><br/><?=$it['player_id2']?>号</span></a>
 			<?php endif;?>
