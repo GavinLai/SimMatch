@@ -229,12 +229,11 @@ class Match_Controller extends Controller {
       	$maxpage  = 1;
       	
       	//检查周排名信息
-      	$stick = config_get('stick'); // 是否置顶
       	$see_weekinfo = Match_Model::getRankWeekInfo($match_id);
       	
 				//获取“晋级”参赛这列表
 				$player_pass_list = Match_Model::getPlayerList($match_id, '5000+', $start, $limit, $totalnum, $maxpage);
-				$player_pass_list = Match_Model::parsePlayerList($player_pass_list, $see_weekinfo);
+				$player_pass_list = Match_Model::parsePlayerList($player_pass_list, $see_weekinfo, true);
       	$this->v->assign('player_pass_list', $player_pass_list);
       	$this->v->assign('totalnum', $totalnum);
       	$this->v->assign('maxpage', $maxpage);

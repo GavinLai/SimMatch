@@ -456,19 +456,58 @@ class Match_Model extends Model {
   	return false;
   }
   
-  static function parsePlayerList($player_list, $see_weekinfo = array()) {
+  /**
+   * 根据最新冠军信息获取之前所有的冠军ID
+   * 
+   * @param array $see_weekinfo
+   * @return array:
+   *  array('player_ids1' => [], 'player_ids2' => [])
+   */
+  static function getRankWeekPlayerIds($see_weekinfo) {
+  	$return = [];
+  	if (!empty($see_weekinfo)) {
+  		$result = D()->from("rank_week")->where("`match_id`=%d AND `match_type`='%s' AND `weekno`<=%d",$see_weekinfo['match_id'],$see_weekinfo['match_type'],$see_weekinfo['weekno'])
+  		             ->select("`weekno`,`player_id1`,`player_id2`")->fetch_array_all();
+  		if (!empty($result)) {
+  			$return = ['player_ids1' => [], 'player_ids2' => [], 'weekno' => []];
+  			foreach ($result AS $it) {
+  				array_push($return['player_ids1'], $it['player_id1']);
+  				array_push($return['player_ids2'], $it['player_id2']);
+  				$return['weekno']['id1_'.$it['player_id1']] = $it['weekno'];
+  				$return['weekno']['id2_'.$it['player_id2']] = $it['weekno'];
+  			}
+  		}
+  	}
+  	return $return;
+  }
+  
+  static function parsePlayerList($player_list, $see_weekinfo = array(), $include_before = false) {
   	if (!empty($player_list)) {
+  		$week_player_ids = [];
+  		if ($include_before) {
+  			$week_player_ids = self::getRankWeekPlayerIds($see_weekinfo);
+  		}
   		foreach ($player_list AS &$it) {
   			$it['rankflag'] = 0;
   			$it['ranktxt']  = '';
-  			if (!empty($see_weekinfo)) {
-  				if ($it['player_id'] == $see_weekinfo['player_id1']) {
+  			if (!$include_before && !empty($see_weekinfo)) {
+  				if ($it['player_id'] == $see_weekinfo['player_id1']) { //只显示最新冠军数据
   					$it['rankflag']= 1;
   					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
   				}
   				if ($it['player_id'] == $see_weekinfo['player_id2']) {
   					$it['rankflag']= 2;
   					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+  				}
+  			}
+  			elseif ($include_before && !empty($week_player_ids)) { //之前冠军数据也显示
+  				if (in_array($it['player_id'], $week_player_ids['player_ids1'])) {
+  					$it['rankflag']= 1;
+  					$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id1_'.$it['player_id']]).'周人气女神';
+  				}
+  				if (in_array($it['player_id'], $week_player_ids['player_ids2'])) {
+  					$it['rankflag']= 2;
+  					$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id2_'.$it['player_id']]).'周鲜花女神';
   				}
   			}
   		}
