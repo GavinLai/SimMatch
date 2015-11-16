@@ -8,6 +8,36 @@ defined('IN_SIMPHP') or die('Access Denied');
 
 class Member_Model extends Model {
 	
+	static function getProvinces(){
+		$parent_id = 2; //2=中国
+		$ret = D()->from("location")->where("`parent`=%d", $parent_id)->select("locaid,location")->fetch_array_all();
+		return $ret;
+	}
+	
+	static function getCities($province_id) {
+		//直辖市locaid
+		static $_zhixia = [
+				'40'  => '北京',
+				'59'  => '天津',
+				'78'  => '上海',
+				'25'  => '重庆',
+				'98'  => '香港',
+				'117' => '澳门',
+				'125' => '台湾',
+		];
+	
+		//直辖市直接返回市本身
+		if (isset($_zhixia[$province_id])) {
+			return [['locaid' => $province_id, 'location' => $_zhixia[$province_id]]];
+		}
+	
+		return D()->from("location")->where("`parent`=%d", $province_id)->select("locaid,location")->fetch_array_all();
+	}
+	
+	static function getLocationName($locaid) {
+		return D()->from("location")->where("`locaid`=%d",$locaid)->select("location")->result();
+	}
+	
 	static function getMembers(){
 		$db = D();
 		$sql = "SELECT * FROM {member} ORDER BY uid DESC ";

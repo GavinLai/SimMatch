@@ -28,7 +28,33 @@
         </tr>
         <tr>
           <th class="c1">真实姓名：</th>
-          <td class="c2"><!--{$player_info.truename}--></td>
+          <td class="c2"><input type="text" name="truename" value="<!--{$player_info.truename}-->" class="inptxt" id="frm_truename"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">手机号：</th>
+          <td class="c2"><input type="text" name="mobile" value="<!--{$player_info.mobile}-->" class="inptxt" id="frm_mobile"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">微信号：</th>
+          <td class="c2"><input type="text" name="weixin" value="<!--{$player_info.weixin}-->" class="inptxt" id="frm_weixin"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">身份证号：</th>
+          <td class="c2"><input type="text" name="idcard" value="<!--{$player_info.idcard}-->" class="inptxt" id="frm_idcard"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">选择省市：</th>
+          <td class="c2">
+    <select name="province" id="frm_province" class="inpsel row-ele" data-city="<!--{$player_info.city}-->" onchange="change_province(this)">
+      <option value="0">请选择省份▼</option>
+<!--{foreach from=$province item=it}-->
+      <option value="<!--{$it.locaid}-->" <!--{if $it.locaid eq $player_info.province}-->selected="selected"<!--{/if}-->><!--{$it.location}--></option>
+<!--{/foreach}-->
+    </select>
+    <select name="city" id="frm_city" class="inpsel row-ele" style="margin-left: 2%;">
+      <option value="0">请选择城市▼</option>
+    </select>
+          </td>
         </tr>
         <tr>
           <th class="c1">封面图片设定：</th>
@@ -78,6 +104,32 @@ function pop_cb_succ(data,status){
 function pop_cb_fail(xhr,status,e){
   closePopup();
 }
+function change_province(obj) {
+	  var pid = $(obj).val();
+	  var curcity = $(obj).attr('data-city');
+	  var $city = $('#frm_city');
+	  var prehtml = '<option value="0">请选择城市▼</option>';
+	  pid = parseInt(pid);
+	  if (0===pid) {
+	    $city.html(prehtml);
+	    return;
+	  }
+	  F.getJSON(genurl('member/cities'),{parent_id: pid,maxage: 0},function(ret){
+	    if (ret.flag=='SUC') {
+	      var html='',selected='';
+	      for(var i=0; i<ret.data.length; i++) {
+	    	  if (''!=curcity && ret.data[i]['locaid']==curcity) {
+	    		  selected=' selected="selected"';
+	    	  }
+	    	  else {
+	    		  selected='';
+	    	  }
+	        html += '<option value="'+ret.data[i]['locaid']+'"'+selected+'>'+ret.data[i]['location']+'</option>';
+	      }
+	      $city.html(prehtml+html);
+	    }
+	  });
+}
 function changecover(obj) {
 	$('#frm_cover_pic_id').val($(obj).attr('rel'));
 	$(obj).parents('#picslist').find('img').removeClass('chked');
@@ -109,6 +161,19 @@ function moveright(obj) {
 }
 var is_edit = '<!--{$is_edit}-->';
 is_edit = is_edit ? true : false;
+var cur_province = '<!--{$player_info.province}-->';
+var cur_city = '<!--{$player_info.city}-->';
+if (''!==cur_province) {
+	cur_province = parseInt(cur_province);
+}
+if (''!==cur_city) {
+	cur_city = parseInt(cur_city);
+}
+$(function(){
+	if (cur_province) {
+		change_province($('#frm_province').get(0));
+	}
+});
 
 // form post
 F.formPost = function() {
@@ -118,6 +183,14 @@ F.formPost = function() {
   var _nid = $('#frm_id').val();
   _nid = ''==_nid ? 0 : parseInt(_nid);
   post_data.player_id = _nid;
+  
+  // truename, mobile, weixin
+  post_data.truename = $('#frm_truename').val().trim();
+  post_data.mobile = $('#frm_mobile').val().trim();
+  post_data.weixin = $('#frm_weixin').val().trim();
+  post_data.idcard = $('#frm_idcard').val().trim();
+  post_data.province = $('#frm_province').val();
+  post_data.city   = $('#frm_city').val();
   
   // new image id
   var _imgs = new Array();

@@ -17,6 +17,7 @@ class Member_Controller extends Controller {
   		'member/save'     => 'member_save',
   		'member/loginlog' => 'member_loginlog',
   		'member/player'            => 'player',
+  		'member/cities'            => 'cities',
   		'member/player/%d/edit'    => 'player_edit',
   		'member/player/%d/suspend' => 'player_suspend',
   		'member/player/%d/delete'  => 'player_delete',
@@ -337,9 +338,15 @@ class Member_Controller extends Controller {
   		$ret = ['flag' => 'ERR', 'msg' => ''];
   		
   		$player_id   = $request->post('player_id', 0);
+  		$truename    = $request->post('truename', '');
+  		$mobile      = $request->post('mobile', '');
+  		$weixin      = $request->post('weixin', '');
+  		$idcard      = $request->post('idcard', '');
+  		$province    = $request->post('province', 0);
+  		$city        = $request->post('city', 0);
   		$inc_vote    = $request->post('inc_vote', 0);
   		$inc_flower  = $request->post('inc_flower', 0);
-  		$cover_pic_id  = $request->post('cover_pic_id', 0);
+  		$cover_pic_id= $request->post('cover_pic_id', 0);
   		$imgs        = $request->post('imgs', []);
   		
   		$player_info = Member_Model::getPlayerInfo($player_id);
@@ -351,9 +358,44 @@ class Member_Controller extends Controller {
   		$uid = 10000; //10000 为系统管理员帐号
   		$ret['flag'] = 'SUC';
   		$ret['msg'] = '更新成功';
+  		$data = ['cover_pic_id' => $cover_pic_id];
+  		if (''!=$truename) {
+  			$data['truename'] = $truename;
+  		}
+  		if (''!=$mobile) {
+  			$data['mobile'] = $mobile;
+  		}
+  		if (''!=$weixin) {
+  			$data['weixin'] = $weixin;
+  		}
+  		if (''!=$idcard && strlen($idcard)<=18) {
+  			$data['idcard'] = $idcard;
+  		}
+  		
+  		//将省份、城市平均成: "40:北京"这样的结构
+  		if ($province) {
+  			$loc = Member_Model::getLocationName($province);
+  			if ($loc) {
+  				$province = $province.':'.$loc;
+  			}
+  		}
+  		else {
+  			$province = '';
+  		}
+  		if ($city) {
+  			$loc = Member_Model::getLocationName($city);
+  			if ($loc) {
+  				$city = $city.':'.$loc;
+  			}
+  		}
+  		else {
+  			$city = '';
+  		}
+  		$data['province'] = $province;
+  		$data['city'] = $city;
 
   		//更新pic_cover_id
-  		D()->update("player",['cover_pic_id'=>$cover_pic_id],['player_id'=>$player_id]);
+  		D()->update("player",$data,['player_id'=>$player_id]);
   		
   		//更新图片
   		if (!empty($imgs) && is_array($imgs)) { //! 务必检查严格
@@ -397,7 +439,16 @@ class Member_Controller extends Controller {
   		$player_gallery = [];
   		if (!empty($player_info)) {
   			$player_gallery = Member_Model::getPlayerGalleryAll($player_info['player_id'], $player_info['cover_pic_id']);
+  			if (!empty($player_info['province'])) {
+  				$player_info['province'] = preg_replace('/(:.*)$/', '', $player_info['province']);
+  			}
+  			if (!empty($player_info['city'])) {
+  				$player_info['city'] = preg_replace('/(:.*)$/', '', $player_info['city']);
+  			}
   		}
+  		
+  		$province = Member_Model::getProvinces();
+  		$this->v->assign('province', $province);
   
   		$this->v->assign('player_info', $player_info)
   						->assign('player_gallery', $player_gallery)
@@ -435,6 +486,30 @@ class Member_Controller extends Controller {
   		$ret = Member_Model::deletePlayers($ids);
   		$response->sendJSON(['flag'=>'OK', 'rids'=>$ret]);
   	}
+  }
+  
+  /**
+   * 获取省下的城市名列表
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function cities(Request $request, Response $response) {
+  	$parent_id = $request->get('parent_id', 0);
+  	$res = ['flag'=>'FAIL', 'msg'=>''];
+  	if (empty($parent_id)) {
+  		$res['msg'] = 'parent_id empty';
+  		$response->sendJSON($res);
+  	}
+  	$cities = Member_Model::getCities($parent_id);
+  	if (empty($cities)) {
+  		$res['msg'] = 'parent_id invalid';
+  		$response->sendJSON($res);
+  	}
+  	$res['flag'] = 'SUC';
+  	$res['msg']  = '';
+  	$res['data'] = $cities;
+  	$response->sendJSON($res);
   }
   
 }
