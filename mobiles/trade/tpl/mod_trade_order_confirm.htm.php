@@ -15,7 +15,8 @@
   <div class="frmbox">
     <div class="r r1">输入赠送的数量：<input type="text" name="amount" value="<?=$amount_start?>" id="amount"/> <?php if($goods_type=='kiss'):?>吻<?php else: ?>花<?php endif;?></div>
     <div class="r r2">支付金额：<em id="money"><?=$amount_start?></em> 元</div>
-    <div class="r r3"><?php if($goods_type=='kiss'):?>每一个吻可抵两票！<?php else: ?>每一束花可抵两票！<?php endif;?></div>
+    <div class="r r3"><?php if($goods_type=='kiss'):?>每 1 个吻可抵 2 票！<?php else: ?>每 1 束花可抵 2 票！<?php endif;?></div>
+    <div class="r r4"><em><?=$animate_num?></em> <?php if($goods_type=='kiss'):?>吻<?php else: ?>花<?php endif;?>起送有意外效果哦~~</div>
   </div>
 </div>
 
@@ -39,6 +40,7 @@ function jsApiCall(jsApiParams, back_url)
 					  var _msg = '';
 				  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
 				  		_msg = '您已送花成功！请关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
+				  		F.post('<?php echo U('trade/order/payok')?>',{"player_id":player_id,"amount":$('#amount').val().trim()});
 				  	}
 				  	else if ("get_brand_wcpay_request:cancel" == res.err_msg) {
 				  		_msg = '您已取消支付';

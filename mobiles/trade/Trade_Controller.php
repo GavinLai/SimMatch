@@ -51,6 +51,7 @@ class Trade_Controller extends Controller {
       'trade/cart/chgnum' => 'cart_chgnum',
       'trade/order/confirm'  => 'order_confirm',
       'trade/order/submit'   => 'order_submit',
+      'trade/order/payok'    => 'order_payok',
       'trade/order/upaddress'=> 'order_upaddress',
       'trade/order/cancel'   => 'order_cancel',
       'trade/order/confirm_shipping'   => 'order_confirm_shipping',
@@ -283,6 +284,8 @@ class Trade_Controller extends Controller {
       }
       $this->v->assign('amount_start', $amount_start);
       
+      $animate_num = config_get('flower_animate_num');
+      $this->v->assign('animate_num', $animate_num);
     }
     else {
       /*
@@ -426,6 +429,23 @@ class Trade_Controller extends Controller {
     
   }
 
+  /**
+   * 支付成功后的逻辑处理
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  public function order_payok(Request $request, Response $response) {
+  	if ($request->is_post()) {
+  		$player_id = $request->post('player_id', 0);
+  		$amount    = $request->post('amount', 0);
+  		$effectnum = config_get('flower_animate_num');
+  		if (!empty($player_id) && $amount >= $effectnum) {
+  			$_SESSION['animatenum_'.$player_id] = $amount;
+  		}
+  	}
+  }
+  
   /**
    * 更新收货地址
    *

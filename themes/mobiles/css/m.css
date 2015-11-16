@@ -334,6 +334,7 @@ a.alink { color: #b5359d; }
 .box-payamount .frmbox .r2 { color: #44b549; }
 .box-payamount .frmbox .r2 em { color: #ff0000; }
 .box-payamount .frmbox .r3 { color: #b5359d; }
+.box-payamount .frmbox .r4 { color: #007cf7; }
 .match-topay .box-topay { position: absolute;bottom: 0;left: 0;width: 100%;height: 60px;line-height: 60px;background: #b5359d;text-align: center; }
 .match-topay .box-topay .btn { width: 100%;height: 100%;border: none;border-radius: 0;background: transparent;color: #fff;font-size: 20px;font-size: 2rem; }
 

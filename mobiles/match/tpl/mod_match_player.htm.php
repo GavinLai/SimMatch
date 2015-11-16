@@ -6,7 +6,7 @@
 
 <?php else:?>
 
-<div class="match-player">
+<div class="match-player" id="match-player">
   <div class="swipe">
     <div id="slider" class="slider">
       <?php for($i=0;$i<$player_gallery_num;$i++):?>
@@ -121,5 +121,20 @@ $(function(){
 	
 });
 </script>
+
+<?php if($animatenum):?>
+<?php add_js('FallingEffect.js',['pos'=>'current']);?>
+<script type="text/javascript">
+$(function(){
+	setTimeout(function(){
+		(new FallingEffect(<?=$animatenum?>,{
+			container: '#match-player',
+			onFinish: function(){}
+		})).show();
+	},100);
+});
+</script>
+<?php endif;?>
+
 </div>
 <?php endif;?>

@@ -529,6 +529,15 @@ class Match_Controller extends Controller {
         'pic'   => $player_cover,
       ];
       $this->v->assign('share_info', $share_info);
+      
+      //送花效果
+      $animatenum = 0;
+      $effectnum = config_get('flower_animate_num');
+      if (isset($_SESSION['animatenum_'.$player_id]) && $_SESSION['animatenum_'.$player_id] >= $effectnum) {
+      	$animatenum = $_SESSION['animatenum_'.$player_id];
+      	unset($_SESSION['animatenum_'.$player_id]);
+      }
+      $this->v->assign('animatenum', $animatenum);
     }
 
     $this->v->assign('errmsg', $errmsg)
