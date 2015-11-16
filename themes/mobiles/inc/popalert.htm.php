@@ -20,8 +20,8 @@ function myAlert(msg, okcall, title, oktext, contentcss) {
 	if (typeof (myAlert._rtwrap)=='undefined') myAlert._rtwrap = $('#rtWrap');
 	myAlert._okcall = okcall;
 	myAlert._okargs = new Array();
-	if (arguments.length > 2) {
-		for (var i = 2; i < arguments.length; i++) {
+	if (arguments.length > 5) {
+		for (var i = 5; i < arguments.length; i++) {
 			myAlert._okargs.push(arguments[i]);
 	  }
 	}
@@ -31,13 +31,13 @@ function myAlert(msg, okcall, title, oktext, contentcss) {
 		if (title===false) {
 			_tit.hide();
 		}
-		else {
+		else if(title!='') {
 			_tit.html(title);
 		}
 	}
 	var _ok = $('#alertok');
 	_ok.text('好的');
-	if (typeof(oktext)!='undefined') {
+	if (typeof(oktext)!='undefined' && oktext!='') {
 		_ok.text(oktext);
 	}
 	myAlert._cont.attr('style','').html(msg);

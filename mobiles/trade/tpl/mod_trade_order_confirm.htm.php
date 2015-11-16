@@ -51,7 +51,7 @@ function jsApiCall(jsApiParams, back_url)
 				  	myAlert(_msg,function(backurl){
 					  	if (typeof(backurl)!='undefined' && ''!=backurl) window.location.href = backurl;
 					  	else setTimeout(function(){ WeixinJSBridge.invoke("closeWindow"); },1000);
-					  },back_url);
+					  },'','','',back_url);
 				}
 			);
 	}
