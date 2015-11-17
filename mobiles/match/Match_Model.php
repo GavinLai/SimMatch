@@ -273,7 +273,7 @@ class Match_Model extends Model {
   	               ->select("COUNT(p.`player_id`) AS rcnt")->result();
   	$maxpage  = ceil($totalnum / ($limit?:10));
     $list = D()->query("SELECT p.`player_id`,p.`match_id`,p.`uid`,p.`cover_pic_id`,p.`truename`,p.`slogan`,p.`votecnt`,p.`flowercnt`,p.`kisscnt`,IFNULL(pg.img_thumb,'') AS img_thumb,IFNULL(pg.img_thumb_cdn,'') AS img_thumb_cdn
-    		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`votecnt` DESC LIMIT {$start}, {$limit}",
+    		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`votecnt` DESC,p.`player_id` ASC LIMIT {$start}, {$limit}",
     		               $match_id, $search)
                ->fetch_array_all();
     if (!empty($list)) {
