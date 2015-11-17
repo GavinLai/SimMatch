@@ -477,7 +477,7 @@ class Match_Controller extends Controller {
 
     //获取player信息
     $player_info = Match_Model::getPlayerInfo($player_id);
-    if (empty($player_info)) {
+    if (empty($player_info) || $player_info['status']=='D') {
       $errmsg = "该参赛者不存在(参赛号：{$player_id})";
     }
     elseif ($player_info['status']<>'R') {

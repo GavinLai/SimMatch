@@ -286,6 +286,8 @@ class Trade_Controller extends Controller {
       
       $animate_num = config_get('flower_animate_num');
       $this->v->assign('animate_num', $animate_num);
+      
+      //$_SESSION['animatenum_'.$player_id] = 100;
     }
     else {
       /*
