@@ -116,7 +116,7 @@ $(function(){
 </script>
 
 	<!-- BEGIN pager -->
-  <div class="paging" id="paging" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>" data-search="<?=$search?>">
+  <div class="paging" data-qurl="<?php echo U('match/'.$the_nid,'_hr=1&isajax=1')?>&s=<?=$search?>" data-target="#player-list" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>">
   	<a href="javascript:;" rel="begin" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">首页</a>
   	<a href="javascript:;" rel="last" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">上一页</a>
   	<a href="javascript:;" rel="next" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">下一页</a>
@@ -147,7 +147,8 @@ function gopage(obj) {
 	var _parent = $(obj).parent();
 	var curpage = myParseInt(_parent.attr('data-curpage'));
 	var maxpage = myParseInt(_parent.attr('data-maxpage'));
-	var search  = _parent.attr('data-search');
+	var qurl    = _parent.attr('data-qurl');
+	var target  = _parent.attr('data-target');
 	var p = 1, rel = $(obj).attr('rel');
 	
 	switch(rel) {
@@ -172,8 +173,8 @@ function gopage(obj) {
 		}
 		return;
 	}
-	F.get('<?php echo U('match/'.$the_nid,'_hr=1&isajax=1')?>&s='+search+'&p='+p, function(ret){
-		$('#player-list').html(ret.body);
+	F.get(qurl+'&p='+p, function(ret){
+		$(target).html(ret.body);
 	});
 }
 function searchform(obj) {

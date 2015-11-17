@@ -355,7 +355,7 @@ a.alink { color: #b5359d; }
 #ranklist .zgj { font-size: 13px;font-size: 1.3rem; }
 #ranklist .zgj em { margin-right: 2px; }
 #ranklist .weektxt { color: #999; }
-#ranklist .zhouci { color: #06bf04; }
+#ranklist .zhouci { font-weight: bold; }
 #ranklist .renqi { color: #f00; }
 #ranklist .xianhua { color: #b5359d; }
 

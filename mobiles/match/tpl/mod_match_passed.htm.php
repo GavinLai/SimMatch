@@ -23,7 +23,19 @@
     </div>
   <?php endforeach;?>
   <?php if($maxpage>1):?>
-  <div class="themore"><a href="javascript:;" onclick="get_more_passplayers(this)" data-maxpage="<?=$maxpage?>" data-curpage="<?=$curpage?>" <?php if($curpage==$maxpage):?>class="disable"<?php endif;?>><?php if($curpage==$maxpage):?>O(∩_∩)O~没有更多了<?php else:?>点击查看更多<?php endif;?></a></div>
+	<!-- BEGIN pager -->
+  <div class="paging" data-qurl="<?php echo U('match/'.$the_nid.'/passed','_hr=1&isajax=1')?>" data-target="#player-pass-list" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>">
+  	<a href="javascript:;" rel="begin" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">首页</a>
+  	<a href="javascript:;" rel="last" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">上一页</a>
+  	<a href="javascript:;" rel="next" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">下一页</a>
+  	<a href="javascript:;" rel="end" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">末页</a>
+  	<select name="pgsel" rel="select" class="pgbtn" onchange="gopage(this)">
+  	<?php for($i=1; $i<=$maxpage; $i++):?>
+  		<option value="<?=$i?>"<?php if($i==$curpage):?> selected="selected"<?php endif;?>>&nbsp;<?=$i?>/<?=$maxpage?></option>
+  	<?php endfor;?>
+  	</select>
+  </div>
+  <!-- END pager -->
   <?php endif;?>
 <script type="text/javascript">
 $(function(){
