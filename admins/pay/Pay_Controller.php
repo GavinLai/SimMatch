@@ -179,6 +179,7 @@ class Pay_Controller extends Controller {
 							->assign('recordNum', $recordNum)
 							->assign('totalNum', $totalNum)
 							->assign('statinfo', $statinfo)
+							->assign('today', date('Y-m-d'))
 							;
 		}
 		$response->send($this->v);

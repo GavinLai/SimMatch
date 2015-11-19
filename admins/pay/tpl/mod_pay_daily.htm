@@ -1,6 +1,8 @@
 <!--{include_file name="_smenu_pay.htm"}-->
 <style type="text/css">
-.listTable .bar { height: 20px;background: #ff6600;display: inline-block; }
+.listTable .bar { height: 16px;background: #ff6600;display: inline-block; }
+.listTable .bar.today { background: #add370; }
+.listTable .bar span { margin-left: -30px; }
 </style>
 <script type="text/javascript" src="/misc/js/ext/date/jquery.calendar.js"></script>
 <link href="/misc/js/ext/date/calendars.css" rel="stylesheet" type="text/css" />
@@ -54,12 +56,12 @@ $(function(){
     <th class="c3">最后更新时间</th>
     <th class="c4">柱状图</th>
   </tr>
-  <!--{foreach from=$recordList item=it}-->
+  <!--{foreach from=$recordList item=it name=itn}-->
   <tr class="rb">
     <td class="c1"><!--{$it.datetime}--></td>
     <td class="c2"><!--{$it.amount}--></td>
     <td class="c3"><!--{trans_time time=$it.timeline is_real=1}--></td>
-    <td class="c4"><span>周<!--{$it.weekno}--></span> <div class="bar" style="width:<!--{$it.amount_len}-->px" title="<!--{$it.amount}-->"></div></td>
+    <td class="c4"><div class="bar<!--{if $it.datetime eq $today}--> today<!--{/if}-->" style="width:<!--{$it.amount_len}-->px" title="当日充值：<!--{$it.amount}-->"><span>周<!--{$it.weekno}--></span></div></td>
   </tr>
   <!--{foreachelse}-->
   <tr class="rn"><td colspan="4">暂没有相应的记录</td></tr>
