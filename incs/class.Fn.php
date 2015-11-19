@@ -205,6 +205,27 @@ class Fn extends Func {
   	return isset($_numset[$num]) ? $_numset[$num] : false;
   }
   
+  /**
+   * 转换成中文周次
+   * @param integer $no
+   * @return char
+   */
+  static function to_weekno($no) {
+  	static $_numset;
+  	if (!isset($_numset)) {
+  		$_numset = array(
+  				'0' => '日',
+  				'1' => '一',
+  				'2' => '二',
+  				'3' => '三',
+  				'4' => '四',
+  				'5' => '五',
+  				'6' => '六'
+  		);
+  	}
+  	return isset($_numset[$no]) ? $_numset[$no] : false;
+  }
+  
 }
  
 /*----- END FILE: class.Fn.php -----*/

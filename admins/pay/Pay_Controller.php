@@ -161,6 +161,20 @@ class Pay_Controller extends Controller {
 			$recordNum  = count($recordList);
 			$totalNum   = $GLOBALS['pager_totalrecord_arr'][0];
 			
+			// 获取最大单日充值数
+			$maxpay = Pay_Model::getMaxDayPay();
+			if ($recordNum) {
+				foreach ($recordList AS &$it) {
+					$it['amount_len'] = 0;
+					$it['weekno'] = Fn::to_weekno(date('w',strtotime($it['datetime'].DAY_BEGIN)));
+					//$it['weekno'] = date('w',strtotime($it['datetime'].DAY_BEGIN));
+					if ($maxpay) {
+						$it['amount_len'] = round($it['amount']*100*3/$maxpay);
+					}
+				}
+				//$statinfo['totalpay_len'] = round($statinfo['total_pay']*100*2/$maxpay);
+			}
+			
 			$this->v->assign('recordList', $recordList)
 							->assign('recordNum', $recordNum)
 							->assign('totalNum', $totalNum)

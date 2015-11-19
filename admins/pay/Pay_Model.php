@@ -125,6 +125,11 @@ class Pay_Model extends Controller {
 		return true;
 	}
 	
+	static function getMaxDayPay() {
+		$maxpay = D()->from("stat_dailypay")->where("1")->select("MAX(`amount`) AS maxpay")->result();
+		return $maxpay ? : 0;
+	}
+	
 }
  
 /*----- END FILE: Pay_Model.php -----*/

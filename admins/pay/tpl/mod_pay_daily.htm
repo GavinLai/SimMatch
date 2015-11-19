@@ -1,6 +1,6 @@
 <!--{include_file name="_smenu_pay.htm"}-->
 <style type="text/css">
-
+.listTable .bar { height: 20px;background: #ff6600;display: inline-block; }
 </style>
 <script type="text/javascript" src="/misc/js/ext/date/jquery.calendar.js"></script>
 <link href="/misc/js/ext/date/calendars.css" rel="stylesheet" type="text/css" />
@@ -52,19 +52,22 @@ $(function(){
     <th class="c1 sortfield" data-rel="<!--{$qparturl}-->,orderby=datetime">日期<!--{sortfield field='datetime'}--></th>
     <th class="c2 sortfield" data-rel="<!--{$qparturl}-->,orderby=amount">金额<!--{sortfield field='amount'}--></th>
     <th class="c3">最后更新时间</th>
+    <th class="c4">柱状图</th>
   </tr>
   <!--{foreach from=$recordList item=it}-->
   <tr class="rb">
     <td class="c1"><!--{$it.datetime}--></td>
     <td class="c2"><!--{$it.amount}--></td>
     <td class="c3"><!--{trans_time time=$it.timeline is_real=1}--></td>
+    <td class="c4"><span>周<!--{$it.weekno}--></span> <div class="bar" style="width:<!--{$it.amount_len}-->px" title="<!--{$it.amount}-->"></div></td>
   </tr>
   <!--{foreachelse}-->
-  <tr class="rn"><td colspan="3">暂没有相应的记录</td></tr>
+  <tr class="rn"><td colspan="4">暂没有相应的记录</td></tr>
   <!--{/foreach}-->
   <tr class="rsum">
     <td class="c1">总计：</td>
     <td class="c2" colspan="2"><em style="color:green"><!--{$statinfo.current_pay}--></em> / <!--{$statinfo.total_pay}--></td>
+    <td class="c4"></td>
   </tr>
   </table>
 </div>
