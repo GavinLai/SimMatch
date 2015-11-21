@@ -23,7 +23,7 @@ class GenPlayerQRCodeJob extends CronJob {
 	const PATH_PREFIX = 'wxbs/qrcode';
 	const SITE_DOMAIN = 'http://bs.fxmapp.com/';
 	
-	public function job($argc, $argv) {
+	public function main($argc, $argv) {
 	
 		// 需要填写你的 Access Key 和 Secret Key
 		$accessKey = 'degc0lsSBdDrin_ccL4q6yMdLUPvMkSIQONrFjWw';

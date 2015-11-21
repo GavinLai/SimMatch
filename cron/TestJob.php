@@ -7,7 +7,7 @@
 class TestJob extends CronJob {
   
   
-  public function job($argc, $argv) {
+  public function main($argc, $argv) {
     
     echo "TestJob doing, argc={$argc}, argv=".BR;
     print_r($argv);

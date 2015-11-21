@@ -27,7 +27,7 @@ class SyncWxMaterialJob extends CronJob {
   /**
    * 作业主入口
    */
-  public function job($argc, $argv) {
+  public function main($argc, $argv) {
     
     $wx = new Weixin();
     $total = $wx->getMaterialCount();

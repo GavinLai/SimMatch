@@ -11,7 +11,7 @@ abstract class CronJob {
   /**
    * abstract method, job main entry point
    */
-  abstract public function job($argc, $argv);
+  abstract public function main($argc, $argv);
   
   /**
    * save cron job log

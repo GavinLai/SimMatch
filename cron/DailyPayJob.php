@@ -11,7 +11,7 @@ define('BEGIN_DATE', '2015-10-27');
 
 class DailyPayJob extends CronJob {
 	
-	public function job($argc, $argv) {
+	public function main($argc, $argv) {
 		
 		// 默认起始结束日期
 		$begin_date = BEGIN_DATE;

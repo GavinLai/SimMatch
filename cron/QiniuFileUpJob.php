@@ -20,7 +20,7 @@ class QiniuFileUpJob extends CronJob {
 	const PATH_DOMAIN = 'http://fimg.fxmapp.com/';
 	const PATH_PREFIX = 'wxbs';
 	
-	public function job($argc, $argv) {
+	public function main($argc, $argv) {
 		
 		// 需要填写你的 Access Key 和 Secret Key
 		$accessKey = 'degc0lsSBdDrin_ccL4q6yMdLUPvMkSIQONrFjWw';
