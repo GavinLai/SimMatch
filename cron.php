@@ -47,7 +47,7 @@ class JobManager {
     exit;
   }
   
-  public function main($argc, $argv) {
+  public function run($argc, $argv) {
     if ($argc < 2) {
       $this->usage();
     }
@@ -61,7 +61,7 @@ class JobManager {
     $argc = count($argv);
     $j = new $job;
     $j->log("{$job} Beginning...");
-    $j->job($argc, $argv);
+    $j->main($argc, $argv);
     $j->log("{$job} Finished!\n");
   }
   
@@ -76,6 +76,6 @@ if (!IS_CLI) {
   $argc = count($argv);
 }
 
-(new JobManager)->main($argc, $argv);
+(new JobManager)->run($argc, $argv);
  
 /*----- END FILE: cron.php -----*/
