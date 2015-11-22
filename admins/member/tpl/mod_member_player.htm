@@ -21,6 +21,7 @@ function listsearch(form) {
 
 <div class="listnav">
   <div class="listbtn-grp listbtn-grp-pager"><!--{include_pager url=$qparturl extraurl=$extraurl}--></div>
+  <!--{checkperms perms="act_member_player_edit"}-->
   <div class="listbtn-grp">
     <div class="listbtn">
       <a href="javascript:void(0);" class="listbtn-link" data-rid="batch" onclick="return F.confirmListDelete(this, 'member/player_delete');">
@@ -48,6 +49,7 @@ function listsearch(form) {
       </a>
     </div>
   </div>
+  <!--{/checkperms}-->
   <div class="listbtn-grp">
     <div class="listbtn">
       <a href="javascript:void(0);" class="listbtn-link" onclick="return F.hashReload();">
@@ -57,6 +59,7 @@ function listsearch(form) {
       </a>
     </div>
   </div>
+  <!--{checkperms perms="act_member_player_edit"}-->
   <div class="listbtn-grp">
     <div class="listbtn">
       <a href="http://bs.fxmapp.com/match/100/join?token=qqdcoqr7azjaib0eucnr0kk3r7kk5dje" target="_blank" class="listbtn-link listbtn-hlink">
@@ -66,6 +69,7 @@ function listsearch(form) {
       </a>
     </div>
   </div>
+  <!--{/checkperms}-->
   <div class="listbtn-grp">
     <div class="listbtn">
       <span>总记录数:&nbsp;<!--{$totalNum}-->&nbsp;&nbsp;当前记录数:&nbsp;<!--{$recordNum}--></span>
@@ -108,9 +112,11 @@ function listsearch(form) {
     <td class="c9"><!--{$it.flowercnt}--></td>
     <td class="c10"><!--{trans_time time=$it.jointime}--></td>
     <td class="cl">
+    <!--{checkperms perms="act_member_player_edit"}-->
       <a href="#/member/player/<!--{$it.player_id}-->/suspend" class="oplink" data-rid="<!--{$it.player_id}-->" onclick="return F.confirmListSuspend(this, 'member/player_suspend', <!--{if $it.status eq 'S'}-->0<!--{else}-->1<!--{/if}-->);"><!--{if $it.status eq 'S'}--><em style="color: blue">激活</em><!--{else}--><em style="color: green">挂起</em><!--{/if}--></a>
       <span class="wsep">|</span><a href="#/member/player/<!--{$it.player_id}-->/edit" class="oplink hashreq">编辑</a>
       <span class="wsep">|</span><a href="#/member/player/<!--{$it.player_id}-->/delete" class="oplink" data-rid="<!--{$it.player_id}-->" onclick="return F.confirmListDelete(this, 'member/player_delete');">删除</a>
+    <!--{/checkperms}-->
     </td>
   </tr>
   <!--{foreachelse}-->

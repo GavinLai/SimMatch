@@ -11,15 +11,21 @@
     <li class="htabs-list sy htabs-list-on" id="hMainTab">
       <a href="#/home" class="link hashreq"><span class="htabs-item-text">首页</span></a>
     </li>
+    <!--{checkperms perms="mod_node"}-->
     <li class="htabs-list sc">
       <a href="#/node" class="link hashreq"><span>赛事活动</span></a>
     </li>
+    <!--{/checkperms}-->
+    <!--{checkperms perms="mod_member"}-->
     <li class="htabs-list yh">
       <a href="#/member/player" class="link hashreq"><span>用户管理</span></a>
     </li>
+    <!--{/checkperms}-->
+    <!--{checkperms perms="mod_pay"}-->
     <li class="htabs-list cz">
       <a href="#/pay" class="link hashreq"><span>充值查询</span></a>
     </li>
+    <!--{/checkperms}-->
     <li class="htabs-list other hide">
       <a href="#/other" class="link hashreq"><span>其它</span></a>
     </li>
