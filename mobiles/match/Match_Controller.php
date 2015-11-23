@@ -580,7 +580,7 @@ class Match_Controller extends Controller {
 
     $errmsg   = '';
     $ranklist = [];
-    $limit    = 20;
+    $limit    = 30;
     $start    = ($page-1) * $limit;
     $hasmore  = false;
     
@@ -592,11 +592,20 @@ class Match_Controller extends Controller {
     	
     	if (!$isajax) {
     		$seo = [
-    				'title'   => '排名 - ' . $ninfo['title'],
+    				'title'   => '选手排名 - ' . $ninfo['title'],
     				'keyword' => $ninfo['keyword'],
     				'desc'    => $ninfo['slogan'],
     		];
     		$this->v->assign('seo', $seo);
+    		
+    		//分享信息
+    		$share_info = [
+    				'title' => '选手排名 - '.$ninfo['title'],
+    				'desc'  => $ninfo['slogan'],
+    				'link'  => U('match/'.$ninfo['nid'].'/rank', '', true),
+    				'pic'   => $ninfo['thumb_url'],
+    		];
+    		$this->v->assign('share_info', $share_info);
     	}
     	
     	//~ 获取列表
