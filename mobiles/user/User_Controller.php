@@ -167,7 +167,7 @@ class User_Controller extends Controller {
         $this->tips($request, $response);
       }
       else { //先用base方式获取微信OAuth2授权，以便于取得openid
-        (new Weixin())->authorizing('http://'.$request->host().'/user/oauth/weixin?act=login&refer='.$refer, 'detail');
+        (new Weixin())->authorizing('http://'.$request->host().'/user/oauth/weixin?act=login&refer='.rawurlencode($refer), 'detail');
       }
     }
     else {
@@ -191,6 +191,7 @@ class User_Controller extends Controller {
       $from  = $request->arg(2);
       if (empty($from)) $from = 'weixin';
       $auth_action = $request->get('act','');
+      $refer = rawurldecode($refer);
       
       //收获地址base oauth回调
       if ('jsapi_address'==$auth_action) {
