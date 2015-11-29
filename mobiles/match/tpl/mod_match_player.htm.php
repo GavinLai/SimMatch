@@ -22,8 +22,13 @@
      <?php endif;?>
   </div>
   <div class="match-pos nameno"><p class="name"><?=$player_info['truename']?></p><p class="no">No.<?=$player_info['player_id']?></p><?php if($player_info['qrcode']!=''):?><p class="qrcode"><a href="javascript:;" onclick="showqrcode(this)"><img src="<?=$player_info['qrcode']?>" alt="qrcode"/></a></p><?php endif;?></div>
-  <a class="match-pos tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">主页</a>
-  <a class="match-pos tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
+  <div class="ltbar">
+	  <?php if($player_info['video']<>''):?>
+	  <a class="barit tovideo" href="<?=$player_info['video']?>" target="_blank">视频</a>
+	  <?php endif;?>
+	  <a class="barit tomatch" href="<?php echo U('match/'.$player_info['match_id'])?>">主页</a>
+	  <a class="barit lastit tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
+  </div>
   <a class="match-pos torank" href="<?php echo U('match/'.$player_info['match_id'].'/rank',['player_id' =>$player_info['player_id'] ])?>">
   当前排名：<em><?=$player_info['rank_info']['rank']?></em><br/>选手总数：<em><?=$player_info['rank_info']['total']?></em>
   <!-- 

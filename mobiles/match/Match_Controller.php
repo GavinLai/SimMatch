@@ -528,6 +528,9 @@ class Match_Controller extends Controller {
         'link'  => U('player/'.$player_info['player_id'], '', true),
         'pic'   => $player_cover,
       ];
+      if ($player_info['stage'] > 0) {
+      	$share_info['title'] = '我是'.$player_info['player_id'].'号'.$player_info['truename'].'，我已经成功进入'.$ninfo['title'].'复赛，快来给我投票，让我挺进决赛！';
+      }
       $this->v->assign('share_info', $share_info);
       
       //送花效果

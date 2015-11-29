@@ -24,7 +24,7 @@
       <tbody>
         <tr>
           <th class="c1">参赛编号：</th>
-          <td class="c2"><!--{$player_info.player_id}--><input type="hidden" name="player_id" value="<!--{$player_info.player_id}-->" id="frm_id" /></td>
+          <td class="c2"><!--{$player_info.player_id}--><!--{if $player_info.stage>0}-->（已晋级<!--{if $player_info.stage==1}-->复赛<!--{else}-->决赛<!--{/if}-->）<!--{/if}--><input type="hidden" name="player_id" value="<!--{$player_info.player_id}-->" id="frm_id" /></td>
         </tr>
         <tr>
           <th class="c1">真实姓名：</th>
@@ -41,6 +41,10 @@
         <tr>
           <th class="c1">身份证号：</th>
           <td class="c2"><input type="text" name="idcard" value="<!--{$player_info.idcard}-->" class="inptxt" id="frm_idcard"  /></td>
+        </tr>
+        <tr>
+          <th class="c1">视频地址：</th>
+          <td class="c2"><input type="text" name="video" value="<!--{$player_info.video}-->" class="inptxt" id="frm_video"  /></td>
         </tr>
         <tr>
           <th class="c1">选择省市：</th>
@@ -189,6 +193,7 @@ F.formPost = function() {
   post_data.mobile = $('#frm_mobile').val().trim();
   post_data.weixin = $('#frm_weixin').val().trim();
   post_data.idcard = $('#frm_idcard').val().trim();
+  post_data.video  = $('#frm_video').val().trim();
   post_data.province = $('#frm_province').val();
   post_data.city   = $('#frm_city').val();
   

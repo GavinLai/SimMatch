@@ -342,6 +342,7 @@ class Member_Controller extends Controller {
   		$mobile      = $request->post('mobile', '');
   		$weixin      = $request->post('weixin', '');
   		$idcard      = $request->post('idcard', '');
+  		$video       = $request->post('video', '');
   		$province    = $request->post('province', 0);
   		$city        = $request->post('city', 0);
   		$inc_vote    = $request->post('inc_vote', 0);
@@ -370,6 +371,9 @@ class Member_Controller extends Controller {
   		}
   		if (''!=$idcard && strlen($idcard)<=18) {
   			$data['idcard'] = $idcard;
+  		}
+  		if (''!=$video && preg_match('/^http(s?):\/\//', $video)) {
+  			$data['video'] = $video;
   		}
   		
   		//将省份、城市平均成: "40:北京"这样的结构
