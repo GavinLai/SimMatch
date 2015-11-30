@@ -18,6 +18,7 @@ class Common_Controller extends Controller {
     'wxpay/notify',
     'match/%d',
     'match/%d/passed',
+    'match/%d/nopassed',
     'match/%d/rank',
   ];
   
@@ -40,7 +41,7 @@ class Common_Controller extends Controller {
    * @param Response $response
    */
   public static function on_dispatch_before(Request $request, Response $response) {
-    
+  	
     // 检查q是否在白名单中
     $loginIgnore = false;
     $q = $request->q();

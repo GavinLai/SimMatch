@@ -90,6 +90,7 @@ function listsearch(form) {
     <th class="c6">微信号</th>
     <th class="c7">身份证号</th>
     <th class="c8 sortfield" data-rel="<!--{$qparturl}-->,orderby=votecnt">总投票数<!--{sortfield field='votecnt'}--></th>
+    <th class="c8 sortfield" data-rel="<!--{$qparturl}-->,orderby=votecnt1">复赛总投票数<!--{sortfield field='votecnt1'}--></th>
     <th class="c9 sortfield" data-rel="<!--{$qparturl}-->,orderby=flowercnt">送花数<!--{sortfield field='flowercnt'}--></th>
     <th class="c10 sortfield" data-rel="<!--{$qparturl}-->,orderby=jointime">报名时间<!--{sortfield field='jointime'}--></th>
     <th class="cl">操作</th>
@@ -109,6 +110,7 @@ function listsearch(form) {
     <td class="c6"><!--{$it.weixin}--></td>
     <td class="c7"><!--{$it.idcard}--></td>
     <td class="c8"><!--{$it.votecnt}--></td>
+    <td class="c8"><!--{$it.votecnt1}--></td>
     <td class="c9"><!--{$it.flowercnt}--></td>
     <td class="c10"><!--{trans_time time=$it.jointime}--></td>
     <td class="cl">
@@ -120,7 +122,7 @@ function listsearch(form) {
     </td>
   </tr>
   <!--{foreachelse}-->
-  <tr class="rn"><td colspan="12">暂没有相应的记录</td></tr>
+  <tr class="rn"><td colspan="13">暂没有相应的记录</td></tr>
   <!--{/foreach}-->
   </table>
 </div>

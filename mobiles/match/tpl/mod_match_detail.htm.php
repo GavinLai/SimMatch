@@ -75,12 +75,12 @@ $(function(){
   <?php else:?>
   <div class="row"><div class="dt"><?=$ninfo['content_detail']?></div></div>
   <?php endif;?>
-  <div class="join"><a href="/match/<?=$the_nid?>/join" class="btn btn-block btn-purple">我要参赛</a></div>
+  <div class="join"><a href="/match/<?=$the_nid?>/repost_confirm" class="btn btn-block btn-purple">+复赛选手补传照片</a></div>
 </div>
 
 <div class="block-page player-info" id="player-wrap">
 <?php if ($player_num):?>
-  <div class="linkbtn-box"><a href="javascript:;" onclick="see_passplayers(this)" class="btn btn-block btn-green">点击查看已晋级复赛选手(总票数5000以上)</a></div>
+  <div class="linkbtn-box"><a href="javascript:;" onclick="see_passplayers(this)" class="btn btn-block btn-green">点击查看未晋级选手(争取"话题女王奖")</a></div>
   <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“选手姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
 <?php endif;?>
   <div id="player-list" class="player-list">
@@ -99,7 +99,7 @@ $(function(){
         <?php endif;?>
         	<p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p>
         </div>
-        <p class="fot"><span class="p lt">票数 <em><?=$it['votecnt']?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
+        <p class="fot"><span class="p lt">票数 <em><?php if($it['stage']>0){echo $it['votecnt'.$it['stage']];}else{echo $it['votecnt'];}?></em></span><span class="p rt">花数 <em><?=$it['flowercnt']?></em></span></p>
       </a>
     </div>
   <?php endforeach;?>
@@ -186,7 +186,7 @@ function searchform(obj) {
 	return false;
 }
 function see_passplayers(obj) {
-	var _url = '<?php echo U('match/'.$the_nid.'/passed','_hr=1')?>';
+	var _url = '<?php echo U('match/'.$the_nid.'/nopassed','_hr=1')?>';
 	F.get(_url, function(ret){
 		$('#player-wrap').html(ret.body);
 	});

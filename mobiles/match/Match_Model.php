@@ -254,15 +254,21 @@ class Match_Model extends Model {
   			$where .= " AND p.`player_id` IN(%s)";
   		}
   		elseif (($pos=strrpos($search, '+'))!==false) {
-  			$search = substr($search, 0, $pos);
-  			$where .= " AND p.`votecnt`>=%d";
+  			//$search = substr($search, 0, $pos);
+  			$search = self::getCurrMatchStage($match_id);
+  			$where .= " AND p.`stage`=%d";
+  		}
+  		elseif (($pos=strrpos($search, '-'))!==false) { //未晋级
+  			$search = self::getCurrMatchStage($match_id);
+  			$where .= " AND p.`stage`<%d";
   		}
   		else {
   			$where .= " AND p.`truename` like '%%%s%%'";
   		}
   	}
   	else {
-  		$where .= " AND p.`votecnt`<5000";
+  		$search = self::getCurrMatchStage($match_id); //默认显示晋级的
+  		$where .= " AND p.`stage`=%d";
   	}
   	if (!empty($exclude_player_ids)) {
   		$exclude_ids_str = implode(',', $exclude_player_ids); 
@@ -272,7 +278,7 @@ class Match_Model extends Model {
   	$totalnum = D()->from("{player} p")->where("p.`match_id`=%d {$where} AND p.`status`='R'",$match_id, $search)
   	               ->select("COUNT(p.`player_id`) AS rcnt")->result();
   	$maxpage  = ceil($totalnum / ($limit?:10));
-    $list = D()->query("SELECT p.`player_id`,p.`match_id`,p.`uid`,p.`cover_pic_id`,p.`truename`,p.`slogan`,p.`votecnt`,p.`flowercnt`,p.`kisscnt`,IFNULL(pg.img_thumb,'') AS img_thumb,IFNULL(pg.img_thumb_cdn,'') AS img_thumb_cdn
+    $list = D()->query("SELECT p.`player_id`,p.`match_id`,p.`uid`,p.`cover_pic_id`,p.`truename`,p.`slogan`,p.`stage`,p.`votecnt`,p.`votecnt1`,p.`votecnt2`,p.`flowercnt`,p.`kisscnt`,IFNULL(pg.img_thumb,'') AS img_thumb,IFNULL(pg.img_thumb_cdn,'') AS img_thumb_cdn
     		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`votecnt` DESC,p.`player_id` ASC LIMIT {$start}, {$limit}",
     		               $match_id, $search)
                ->fetch_array_all();
@@ -297,14 +303,19 @@ class Match_Model extends Model {
     return $rs;
   }
   
-  static function getPlayerGallery($player_id) {
-    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->order_by("`sortorder` ASC,`rid` ASC")->select("`img_std`,`img_std_cdn`")->fetch_array_all();
+  static function getPlayerGallery($player_id, $include_rid = false) {
+    $rs = D()->from("player_gallery")->where("`player_id`=%d", $player_id)->order_by("`sortorder` ASC,`rid` ASC")->select("`rid`,`img_std`,`img_std_cdn`")->fetch_array_all();
     $ret= [];
     if (!empty($rs)) {
     	$usecdn = C('env.usecdn');
-      foreach ($rs AS $it) {
-        array_push($ret, fixpath(2==$usecdn&&$it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
-      }
+    	if (!$include_rid) {
+    		foreach ($rs AS $it) {
+    			array_push($ret, fixpath(2==$usecdn&&$it['img_std_cdn']!=''?$it['img_std_cdn']:$it['img_std']));
+    		}
+    	}
+    	else {
+    		return $rs;
+    	}
     }
     return $ret;
   }
@@ -349,6 +360,11 @@ class Match_Model extends Model {
     return false;
   }
   
+  static function getCurrMatchStage($match_id) {
+  	$rs = D()->from("node_match")->where("`enid`=%d", $match_id)->select("current_stage")->result();
+  	return $rs ? : 0;
+  }
+  
   static function getRankList($type, $start=0, $limit=20, Array $extra = array(), &$hasmore = false) {
   	$hasmore = false;
   	if ($type=='') {
@@ -380,7 +396,8 @@ class Match_Model extends Model {
   	elseif ($type=='total_rank' || $type=='pass_rank') {
   		$where_extra = '';
   		if ($type=='pass_rank') {
-  			$where_extra = 'AND p.`votecnt`>=5000';
+  			$currstage = self::getCurrMatchStage($extra['match_id']);
+  			$where_extra = 'AND p.`stage`='.$currstage;
   		}
   	  $sql = "SELECT p.*,pg.img_thumb,pg.img_thumb_cdn
   	  		    FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid
@@ -394,9 +411,10 @@ class Match_Model extends Model {
   				array_pop($result); //去掉多出的一个
   			}
   			$i = 1;
+  			$time_from = Node::getMatchStageTime($extra['match_id']);
   			foreach ($result AS &$it) {
   				$it['rankno'] = $start + $i; //添加"排名"字段
-  				$it['votecnt_single'] = Node::getActionNum($it['player_id']);
+  				$it['votecnt_single'] = Node::getActionNum($it['player_id'], 'vote', ($it['stage'] > 0 ? $time_from : 0));
   				$it['img_thumb'] = fixpath(2==$usecdn&&$it['img_thumb_cdn']!=''?$it['img_thumb_cdn']:$it['img_thumb']);
   				$i++;
   			}
@@ -513,6 +531,17 @@ class Match_Model extends Model {
   		}
   	}
   	return $player_list;
+  }
+  
+  /**
+   * 检查是否能repost
+   * @param integer $player_id
+   * @return boolean
+   */
+  static function canRepost($player_id) {
+  	$repostcnt = D()->from("player")->where("player_id=%d", $player_id)->select("repostcnt")->result();
+  	$repostcnt = $repostcnt ? : 0;
+  	return $repostcnt > 0 ? false : true;
   }
   
 }

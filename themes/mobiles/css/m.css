@@ -283,21 +283,34 @@ a.alink { color: #b5359d; }
 /*match join页*/
 .match-join { padding: 10px; }
 .match-join .row { margin-bottom: 10px; }
+.match-join .pname { font-size: 20px;font-size: 2rem;text-align: center; }
 .match-join .row-ele { border-radius: 5px;background-color: #fff;width: 100%;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box; }
 .match-join .row-tip { background-color: #d3d3d3;padding: 5px 10px; }
+.match-join .row-tip2 em { color: red; }
 .match-join .inptxt { border: 1px solid #ccc;height: 40px;line-height: 40px;padding-left: 5px; }
 .match-join .inpsel { border: 1px solid #ccc;height: 36px;padding-left: 5px;width: 48%; }
 .match-join .btn { width: 100%;line-height: 32px;font-size: 16px;font-size: 1.6rem; }
 .match-join .pvtip { margin-bottom: 3px; }
 .match-join .uparea { padding: 0 10px 10px; }
+.match-join .uparea input { display: block;height: 25px;line-height: 25px;width: 100%; }
 .match-join .uparea span { color: #999;font-size: 13px;font-size: 1.3rem; }
 .match-join .row.tips { color: #999;font-size: 13px;font-size: 1.3rem; }
 .match-join .row.tips em { font-weight: bold;font-size: 14px;font-size: 1.4rem; }
 #match-preview { padding: 10px 10px 0;border-radius: 5px 5px 0 0; }
 #match-preview .pv { position: relative;margin-bottom: 10px; }
-#match-preview img.pvimg { max-width: 100%;vertical-align: top; }
+#match-preview img.pvimg { max-width: 100%;vertical-align: top;-webkit-box-sizing: border-box;-moz-box-sizing: border-box;-o-box-sizing: border-box;-ms-box-sizing: border-box;box-sizing: border-box; }
+#match-preview img.pvimg.chkcv { border: 2px solid #ff6600; }
 #match-preview .pvop { position: absolute;left: 0;bottom: 0;height: 30px;line-height: 30px;width: 100%; }
 #match-preview .pvop a { color: #fff; background: #8c441e;padding: 4px 15px;margin-left: 3px;font-size: 13px;font-size: 1.3rem; }
+
+/*match confirm页*/
+.match-confirm .row { text-align: center;margin-bottom: 30px; }
+.match-confirm .row.row-tit { margin: 30px 0 20px; }
+.match-confirm .row.row-btn { margin-bottom: 10px; }
+.match-confirm h1 { font-size: 20px;font-size: 2rem; }
+.match-confirm .row-ele { width: 50%; }
+.match-confirm .btn { width: 50%; }
+.match-confirm .err { color: #ff0000;text-align:center; }
 
 /* match player页 */
 .match-player,.match-player .swipe,.match-player .slider,.match-player .slidit { height: 100%;width: 100%; }

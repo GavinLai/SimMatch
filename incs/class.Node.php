@@ -195,6 +195,10 @@ class Node {
   			D()->query("UPDATE {node} SET {$act}cnt={$act}cnt+%d WHERE nid=%d", $inc, $match_id);
   			 
   			if ($act == 'vote') {
+  				$player_stage = D()->from("player")->where("player_id=%d", $player_id)->select("`stage`")->result();
+  				if (in_array($player_stage, ['1','2'])) { //同步更新晋级赛程的统计票数字段
+  					D()->query("UPDATE {player} SET votecnt{$player_stage}=votecnt{$player_stage}+%d WHERE player_id=%d", $inc, $player_id);
+  				}
   				if (!$nocheck) {
   					return $maxvotenum - $votedcnt - $inc; //需检查限制的，返回当前剩余可投票数；否则留最后默认范围$aid
   				}
@@ -219,17 +223,51 @@ class Node {
   }
   
   /**
+   * 根据选手id获取选手所在的比赛id
+   * @param integer $player_id
+   * @return integer
+   */
+  static function getMatchIdByPlayer($player_id) {
+  	$rs = D()->from("player")->where("`player_id`=%d", $player_id)->select("`match_id`")->result();
+  	return $rs ? : 0;
+  }
+  
+  /**
+   * 返回比赛赛程的开始时间戳
+   * @param integer $match_id
+   * @return integer
+   */
+  static function getMatchStageTime($match_id) {
+  	$rs = D()->from("{node_match} m INNER JOIN {node_match_stage} ms ON m.enid=ms.match_id AND m.match_type=ms.match_type")->where("m.`enid`=%d", $match_id)->select("ms.`start_time`")->result();
+  	return $rs ? strtotime($rs) : 0;
+  }
+  
+  /**
+   * 根据比赛进程获取相应的投票数统计字段
+   * @param string $match_stage
+   * @return string
+   */
+  static function getVoteFiled($match_stage = '') {
+  	$vote_field = 'votecnt';
+  	if (in_array($match_stage, ['1','2'])) {
+  		$vote_field = 'votecnt'.$match_stage;
+  	}
+  	return $vote_field;
+  }
+  
+  /**
    * 获取player的真实某动作数
    * 
    * @param integer $player_id
    * @param string $type
+   * @param integer $time_from
    * @return number
    */
-  static function getActionNum($player_id, $type = 'vote') {
+  static function getActionNum($player_id, $type = 'vote', $time_from = 0) {
   	if (!$player_id || !in_array($type, ['vote','flower','kiss'])) {
   		return -1;
   	}
-  	$num = D()->from("action")->where("`player_id`=%d AND `action`='%s'", $player_id, $type)->select("SUM(`inc`) AS cnt")->result();
+  	$num = D()->from("action")->where("`player_id`=%d AND `action`='%s' AND `timeline`>=%d", $player_id, $type, $time_from)->select("SUM(`inc`) AS cnt")->result();
   	return $num ? : 0;
   }
   

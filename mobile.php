@@ -13,6 +13,8 @@ require (__DIR__.'/core/init.php');
 $request  = new Request();
 $response = new Response();
 
+//$response->send('<center style="font-size:36px;">系统维护中，请稍后再访问</center>');
+
 try {
   SimPHP::I(['modroot'=>'mobiles'])
   ->boot(RC_ALL ^ RC_MEMCACHE)

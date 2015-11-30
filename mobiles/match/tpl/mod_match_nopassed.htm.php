@@ -6,7 +6,7 @@
 
 <?php else:?>
 
-<p class="player-pass-tip">当前<em><?=$totalnum?></em>名选手晋级复赛(5000票以上晋级)&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
+<p class="player-pass-tip"><em><?=$totalnum?></em>名选手未晋级(可争取"话题女王奖")&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
 <div class="player-list" id="player-pass-list">
 	<!--{AJAXPART}-->
   <?php foreach ($player_pass_list AS $it):?>
@@ -24,7 +24,7 @@
   <?php endforeach;?>
   <?php if($maxpage>1):?>
 	<!-- BEGIN pager -->
-  <div class="paging" data-qurl="<?php echo U('match/'.$the_nid.'/passed','_hr=1&isajax=1')?>" data-target="#player-pass-list" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>">
+  <div class="paging" data-qurl="<?php echo U('match/'.$the_nid.'/nopassed','_hr=1&isajax=1')?>" data-target="#player-pass-list" data-curpage="<?=$curpage?>" data-maxpage="<?=$maxpage?>">
   	<a href="javascript:;" rel="begin" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">首页</a>
   	<a href="javascript:;" rel="last" class="pgbtn<?php if(1==$curpage){echo ' disable';}?>" onclick="gopage(this)">上一页</a>
   	<a href="javascript:;" rel="next" class="pgbtn<?php if($maxpage==$curpage){echo ' disable';}?>" onclick="gopage(this)">下一页</a>
@@ -58,7 +58,7 @@ function get_more_passplayers(obj) {
 	curpage = parseInt(curpage);
 	if (curpage==maxpage) return;
 	$(obj).text('数据获取中...');
-	F.get('<?php echo U('match/'.$the_nid.'/passed','_hr=1&isajax=1')?>&p='+(curpage+1), function(ret){
+	F.get('<?php echo U('match/'.$the_nid.'/nopassed','_hr=1&isajax=1')?>&p='+(curpage+1), function(ret){
 		$(obj).parent().replaceWith(ret.body);
 	});
 }

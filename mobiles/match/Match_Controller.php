@@ -44,8 +44,11 @@ class Match_Controller extends Controller {
     return [
       'match/%d'        => 'detail', 
       'match/%d/passed' => 'passed',
+      'match/%d/nopassed' => 'nopassed',
       'match/%d/join'   => 'join',
       'match/%d/rank'   => 'rank',
+      'match/%d/repost' => 'repost',
+      'match/%d/repost_confirm' => 'repost_confirm',
       'match/player/%d' => 'player',
     ];
   }
@@ -135,17 +138,21 @@ class Match_Controller extends Controller {
         
         //检查是否启用记录的页码
         if (!$page) {
+        	$page = 1;
+        	/*
         	if (''==$search) {
         		$page = isset($_SESSION['mark_pageno']) ? $_SESSION['mark_pageno'] : 1;
         	}
         	else {
         		$page = 1;
-        	}
+        	}*/
         }
         else {
+        	/*
         	if (''==$search) {
         		$_SESSION['mark_pageno'] = $page;
         	}
+        	*/
         }
         $start = ($page-1) * $limit;
         $totalnum = 0;
@@ -233,6 +240,64 @@ class Match_Controller extends Controller {
       	
 				//获取“晋级”参赛这列表
 				$player_pass_list = Match_Model::getPlayerList($match_id, '5000+', $start, $limit, $totalnum, $maxpage);
+				$player_pass_list = Match_Model::parsePlayerList($player_pass_list, $see_weekinfo, true);
+      	$this->v->assign('player_pass_list', $player_pass_list);
+      	$this->v->assign('totalnum', $totalnum);
+      	$this->v->assign('maxpage', $maxpage);
+      	$this->v->assign('curpage', $page);
+      	
+      	if ($isajax) {
+      		$this->v->filter_output_part();
+      	}
+      }
+      $this->v->assign('errmsg', $errmsg);
+    }
+    else {
+    	
+    }
+    
+    $response->send($this->v);
+  }
+  
+  /**
+   * 获取未晋级选手列表
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function nopassed(Request $request, Response $response)
+  {
+    $this->v->set_tplname('mod_match_nopassed');
+    $this->nav_flag1 = 'match_nopassed';
+    
+    $match_id = $request->arg(1);
+    $this->v->assign('the_nid', $match_id);
+    
+    if ($request->is_hashreq()) {
+  
+      $errmsg   = '';
+  
+      //获取Node信息
+      $ninfo = Node::getInfo($match_id);
+      if (empty($ninfo)) {
+        $errmsg = "比赛不存在(nid={$match_id})";
+      }
+      else {
+  
+      	//参赛者列表
+      	$limit = 20;
+      	$isajax= $request->get('isajax', 0);
+      	$page  = $request->get('p', 1);
+      	$start = ($page-1) * $limit;
+      	$totalnum = 0;
+      	$maxpage  = 1;
+      	
+      	//检查周排名信息
+      	//$see_weekinfo = Match_Model::getRankWeekInfo($match_id);
+      	$see_weekinfo = [];
+      	
+				//获取“未晋级”参赛这列表
+				$player_pass_list = Match_Model::getPlayerList($match_id, '5000-', $start, $limit, $totalnum, $maxpage);
 				$player_pass_list = Match_Model::parsePlayerList($player_pass_list, $see_weekinfo, true);
       	$this->v->assign('player_pass_list', $player_pass_list);
       	$this->v->assign('totalnum', $totalnum);
@@ -434,6 +499,291 @@ class Match_Controller extends Controller {
   }
   
   /**
+   * 重复上传图片前的选手确认
+   * @param Request $request
+   * @param Response $response
+   */
+  function repost_confirm(Request $request, Response $response)
+  {
+  	$this->v->set_tplname('mod_match_repost_confirm');
+  	$this->v->set_page_render_mode(View::RENDER_MODE_GENERAL);
+  	$errmsg    = '';
+  	
+  	if ($request->is_post()) { //提交数据
+  		$match_id  = $request->post('match_id', 0);
+  		$player_id = $request->post('player_id', 0);
+  		
+  		$player_info = Match_Model::getPlayerInfo($player_id);
+  		if (empty($match_id) || !Node::isExisted($match_id)) {
+  			$errmsg = "赛事不存在(match_id={$match_id})";
+  		}
+	  	elseif (empty($player_info) || $player_info['status']=='D') {
+	      $errmsg = "该参赛者不存在(参赛号：{$player_id})";
+	    }
+	    elseif ($player_info['status']<>'R') {
+	      $errmsg = "该参赛者被冻结(参赛号：{$player_id})";
+	    }
+	    elseif ($player_info['stage']==0) {
+	    	$errmsg = "该参赛者未晋级，不能修改。";
+	    }
+	    elseif ($player_info['repostcnt']>0) {
+	    	$errmsg = "该参赛者已修改过资料，不能再修改。";
+	    }
+	    else {
+	    	$errmsg = '<em style="color: green">检测通过！</em><script type="text/javascript">window.location.href="'.U('match/'.$match_id.'/repost',['player_id'=>$player_id]).'"</script>';
+	    }
+	    
+	    $this->v->assign('errmsg', $errmsg);
+	    $this->v->assign('match_id', $match_id);
+	    $response->send($this->v);
+  	}
+  	else {
+  		$nid       = $request->arg(1);
+  		
+  		if (empty($nid) || !Node::isExisted($nid)) {
+  			$errmsg = "赛事不存在(nid={$nid})";
+  		}
+  		else {
+  			//SEO信息
+  			$ninfo = Node::getInfo($nid);
+  			$seo = [
+  					'title'   => '上传复赛照片选手确认 - '.$ninfo['title'],
+  					'keyword' => $ninfo['keyword'],
+  					'desc'    => $ninfo['title'],
+  			];
+  			$this->v->assign('seo', $seo);
+  			$this->v->assign('match_id', $nid);
+  		}
+  		
+  		$this->v->assign('errmsg', $errmsg);
+  		$response->send($this->v);
+  	}
+  }
+  
+  /**
+   * 重复上传图片
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function repost(Request $request, Response $response)
+  {
+    //最大上传图片数
+    $maxuploadnum = 10;
+    
+    if ($request->is_post()) { //提交数据
+  
+      $res = ['flag'=>'FAIL', 'msg'=>''];
+  
+      $player_id = $request->post('player_id', 0);/*
+      $truename = $request->post('truename', '');
+      $mobile   = $request->post('mobile', '');
+      $weixin   = $request->post('weixin', '');
+      $province = $request->post('province', 0);
+      $city     = $request->post('city', 0);
+      $idcard   = $request->post('idcard', '');
+      $slogan   = $request->post('slogan', '');
+      $remark   = $request->post('remark', '');*/
+      $video    = $request->post('video', '');
+      $imgs     = $request->post('imgs', []);
+      $cover_idx= $request->post('cover_idx', 0);
+      
+      if (!Match_Model::canRepost($player_id)) {
+      	$res['msg'] = '该参赛者已修改过资料，不能再修改。';
+      	$response->sendJSON($res);
+      }
+  /*
+      $res['imgs'] = $imgs;
+      $response->sendJSON($res);
+      
+      $truename = trim($truename);
+      if(''==$truename){
+        $res['msg'] = '真实姓名必须填写';
+        $response->sendJSON($res);
+      }
+  
+      $mobile = trim($mobile);
+      if(''==$mobile){
+        $res['msg'] = '手机号必须填写';
+        $response->sendJSON($res);
+      }
+      elseif (!preg_match("/^\d{11,14}$/", $mobile)) {
+        $res['msg'] = '手机号不合法';
+        $response->sendJSON($res);
+      }
+  
+      $weixin = trim($weixin);
+      if(''==$weixin){
+        $res['msg'] = '微信号必须填写';
+        $response->sendJSON($res);
+      }
+  
+      $idcard = trim($idcard);
+      if (''!=$idcard && strlen($idcard)!=18 && strlen($idcard)!=15) {
+        $res['msg'] = '身份证号不合法';
+        $response->sendJSON($res);
+      }
+      */
+      $video = trim($video);
+      if (''!=$video && !preg_match("/^http:\/\//i", $video)) {
+        $res['msg'] = '视频地址不合法';
+        $response->sendJSON($res);
+      }
+  
+      if (empty($imgs)) {
+        $res['msg'] = '请至少上传一张图片';
+        $response->sendJSON($res);
+      }
+      elseif (count($imgs) > $maxuploadnum) {
+        $res['msg'] = '最多只能上传'.$maxuploadnum.'张图片，请删除'.(count($imgs)-$maxuploadnum).'张再提交';
+        $response->sendJSON($res);
+      }
+  /*
+      $slogan = trim($slogan);
+      $remark = trim($remark);
+  
+      //将省份、城市平均成: "40:北京"这样的结构
+      if ($province) {
+        $loc = Match_Model::getLocationName($province);
+        if ($loc) {
+          $province = $province.':'.$loc;
+        }
+      }
+      else {
+        $province = '';
+      }
+      if ($city) {
+        $loc = Match_Model::getLocationName($city);
+        if ($loc) {
+          $city = $city.':'.$loc;
+        }
+      }
+      else {
+        $city = '';
+      }
+  */
+      $_data = [/*
+        'truename' => $truename,
+        'mobile'   => $mobile,
+        'weixin'   => $weixin,
+        'province' => $province,
+        'city'     => $city,
+        'idcard'   => $idcard,
+        'slogan'   => $slogan,
+        'remark'   => $remark,
+        'status'   => 'R',*/
+        'video'    => $video
+      ];
+      
+      //保存新增图片，并保持原来的顺序
+      $i = 1;
+      $cover_pic_id = 0;
+      foreach ($imgs AS &$img) {
+      	if (!is_numeric($img)) {
+      		$imgpaths = Match_Model::saveImgData($img);
+      		if (is_numeric($imgpaths)) {
+      			unset($img);
+      			continue;
+      		}
+      		$rid = Match_Model::savePlayerGallery($player_id, $imgpaths);
+      		if ($rid) {
+      			$img = "{$rid}";
+      		}
+      		else {
+      			unset($img);
+      		}
+      	}
+      	if (!$cover_pic_id && isset($img) && is_numeric($img)) { //默认第一张为封面图片
+      		$cover_pic_id = $img;
+      	}
+      }
+      //更新图片
+      if (!empty($imgs) && is_array($imgs)) { //! 务必检查严格
+      	if ($cover_idx && isset($imgs[$cover_idx])) { //如果客户端设定的封面图片有效，则采用客户端的设置
+      		$cover_pic_id = $imgs[$cover_idx];
+      	}
+      	$imgs_idstr = implode(',', $imgs);
+      	$existed_rids = D()->from("player_gallery")->where("`rid` IN(%s)", $imgs_idstr)->select("`rid`")->fetch_column('rid');
+      	if (!empty($existed_rids)) { //! 务必检查严格，否则容易出现丢失图片数据
+      		//先将原有的记录的player_id设为0
+      		D()->query("UPDATE `{player_gallery}` SET `old_player_id`=`player_id`,`player_id`=0 WHERE `player_id`=%d",$player_id);
+      		//紧接着重新关联新的记录
+      		D()->query("UPDATE `{player_gallery}` SET `player_id`=%d,`old_player_id`=%d WHERE `rid` IN(%s)", $player_id, $player_id, $imgs_idstr);
+      		//更新排序
+      		$o = 1;
+      		foreach ($imgs AS $rid) {
+      			D()->query("UPDATE `{player_gallery}` SET `sortorder`=%d WHERE `rid`=%d", $o, $rid);
+      			$o++;
+      		}
+      	}
+      }
+      
+      //更新参赛者信息
+      $_data['cover_pic_id'] = $cover_pic_id;
+      $_data['repostcnt'] = 1;
+      D()->update("player", $_data, ['player_id'=>$player_id]);
+      
+      //返回
+      $res['flag'] = 'SUC';
+      $res['player_id'] = $player_id;
+      $response->sendJSON($res);
+  
+    }
+    else { //载入页面
+      $this->v->set_tplname('mod_match_repost');
+      $this->v->set_page_render_mode(View::RENDER_MODE_GENERAL);
+  
+      $errmsg    = '';
+      $nid       = $request->arg(1);
+      $player_id = $request->get('player_id', 0);
+      
+      $player_info = Match_Model::getPlayerInfo($player_id);
+      if (empty($nid) || !Node::isExisted($nid)) {
+        $errmsg = "赛事不存在(nid={$nid})";
+      }
+      elseif (empty($player_info) || $player_info['status']=='D') {
+      	$errmsg = "参赛者不存在(player_id={$player_id})";
+      }
+      elseif ($player_info['status']<>'R') {
+      	$errmsg = "参赛者被冻结(player_id={$player_id})";
+      }
+      elseif ($player_info['stage']==0) {
+      	$errmsg = "该参赛者未晋级，不能修改。";
+      }
+      else {
+        //SEO信息
+        $ninfo = Node::getInfo($nid);
+        $seo = [
+          'title'   => '上传复赛照片 - '.$ninfo['title'],
+          'keyword' => $ninfo['keyword'],
+          'desc'    => $ninfo['title'],
+        ];
+        $this->v->assign('seo', $seo);
+        
+        //获取选手图片信息
+        $rs = Match_Model::getPlayerGallery($player_id, true);
+        $player_gallery = $rs ? : [];
+        $this->v->assign('player_gallery', $player_gallery);
+        $this->v->assign('player_gallery_num', count($player_gallery));
+      }
+
+      /*
+      if (''==$errmsg) {
+        $province = Match_Model::getProvinces();
+        $this->v->assign('province', $province);
+        $this->v->assign('nid', $nid);
+      }
+      */
+      
+      $this->v->assign('errmsg', $errmsg);
+      $this->v->assign('maxuploadnum', $maxuploadnum);
+      $this->v->assign('player_info', $player_info);
+      
+      $response->send($this->v);
+    }
+  }
+  
+  /**
    * 获取省下的城市名列表
    *
    * @param Request $request
@@ -505,7 +855,11 @@ class Match_Controller extends Controller {
       $ninfo = Node::getInfo($player_info['match_id']);
       
       //选手“投票数”统计
-      $player_info['votecnt_single'] = Node::getActionNum($player_id, 'vote');
+      $time_from = 0;
+      if ($player_info['stage'] > 0) {
+      	$time_from = Node::getMatchStageTime($player_info['match_id']);
+      }
+      $player_info['votecnt_single'] = Node::getActionNum($player_id, 'vote', $time_from);
       
       //排名信息
       $player_info['rank_info'] = Match_Model::getRankInfo($player_info['match_id'], $player_id);
@@ -656,12 +1010,20 @@ class Match_Controller extends Controller {
       
       $ret = Node::action('vote', $player_id, $uid);
       if ($ret >= 0) {
+      	
+      	$time_from  = 0;
+      	$vote_field = 'votecnt';
+      	$player_info= Match_Model::getPlayerInfo($player_id);
+      	if ($player_info['stage'] > 0) {
+      		$time_from  = Node::getMatchStageTime($player_info['match_id']);
+      		$vote_field = Node::getVoteFiled($player_info['stage']);
+      	}
         
         //返回当前player总投票数(包括flower加权)
-        $votedcnt = D()->from("player")->where("player_id=%d", $player_id)->select("votecnt")->result();
+        $votedcnt = $player_info[$vote_field];
         
         //返回当前player投票数
-        $votedcnt_single = Node::getActionNum($player_id, 'vote');
+        $votedcnt_single = Node::getActionNum($player_id, 'vote', $time_from);
         
         $res['flag'] = 'SUC';
         $res['msg']  = "投票成功！";

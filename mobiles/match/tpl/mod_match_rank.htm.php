@@ -35,7 +35,7 @@ function gorank(obj) {
 <?php if($listnum):?>
 
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'):?>
-		<li class="h"><div class="c-12-2 cc">名次</div><div class="c-12-4 cl">选手</div><div class="c-12-2 cc">票数</div><div class="c-12-2 cc">花数</div><div class="c-12-2 cc">总票数</div></li>
+		<li class="h"><div class="c-12-2 cc">名次</div><div class="c-12-4 cl">选手</div><div class="c-12-2 cc">投票数</div><div class="c-12-2 cc">送花数</div><div class="c-12-2 cc">总票数</div></li>
 	<?php elseif ($type=='week_rank'):?>
 		<li class="h zgj"><div class="c-10-2 cc zhouci">周次</div><div class="c-10-4 cl renqi"><em>👑</em>人气女神</div><div class="c-10-4 cl xianhua"><em>🌺</em>鲜花女神</div></li>
 		<li class="holder"></li>
@@ -44,11 +44,11 @@ function gorank(obj) {
 		<?php foreach ($ranklist AS $it):?>
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'):?>
 		<li>
-			<div class="c-12-2 cc"><?=$it['rankno']?></div>
+			<div class="c-12-2 cc">第<em><?=$it['rankno']?></em>名</div>
 			<div class="c-12-4 cl"><a href="<?php echo U('player/'.$it['player_id'])?>" class="cimg"><img src="<?=$it['img_thumb']?>" alt="" class="ulogo"/><span><?=$it['truename']?></span><br/><span class="plno"><?=$it['player_id']?>号</span></a></div>
 			<div class="c-12-2 cc"><?=$it['votecnt_single']?></div>
 			<div class="c-12-2 cc"><?=$it['flowercnt']?></div>
-			<div class="c-12-2 cc"><?=$it['votecnt']?></div>
+			<div class="c-12-2 cc"><?php if($it['stage']>0){echo $it['votecnt'.$it['stage']];}else{echo $it['votecnt'];}?></div>
 		</li>
 	<?php elseif ($type=='week_rank'):?>
 		<li>

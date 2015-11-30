@@ -38,7 +38,7 @@
   <div class="match-pos btmnav">
     <a class="navit" href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt_single']?></em>票)</span></a>
     <a class="navit" href="<?php echo U('trade/order/confirm',['goods'=>'flower','player_id'=>$player_info['player_id']])?>" id="op-toflower">送花<br><span>(<em><?=$player_info['flowercnt']?></em>花)</span></a>
-    <a class="navit" href="javascript:;" id="op-tokiss">总票数<br><span>(<em><?=$player_info['votecnt']?></em>票)</span></a>
+    <a class="navit" href="javascript:;" id="op-tokiss">总票数<br><span>(<em><?php if($player_info['stage']>0){ echo $player_info['votecnt'.$player_info['stage']]; }else{ echo $player_info['votecnt']; }?></em>票)</span></a>
     <a class="navit" href="javascript:;" id="op-toshare">分享给<br><span>朋友</span></a>
   </div>
 <script type="text/javascript">
