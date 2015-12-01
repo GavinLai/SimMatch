@@ -423,8 +423,8 @@ class Match_Model extends Model {
   	elseif ($type=='week_rank') {
   		$match_info = Node::getInfo($extra['match_id']);
   		$now_dt = date('Y-m-d H:i:s');
-  		$sql = "SELECT * FROM `{rank_week}` WHERE `match_id`=%d AND `match_type`='%s' ORDER BY `weekno` ASC";
-  		$result = D()->query($sql, $extra['match_id'], $match_info['match_type'])->fetch_array_all();
+  		$sql = "SELECT * FROM `{rank_week}` WHERE `match_id`=%d ORDER BY `weekno` ASC";
+  		$result = D()->query($sql, $extra['match_id'])->fetch_array_all();
   		$true_rs = [];
   		foreach ($result AS &$it) {
   			$it['weekno_txt'] = '第' . Fn::to_cnnum($it['weekno']) . '周';

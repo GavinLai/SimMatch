@@ -138,21 +138,17 @@ class Match_Controller extends Controller {
         
         //检查是否启用记录的页码
         if (!$page) {
-        	$page = 1;
-        	/*
         	if (''==$search) {
-        		$page = isset($_SESSION['mark_pageno']) ? $_SESSION['mark_pageno'] : 1;
+        		$page = isset($_SESSION['mark_pageno']) ? intval($_SESSION['mark_pageno']) : 1;
         	}
         	else {
         		$page = 1;
-        	}*/
+        	}
         }
         else {
-        	/*
         	if (''==$search) {
         		$_SESSION['mark_pageno'] = $page;
         	}
-        	*/
         }
         $start = ($page-1) * $limit;
         $totalnum = 0;

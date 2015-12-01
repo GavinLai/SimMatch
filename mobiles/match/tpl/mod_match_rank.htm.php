@@ -44,7 +44,7 @@ function gorank(obj) {
 		<?php foreach ($ranklist AS $it):?>
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'):?>
 		<li>
-			<div class="c-12-2 cc">第<em><?=$it['rankno']?></em>名</div>
+			<div class="c-12-2 cc"><?php if($it['rankno']<100):?>第<?php endif;?><em><?=$it['rankno']?></em>名</div>
 			<div class="c-12-4 cl"><a href="<?php echo U('player/'.$it['player_id'])?>" class="cimg"><img src="<?=$it['img_thumb']?>" alt="" class="ulogo"/><span><?=$it['truename']?></span><br/><span class="plno"><?=$it['player_id']?>号</span></a></div>
 			<div class="c-12-2 cc"><?=$it['votecnt_single']?></div>
 			<div class="c-12-2 cc"><?=$it['flowercnt']?></div>
