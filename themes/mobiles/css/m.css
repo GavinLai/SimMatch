@@ -304,12 +304,12 @@ a.alink { color: #b5359d; }
 #match-preview .pvop a { color: #fff; background: #8c441e;padding: 4px 15px;margin-left: 3px;font-size: 13px;font-size: 1.3rem; }
 
 /*match confirm页*/
-.match-confirm .row { text-align: center;margin-bottom: 30px; }
+.match-confirm .row { text-align: center;margin-bottom: 20px; }
 .match-confirm .row.row-tit { margin: 30px 0 20px; }
 .match-confirm .row.row-btn { margin-bottom: 10px; }
 .match-confirm h1 { font-size: 20px;font-size: 2rem; }
-.match-confirm .row-ele { width: 50%; }
-.match-confirm .btn { width: 50%; }
+.match-confirm .row-ele { width: 80%; }
+.match-confirm .btn { width: 80%; }
 .match-confirm .err { color: #ff0000;text-align:center; }
 
 /* match player页 */

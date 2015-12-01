@@ -508,6 +508,8 @@ class Match_Controller extends Controller {
   	if ($request->is_post()) { //提交数据
   		$match_id  = $request->post('match_id', 0);
   		$player_id = $request->post('player_id', 0);
+  		$mobile    = $request->post('mobile', '');
+  		$mobile = trim($mobile);
   		
   		$player_info = Match_Model::getPlayerInfo($player_id);
   		if (empty($match_id) || !Node::isExisted($match_id)) {
@@ -519,6 +521,12 @@ class Match_Controller extends Controller {
 	    elseif ($player_info['status']<>'R') {
 	      $errmsg = "该参赛者被冻结(参赛号：{$player_id})";
 	    }
+	    elseif (empty($mobile)) {
+	    	$errmsg = "手机号或微信号没输入，无法确认身份";
+	    }
+	    elseif ($mobile!=$player_info['mobile'] && $mobile!=$player_info['weixin']) {
+	    	$errmsg = "手机号或微信号不对，身份确认失败！";
+	    }
 	    elseif ($player_info['stage']==0) {
 	    	$errmsg = "该参赛者未晋级，不能修改。";
 	    }
@@ -527,6 +535,7 @@ class Match_Controller extends Controller {
 	    }
 	    else {
 	    	$errmsg = '<em style="color: green">检测通过！</em><script type="text/javascript">window.location.href="'.U('match/'.$match_id.'/repost',['player_id'=>$player_id]).'"</script>';
+	    	$_SESSION['canrepost'] = 1;
 	    }
 	    
 	    $this->v->assign('errmsg', $errmsg);
@@ -571,15 +580,7 @@ class Match_Controller extends Controller {
   
       $res = ['flag'=>'FAIL', 'msg'=>''];
   
-      $player_id = $request->post('player_id', 0);/*
-      $truename = $request->post('truename', '');
-      $mobile   = $request->post('mobile', '');
-      $weixin   = $request->post('weixin', '');
-      $province = $request->post('province', 0);
-      $city     = $request->post('city', 0);
-      $idcard   = $request->post('idcard', '');
-      $slogan   = $request->post('slogan', '');
-      $remark   = $request->post('remark', '');*/
+      $player_id = $request->post('player_id', 0);
       $video    = $request->post('video', '');
       $imgs     = $request->post('imgs', []);
       $cover_idx= $request->post('cover_idx', 0);
@@ -588,38 +589,11 @@ class Match_Controller extends Controller {
       	$res['msg'] = '该参赛者已修改过资料，不能再修改。';
       	$response->sendJSON($res);
       }
-  /*
-      $res['imgs'] = $imgs;
-      $response->sendJSON($res);
+      if (!isset($_SESSION['canrepost']) || !$_SESSION['canrepost']) {
+      	$res['msg'] = '确认身份失败，不能修改。';
+      	$response->sendJSON($res);
+      }
       
-      $truename = trim($truename);
-      if(''==$truename){
-        $res['msg'] = '真实姓名必须填写';
-        $response->sendJSON($res);
-      }
-  
-      $mobile = trim($mobile);
-      if(''==$mobile){
-        $res['msg'] = '手机号必须填写';
-        $response->sendJSON($res);
-      }
-      elseif (!preg_match("/^\d{11,14}$/", $mobile)) {
-        $res['msg'] = '手机号不合法';
-        $response->sendJSON($res);
-      }
-  
-      $weixin = trim($weixin);
-      if(''==$weixin){
-        $res['msg'] = '微信号必须填写';
-        $response->sendJSON($res);
-      }
-  
-      $idcard = trim($idcard);
-      if (''!=$idcard && strlen($idcard)!=18 && strlen($idcard)!=15) {
-        $res['msg'] = '身份证号不合法';
-        $response->sendJSON($res);
-      }
-      */
       $video = trim($video);
       if (''!=$video && !preg_match("/^http:\/\//i", $video)) {
         $res['msg'] = '视频地址不合法';
@@ -634,40 +608,7 @@ class Match_Controller extends Controller {
         $res['msg'] = '最多只能上传'.$maxuploadnum.'张图片，请删除'.(count($imgs)-$maxuploadnum).'张再提交';
         $response->sendJSON($res);
       }
-  /*
-      $slogan = trim($slogan);
-      $remark = trim($remark);
-  
-      //将省份、城市平均成: "40:北京"这样的结构
-      if ($province) {
-        $loc = Match_Model::getLocationName($province);
-        if ($loc) {
-          $province = $province.':'.$loc;
-        }
-      }
-      else {
-        $province = '';
-      }
-      if ($city) {
-        $loc = Match_Model::getLocationName($city);
-        if ($loc) {
-          $city = $city.':'.$loc;
-        }
-      }
-      else {
-        $city = '';
-      }
-  */
-      $_data = [/*
-        'truename' => $truename,
-        'mobile'   => $mobile,
-        'weixin'   => $weixin,
-        'province' => $province,
-        'city'     => $city,
-        'idcard'   => $idcard,
-        'slogan'   => $slogan,
-        'remark'   => $remark,
-        'status'   => 'R',*/
+      $_data = [
         'video'    => $video
       ];
       
@@ -720,6 +661,7 @@ class Match_Controller extends Controller {
       D()->update("player", $_data, ['player_id'=>$player_id]);
       
       //返回
+      if(isset($_SESSION['canrepost'])) unset($_SESSION['canrepost']);
       $res['flag'] = 'SUC';
       $res['player_id'] = $player_id;
       $response->sendJSON($res);
@@ -762,14 +704,6 @@ class Match_Controller extends Controller {
         $this->v->assign('player_gallery', $player_gallery);
         $this->v->assign('player_gallery_num', count($player_gallery));
       }
-
-      /*
-      if (''==$errmsg) {
-        $province = Match_Model::getProvinces();
-        $this->v->assign('province', $province);
-        $this->v->assign('nid', $nid);
-      }
-      */
       
       $this->v->assign('errmsg', $errmsg);
       $this->v->assign('maxuploadnum', $maxuploadnum);
