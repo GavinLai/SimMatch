@@ -30,10 +30,7 @@
 	  <a class="barit lastit tojoin" href="<?php echo U('match/'.$player_info['match_id'].'/join')?>">报名</a>
   </div>
   <a class="match-pos torank" href="<?php echo U('match/'.$player_info['match_id'].'/rank',['player_id' =>$player_info['player_id'] ])?>">
-  当前排名：<em><?=$player_info['rank_info']['rank']?></em><br/>选手总数：<em><?=$player_info['rank_info']['total']?></em>
-  <!-- 
-    <span>排名</span>
-   -->
+  <?php if($player_info['is_goup']):?>晋级组排名：<?php else:?>未晋级组排名：<?php endif;?><em><?=$player_info['rank_info']['rank']?></em><br/><?php if($player_info['is_goup']):?>晋级组总数：<?php else:?>未晋级组总数：<?php endif;?><em><?=$player_info['rank_info']['total']?></em>
   </a>
   <div class="match-pos btmnav">
     <a class="navit" href="javascript:;" id="op-tovote">投票<br><span>(<em><?=$player_info['votecnt_single']?></em>票)</span></a>

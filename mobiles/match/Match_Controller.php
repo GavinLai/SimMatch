@@ -858,7 +858,9 @@ class Match_Controller extends Controller {
       $player_info['votecnt_single'] = Node::getActionNum($player_id, 'vote', $time_from);
       
       //排名信息
-      $player_info['rank_info'] = Match_Model::getRankInfo($player_info['match_id'], $player_id);
+      $current_stage = $ninfo['current_stage'];
+      $player_info['rank_info'] = Match_Model::getRankInfo($player_info['match_id'], $player_info, $current_stage);
+      $player_info['is_goup']= $player_info['stage']==$current_stage ? true : false;
       
       $usecdn = C('env.usecdn');
       $player_info['qrcode'] = 2==$usecdn&&$player_info['qrcode_cdn']!='' ? $player_info['qrcode_cdn'] : $player_info['qrcode'];

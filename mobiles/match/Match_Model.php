@@ -333,20 +333,30 @@ class Match_Model extends Model {
     return $ret;
   }
   
-  static function getRankInfo($match_id, $player_id) {
-    if (!$player_id) {
+  static function getRankInfo($match_id, $player_id, $current_stage = 0) {
+    if (empty($player_id)) {
       return false;
     }
-    $total_players  = D()->from("player")->where("`match_id`=%d AND `status`='R'", $match_id)->select("COUNT(player_id) AS rnum")->result();
-    $player_votecnt = D()->from("player")->where("`match_id`=%d AND `player_id`=%d AND `status`='R'", $match_id, $player_id)->select("votecnt")->result();
-    $player_ids = D()->from("player")->where("`match_id`=%d AND `votecnt`>=%d AND `status`='R'", $match_id, $player_votecnt)->order_by("votecnt DESC, player_id ASC")->select("player_id")->fetch_column('player_id');
-    $rank = 0;
-    foreach ($player_ids AS $pid) {
-      ++$rank;
-      if ($pid==$player_id) {
-        break;
-      }
+    $player_info = $player_id;
+    if (!is_array($player_id)) {
+    	$player_info = self::getPlayerInfo($player_id);
     }
+    $votefield = 'votecnt';
+    $stage_part= '';
+    if ($current_stage > 0) {
+    	$stage_part="AND `stage`<{$current_stage}";
+    	if ($player_info['stage']==$current_stage) {
+    		$stage_part="AND `stage`={$current_stage}";
+    		$votefield = 'votecnt'.$current_stage;
+    	}
+    }
+    $total_players  = D()->from("player")->where("`match_id`=%d AND `status`='R' {$stage_part}", $match_id)->select("COUNT(player_id) AS rnum")->result();
+    $player_votecnt = $player_info[$votefield];
+    $player_num = D()->from("player")
+                     ->where("`match_id`=%d AND `{$votefield}`>%d AND `status`='R' {$stage_part}", $match_id, $player_votecnt)
+                     ->select("COUNT(`player_id`) AS pnum")
+                     ->result();
+    $rank = $player_num+1;
     return ['total'=>$total_players, 'rank'=>$rank];
   }
   
@@ -361,16 +371,20 @@ class Match_Model extends Model {
   }
   
   static function getCurrMatchStage($match_id) {
-  	$rs = D()->from("node_match")->where("`enid`=%d", $match_id)->select("current_stage")->result();
-  	return $rs ? : 0;
+  	static $rs;
+  	if (!isset($rs)) {
+  		$rs = D()->from("node_match")->where("`enid`=%d", $match_id)->select("current_stage")->result();
+  		$rs = $rs ? : 0;
+  	}
+  	return $rs;
   }
   
   static function getRankList($type, $start=0, $limit=20, Array $extra = array(), &$hasmore = false) {
   	$hasmore = false;
   	if ($type=='') {
-  		$type = 'total_rank';
+  		$type = 'pass_rank';
   	}
-  	if (!in_array($type, ['total_rank','pass_rank','week_rank','most_vote','most_flower'])) {
+  	if (!in_array($type, ['total_rank','pass_rank','nopass_rank','week_rank','most_vote','most_flower'])) {
   		return [];
   	}
   	if (in_array($type, ['most_vote','most_flower']) && empty($extra['player_id'])) {
@@ -393,16 +407,24 @@ class Match_Model extends Model {
   			array_pop($result); //去掉多出的一个
   		}
   	}
-  	elseif ($type=='total_rank' || $type=='pass_rank') {
+  	elseif ($type=='total_rank' || $type=='pass_rank' || $type=='nopass_rank') {
   		$where_extra = '';
+  		$votefield = 'votecnt';
   		if ($type=='pass_rank') {
   			$currstage = self::getCurrMatchStage($extra['match_id']);
   			$where_extra = 'AND p.`stage`='.$currstage;
+  			if ($currstage>0) {
+  				$votefield = 'votecnt'.$currstage;
+  			}
+  		}
+  		elseif ($type=='nopass_rank') {
+  			$currstage = self::getCurrMatchStage($extra['match_id']);
+  			$where_extra = 'AND p.`stage`<'.$currstage;
   		}
   	  $sql = "SELECT p.*,pg.img_thumb,pg.img_thumb_cdn
   	  		    FROM `{player}` p INNER JOIN `{player_gallery}` pg ON p.cover_pic_id=pg.rid
   	  		    WHERE p.`match_id`=%d {$where_extra} AND p.`status`='R'
-  	  		    ORDER BY votecnt DESC
+  	  		    ORDER BY p.{$votefield} DESC, p.player_id ASC
   	  		    LIMIT %d,%d";
   		$result = D()->query($sql, $extra['match_id'], $start, $limit_true)->fetch_array_all();
   		if (!empty($result)) {
@@ -410,10 +432,21 @@ class Match_Model extends Model {
   				$hasmore = true;
   				array_pop($result); //去掉多出的一个
   			}
+  			
   			$i = 1;
+  			$prevote = PHP_INT_MAX;
+  			$prerank = -1;
   			$time_from = Node::getMatchStageTime($extra['match_id']);
   			foreach ($result AS &$it) {
-  				$it['rankno'] = $start + $i; //添加"排名"字段
+  				//添加"排名"字段
+  				if ($it[$votefield] < $prevote) {
+  					$it['rankno'] = $start + $i;
+  					$prerank = $it['rankno'];
+  				}
+  				else {
+  					$it['rankno'] = $prerank;
+  				}
+  				$prevote = $it[$votefield];
   				$it['votecnt_single'] = Node::getActionNum($it['player_id'], 'vote', ($it['stage'] > 0 ? $time_from : 0));
   				$it['img_thumb'] = fixpath(2==$usecdn&&$it['img_thumb_cdn']!=''?$it['img_thumb_cdn']:$it['img_thumb']);
   				$i++;
