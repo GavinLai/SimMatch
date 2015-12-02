@@ -35,7 +35,10 @@ function gorank(obj) {
 <?php if($listnum):?>
 
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'||$type=='nopass_rank'):?>
-		<li class="h"><div class="c-12-2 cc">名次</div><div class="c-12-4 cl">选手</div><div class="c-12-2 cc">投票数</div><div class="c-12-2 cc">送花数</div><div class="c-12-2 cc">总票数</div></li>
+		<?php if($type==''||$type=='pass_rank'):?>
+	  <li class="t">复赛总票数 = 初赛总票数<em style="color:red">x30%</em> + 复赛阶段投票数 + 复赛鲜花数<em style="color:red">x2</em>（此处显示的鲜花总数为初赛总花数与复赛已得鲜花数的总和）</li>
+	  <?php endif;?>
+		<li class="h"><div class="c-12-3 cc">名次</div><div class="c-12-4 cl">选手</div><div class="c-12-2 cc">送花数</div><div class="c-12-3 cc">总票数</div></li>
 	<?php elseif ($type=='week_rank'):?>
 		<li class="h zgj"><div class="c-10-2 cc zhouci">周次</div><div class="c-10-4 cl renqi"><em>👑</em>人气女神</div><div class="c-10-4 cl xianhua"><em>🌺</em>鲜花女神</div></li>
 		<li class="holder"></li>
@@ -44,11 +47,10 @@ function gorank(obj) {
 		<?php foreach ($ranklist AS $it):?>
 	<?php if($type==''||$type=='total_rank'||$type=='pass_rank'||$type=='nopass_rank'):?>
 		<li>
-			<div class="c-12-2 cc"><?php if($it['rankno']<100):?>第<?php endif;?><em><?=$it['rankno']?></em>名</div>
+			<div class="c-12-3 cc">第<em><?=$it['rankno']?></em>名</div>
 			<div class="c-12-4 cl"><a href="<?php echo U('player/'.$it['player_id'])?>" class="cimg"><img src="<?=$it['img_thumb']?>" alt="" class="ulogo"/><span><?=$it['truename']?></span><br/><span class="plno"><?=$it['player_id']?>号</span></a></div>
-			<div class="c-12-2 cc"><?=$it['votecnt_single']?></div>
 			<div class="c-12-2 cc"><?=$it['flowercnt']?></div>
-			<div class="c-12-2 cc"><?php if($it['stage']>0){echo $it['votecnt'.$it['stage']];}else{echo $it['votecnt'];}?></div>
+			<div class="c-12-3 cc"><?php if($it['stage']>0){echo $it['votecnt'.$it['stage']];}else{echo $it['votecnt'];}?></div>
 		</li>
 	<?php elseif ($type=='week_rank'):?>
 		<li>

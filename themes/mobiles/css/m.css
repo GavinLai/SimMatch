@@ -356,6 +356,7 @@ a.alink { color: #b5359d; }
 /*rank页面*/
 #ranklist { width: 94%;margin: 10px auto; }
 #ranklist li { width: 100%;overflow: auto;zoom: 1;margin-bottom: 10px; }
+#ranklist li.t { text-align: left;color: #999; }
 #ranklist li.h { font-weight: bold; }
 #ranklist li.e { margin: 20px 0; }
 #ranklist li.e a { display: block;text-align: center;border-radius: 5px;background: #ddd;color: #5f646e;height: 40px;line-height: 40px;font-size: 16px;font-size: 1.6rem; }

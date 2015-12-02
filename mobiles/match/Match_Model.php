@@ -450,7 +450,7 @@ class Match_Model extends Model {
   					$it['rankno'] = $prerank;
   				}
   				$prevote = $it[$votefield];
-  				$it['votecnt_single'] = Node::getActionNum($it['player_id'], 'vote', ($it['stage'] > 0 ? $time_from : 0));
+  				//$it['votecnt_single'] = Node::getActionNum($it['player_id'], 'vote', ($it['stage'] > 0 ? $time_from : 0));
   				$it['img_thumb'] = fixpath(2==$usecdn&&$it['img_thumb_cdn']!=''?$it['img_thumb_cdn']:$it['img_thumb']);
   				$i++;
   			}
