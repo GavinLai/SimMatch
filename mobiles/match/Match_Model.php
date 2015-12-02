@@ -245,6 +245,7 @@ class Match_Model extends Model {
   
   static function getPlayerList($match_id, $search = '', $start = 0, $limit = 20, &$totalnum = 0, &$maxpage = 0, $exclude_player_ids = array()) {
   	$where = '';
+  	$order_votefield = 'votecnt';
   	if (!empty($search)) {
   		if (is_numeric($search)) {
   			$where .= " AND p.`player_id`=%d";
@@ -253,14 +254,15 @@ class Match_Model extends Model {
   			$search = implode(',', $search);
   			$where .= " AND p.`player_id` IN(%s)";
   		}
-  		elseif (($pos=strrpos($search, '+'))!==false) {
-  			//$search = substr($search, 0, $pos);
+  		elseif (($pos=strrpos($search, '+'))!==false) { //已晋级
   			$search = self::getCurrMatchStage($match_id);
   			$where .= " AND p.`stage`=%d";
+  			if ($search>0) $order_votefield .= $search;
   		}
   		elseif (($pos=strrpos($search, '-'))!==false) { //未晋级
   			$search = self::getCurrMatchStage($match_id);
   			$where .= " AND p.`stage`<%d";
+  			if ($search>0) $order_votefield .= $search;
   		}
   		else {
   			$where .= " AND p.`truename` like '%%%s%%'";
@@ -269,6 +271,7 @@ class Match_Model extends Model {
   	else {
   		$search = self::getCurrMatchStage($match_id); //默认显示晋级的
   		$where .= " AND p.`stage`=%d";
+  		if ($search>0) $order_votefield .= $search;
   	}
   	if (!empty($exclude_player_ids)) {
   		$exclude_ids_str = implode(',', $exclude_player_ids); 
@@ -279,7 +282,7 @@ class Match_Model extends Model {
   	               ->select("COUNT(p.`player_id`) AS rcnt")->result();
   	$maxpage  = ceil($totalnum / ($limit?:10));
     $list = D()->query("SELECT p.`player_id`,p.`match_id`,p.`uid`,p.`cover_pic_id`,p.`truename`,p.`slogan`,p.`stage`,p.`votecnt`,p.`votecnt1`,p.`votecnt2`,p.`flowercnt`,p.`kisscnt`,IFNULL(pg.img_thumb,'') AS img_thumb,IFNULL(pg.img_thumb_cdn,'') AS img_thumb_cdn
-    		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`votecnt` DESC,p.`player_id` ASC LIMIT {$start}, {$limit}",
+    		               FROM {player} p LEFT JOIN {player_gallery} pg ON p.cover_pic_id=pg.rid WHERE p.`match_id`=%d {$where} AND p.`status`='R' ORDER BY p.`{$order_votefield}` DESC,p.`player_id` ASC LIMIT {$start}, {$limit}",
     		               $match_id, $search)
                ->fetch_array_all();
     if (!empty($list)) {
