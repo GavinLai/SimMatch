@@ -84,18 +84,17 @@ $(function(){
   <div class="search-box"><form action="" method="get" onsubmit="return searchform(this)"><input type="search" name="search" value="<?=$search?>" class="stext" placeholder="请输入“选手姓名 或 编号”搜索"/><input type="submit" name="submit" class="sbtn" value="  "/></form></div>
 <?php endif;?>
   <div id="player-list" class="player-list">
-
 <!--{AJAXPART}-->
   <?php if (!$player_num):?>
     <div class="emptytip"><?php if($search!=''):?>找不到对应的参赛选手<?php else:?>还没有参赛选手，快来做第一个吧！<a href="/match/<?=$the_nid?>/join">我要参赛！</a><?php endif;?></div>
   <?php else:?>
-  
+  <div class="listtip">12月20日总票数排名前30的选手晋级地面决赛</div>
   <?php foreach ($player_list AS $it):?>
     <div class="itbox">
       <a href="<?php echo U('player/'.$it['player_id'])?>" class="itcont hl<?=$it['rankflag']?>">
         <div class="cot">编号 <?=$it['player_id']?><span class="rt">姓名 <?=$it['truename']?></span>
         <?php if($it['ranktxt']!=''):?>
-        <br/><span class="ranktip"><?php if($it['rankflag']==1):?>👑<?php else:?>🌺<?php endif;?>&nbsp;<?=$it['ranktxt']?></span>
+        <br/><span class="ranktip"><?php if($it['rankflag']==1):?>👑&nbsp;<?php elseif($it['rankflag']==2):?>🌺&nbsp;<?php else:?>🏆<?php endif;?><?=$it['ranktxt']?></span>
         <?php endif;?>
         	<p class="imgc"><span class="edge"></span><img src="<?=$it['img_thumb']?>" alt="" /></p>
         </div>

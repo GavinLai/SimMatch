@@ -287,6 +287,10 @@ class Match_Model extends Model {
                ->fetch_array_all();
     if (!empty($list)) {
     	$usecdn = C('env.usecdn');
+    	$i = 1;
+    	$prevote = PHP_INT_MAX;
+    	$prerank = -1;
+    	$votefield = $order_votefield;
       foreach($list AS &$it) {
       	if (''==$it['img_thumb']) { //封面图片id未设置
       		$row = D()->from("player_gallery")->where("`player_id`=%d", $it['player_id'])->limit(0, 1)->select("`img_thumb`,`img_thumb_cdn`")->get_one();
@@ -295,6 +299,17 @@ class Match_Model extends Model {
       	else {
       		$it['img_thumb'] = 2==$usecdn&&$it['img_thumb_cdn']!='' ? $it['img_thumb_cdn'] : $it['img_thumb'];
       	}
+      	
+      	//添加"排名"字段
+      	if ($it[$votefield] < $prevote) {
+      		$it['rankno'] = $start + $i;
+      		$prerank = $it['rankno'];
+      	}
+      	else {
+      		$it['rankno'] = $prerank;
+      	}
+      	$i++;
+      	$prevote = $it[$votefield];
       }
     }
     return $list;
@@ -544,24 +559,32 @@ class Match_Model extends Model {
   		foreach ($player_list AS &$it) {
   			$it['rankflag'] = 0;
   			$it['ranktxt']  = '';
-  			if (!$include_before && !empty($see_weekinfo)) {
-  				if ($it['player_id'] == $see_weekinfo['player_id1']) { //只显示最新冠军数据
-  					$it['rankflag']= 1;
-  					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
-  				}
-  				if ($it['player_id'] == $see_weekinfo['player_id2']) {
-  					$it['rankflag']= 2;
-  					$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+  			if ($it['stage'] > 0) {
+  				if ($it['rankno'] <= 30) {
+  					$it['rankflag'] = 3;
+  					$it['ranktxt'] = '决赛席位争夺中...';
   				}
   			}
-  			elseif ($include_before && !empty($week_player_ids)) { //之前冠军数据也显示
-  				if (in_array($it['player_id'], $week_player_ids['player_ids1'])) {
-  					$it['rankflag']= 1;
-  					$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id1_'.$it['player_id']]).'周人气女神';
+  			else {
+  				if (!$include_before && !empty($see_weekinfo)) {
+  					if ($it['player_id'] == $see_weekinfo['player_id1']) { //只显示最新冠军数据
+  						$it['rankflag']= 1;
+  						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周人气女神';
+  					}
+  					if ($it['player_id'] == $see_weekinfo['player_id2']) {
+  						$it['rankflag']= 2;
+  						$it['ranktxt'] = '第'.Fn::to_cnnum($see_weekinfo['weekno']).'周鲜花女神';
+  					}
   				}
-  				if (in_array($it['player_id'], $week_player_ids['player_ids2'])) {
-  					$it['rankflag']= 2;
-  					$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id2_'.$it['player_id']]).'周鲜花女神';
+  				elseif ($include_before && !empty($week_player_ids)) { //之前冠军数据也显示
+  					if (in_array($it['player_id'], $week_player_ids['player_ids1'])) {
+  						$it['rankflag']= 1;
+  						$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id1_'.$it['player_id']]).'周人气女神';
+  					}
+  					if (in_array($it['player_id'], $week_player_ids['player_ids2'])) {
+  						$it['rankflag']= 2;
+  						$it['ranktxt'] = '第'.Fn::to_cnnum($week_player_ids['weekno']['id2_'.$it['player_id']]).'周鲜花女神';
+  					}
   				}
   			}
   		}
