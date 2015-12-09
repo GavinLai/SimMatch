@@ -314,6 +314,21 @@ a.alink { color: #b5359d; }
 .match-confirm .btn { width: 80%; }
 .match-confirm .err { color: #ff0000;text-align:center; }
 
+/*match address页*/
+.topnav-form { color: #5f646e;text-align: center;font-size: 16px;font-size: 1.6rem; }
+.topnav-form a { display: block;float: left;width: 15%;height: 100%; }
+.topnav-form a.rt { float: right;color: #f00/*#b5359d;*/ }
+.match-address { background: #fff;border-color: #ddd;border-style: solid;border-width: 1px 0;padding: 0 0 0 10px;margin-top: 10px; }
+.match-address ul {  }
+.match-address li { border-bottom: 1px solid #ddd;overflow: auto;zoom: 1;height:40px;line-height: 40px;  }
+.match-address li.last { border-bottom: none; }
+.match-address li > div { height: 100%; }
+.match-address li input { border: none;width: 95%;height: 30px; }
+.match-address-tip { color: #44b549; }
+.match-address-tit { padding: 10px;margin-top: 10px; }
+.match-address-tit span,.match-address-tit em { font-weight: bold;margin: 0 2px; }
+.match-address-tit em { color: #f00; }
+
 /* match player页 */
 .match-player,.match-player .swipe,.match-player .slider,.match-player .slidit { height: 100%;width: 100%; }
 .match-player { position: relative; }
@@ -351,7 +366,7 @@ a.alink { color: #b5359d; }
 .box-payamount .frmbox .r2 { color: #44b549; }
 .box-payamount .frmbox .r2 em { color: #ff0000; }
 .box-payamount .frmbox .r3 { color: #b5359d; }
-.box-payamount .frmbox .r4 { color: #007cf7; }
+.box-payamount .frmbox .r4 { color: #007cf7;line-height: 1.75; }
 .match-topay .box-topay { position: absolute;bottom: 0;left: 0;width: 100%;height: 60px;line-height: 60px;background: #b5359d;text-align: center; }
 .match-topay .box-topay .btn { width: 100%;height: 100%;border: none;border-radius: 0;background: transparent;color: #fff;font-size: 20px;font-size: 2rem; }
 

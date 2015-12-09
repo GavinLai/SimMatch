@@ -265,11 +265,14 @@ class Trade_Controller extends Controller {
       });
       
       //检查player是否存在
-      if (!Node::playerExisted($player_id)) {
+      import('match/Match_Model');
+      $player_info = Match_Model::getPlayerInfo($player_id, false);
+      if (empty($player_info)) {
         $errmsg = "参赛者不存在(player_id={$player_id})";
         $response->send($this->v);
       }
       $this->v->assign('player_id', $player_id);
+      $this->v->assign('player_info', $player_info);
       
       //商品类型
       if (!in_array($goods_type, ['flower','kiss'])) {
@@ -405,7 +408,7 @@ class Trade_Controller extends Controller {
         	$jsApiParams = Wxpay::unifiedOrder($order, $GLOBALS['user']->openid);
         }
         
-        $ret = ['flag'=>'SUC','msg'=>'订单提交成功','order_sn'=>$order_sn,'js_api_params'=>json_decode($jsApiParams)];
+        $ret = ['flag'=>'SUC','msg'=>'订单提交成功','order_id'=>$order_id,'order_sn'=>$order_sn,'js_api_params'=>json_decode($jsApiParams)];
         $response->sendJSON($ret);
       }
       else {

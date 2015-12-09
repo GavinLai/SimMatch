@@ -9,7 +9,7 @@ defined('IN_SIMPHP') or die('Access Denied');
 return [
   'mysql-write' => [
     [
-      'host'	  => 'localhost',
+      'host'	  => '127.0.0.1',
       'port'		=> '3306',
       'user'		=> 'gavin',
       'pass'		=> 'gavin@asdf',
@@ -20,7 +20,7 @@ return [
   ],
   'mysql-read' => [
     [
-      'host'	  => '127.0.0.1',
+      'host'	  => 'localhost',
       'port'		=> '3306',
       'user'		=> 'gavin',
       'pass'		=> 'gavin@asdf',

@@ -34,6 +34,10 @@ class Match_Model extends Model {
     return D()->from("location")->where("`parent`=%d", $province_id)->select("locaid,location")->fetch_array_all();
   }
   
+  static function getDistricts($province_id) {
+    return D()->from("location")->where("`parent`=%d", $province_id)->select("locaid,location")->fetch_array_all();
+  }
+  
   static function getLocationName($locaid) {
     return D()->from("location")->where("`locaid`=%d",$locaid)->select("location")->result();
   }
@@ -315,9 +319,13 @@ class Match_Model extends Model {
     return $list;
   }
   
-  static function getPlayerInfo($player_id) {
+  static function getPlayerInfo($player_id, $include_all = TRUE) {
   	if (empty($player_id)) return false;
-    $rs = D()->from("player")->where("`player_id`=%d", $player_id)->select("*")->get_one();
+  	$where_extra = '';
+  	if (!$include_all) {
+  		$where_extra = " AND `status`='R'";
+  	}
+    $rs = D()->from("player")->where("`player_id`=%d{$where_extra}", $player_id)->select("*")->get_one();
     return $rs;
   }
   
@@ -601,6 +609,11 @@ class Match_Model extends Model {
   	$repostcnt = D()->from("player")->where("player_id=%d", $player_id)->select("repostcnt")->result();
   	$repostcnt = $repostcnt ? : 0;
   	return $repostcnt > 0 ? false : true;
+  }
+  
+  static function getUserAddress($user_id) {
+  	$res = D()->from("member_address")->where("user_id=%d",$user_id)->select()->get_one();
+  	return $res ? : [];
   }
   
 }

@@ -49,6 +49,7 @@ class Match_Controller extends Controller {
       'match/%d/rank'   => 'rank',
       'match/%d/repost' => 'repost',
       'match/%d/repost_confirm' => 'repost_confirm',
+      'match/%d/post_address' => 'post_address',
       'match/player/%d' => 'player',
     ];
   }
@@ -738,6 +739,30 @@ class Match_Controller extends Controller {
   }
   
   /**
+   * 获取城市下地区名列表
+   *
+   * @param Request $request
+   * @param Response $response
+   */
+  function districts(Request $request, Response $response) {
+    $parent_id = $request->get('parent_id', 0);
+    $res = ['flag'=>'FAIL', 'msg'=>''];
+    if (empty($parent_id)) {
+      $res['msg'] = 'parent_id empty';
+      $response->sendJSON($res);
+    }
+    $districts = Match_Model::getDistricts($parent_id);
+    if (empty($districts)) {
+      $res['msg'] = 'parent_id invalid';
+      $response->sendJSON($res);
+    }
+    $res['flag'] = 'SUC';
+    $res['msg']  = '';
+    $res['data'] = $districts;
+    $response->sendJSON($res);
+  }
+  
+  /**
    * 参赛者详情页
    *
    * @param Request $request
@@ -984,7 +1009,185 @@ class Match_Controller extends Controller {
       }
     }
   }
-    
+  
+  /**
+   * 提交地址
+   * 
+   * @param Request $request
+   * @param Response $response
+   */
+  function post_address(Request $request, Response $response)
+  {
+  	$uid = $GLOBALS['user']->uid;
+  	if ($request->is_post()) {
+  		
+  		//送花奖励阶梯
+  		$sendmoney_phases = [30,50,100];
+  		
+  		$address_id= $request->post('address_id', 0);
+  		$match_id  = $request->post('match_id', 0);
+  		$player_id = $request->post('player_id', 0);
+  		$order_id  = $request->post('order_id', 0);
+  		$sendmoney = $request->post('sendmoney', 0);
+  		$backurl   = $request->post('backurl', 0);
+  		$consignee = $request->post('consignee', '');
+  		$mobile    = $request->post('mobile', '');
+  		$province  = $request->post('province', 0);
+  		$city      = $request->post('city', 0);
+  		$address   = $request->post('address', '');
+  		$zipcode   = $request->post('zipcode', '');
+  		
+  		$res = ['flag'=>'FAIL', 'msg'=>'', 'match_id'=>$match_id, 'backurl'=>$backurl];
+  		if (empty($uid)) {
+  			$res['msg'] = '未登录，请先登录';
+  			$response->sendJSON($res);
+  		}
+  		
+  		if (''==$consignee) {
+  			$res['msg'] = '姓名不能为空';
+  			$response->sendJSON($res);
+  		}
+  		
+  		if (''==$mobile) {
+  			$res['msg'] = '手机不能为空';
+  			$response->sendJSON($res);
+  		}
+  		elseif (!preg_match('/^\d{11,14}$/', $mobile)) {
+  			$res['msg'] = '手机号码不正确';
+  			$response->sendJSON($res);
+  		}
+  		
+  		if (empty($province)) {
+  			$res['msg'] = '身份地址不能为空';
+  			$response->sendJSON($res);
+  		}
+  		$province_name = Match_Model::getLocationName($province);
+  		if (empty($city)) {
+  			$res['msg'] = '城市地址不能为空';
+  			$response->sendJSON($res);
+  		}
+  		$city_name = Match_Model::getLocationName($city);
+  		
+  		if (''==$address) {
+  			$res['msg'] = '详细地址不能为空';
+  			$response->sendJSON($res);
+  		}
+  		
+  		if (''!=$zipcode && !preg_match('/^\d{6}$/', $zipcode)) {
+  			$res['msg'] = '邮政编码不正确';
+  			$response->sendJSON($res);
+  		}
+  		
+  		$tbname = 'member_address';
+  		$tbdata = [
+  				'address_name'  => '',
+  				'user_id'       => $uid,
+  				'consignee'     => $consignee,
+  				'country'       => 2,
+  				'country_name'  => '中国',
+  				'province'      => $province,
+  				'province_name' => $province_name,
+  				'city'          => $city,
+  				'city_name'     => $city_name,
+  				'district'      => 0,
+  				'district_name' => '',
+  				'address'       => $address,
+  				'zipcode'       => $zipcode,
+  				'mobile'        => $mobile
+  		];
+  		if (!$address_id) { // Insert mode
+  			$address_id = D()->insert($tbname, $tbdata);
+  		}
+  		else { // Edit mode
+  			D()->update($tbname, $tbdata, ['address_id' => $address_id]);
+  		}
+  		
+  		//送奖品记录
+  		if ($address_id && $sendmoney>=$sendmoney_phases[0] && $player_id && $order_id) {
+  			$phasemoney = $sendmoney_phases[0];
+  			if ($sendmoney>=$sendmoney_phases[1] && $sendmoney<$sendmoney_phases[2]) {
+  				$phasemoney = $sendmoney_phases[1];
+  			}
+  			elseif ($sendmoney>=$sendmoney_phases[2]) {
+  				$phasemoney = $sendmoney_phases[2];
+  			}
+  			$tbdata = [
+  					'user_id'    => $uid,
+  					'address_id' => $address_id,
+  					'player_id'  => $player_id,
+  					'order_id'   => $order_id,
+  					'phase_money'=> $phasemoney,
+  					'true_money' => $sendmoney,
+  					'timeline'   => simphp_time()
+  			];
+  			$rid = D()->from("member_giftpay")->where("`user_id`=%d AND `player_id`=%d AND `order_id`=%d", $uid, $player_id, $order_id)->select('`rid`')->result();
+  			if (!$rid) { //一个订单只有没有生成过记录时才记录，避免重复
+  				D()->insert('member_giftpay', $tbdata);
+  			}
+  			else {
+  				$res['flag'] = 'SUC';
+  				$res['msg'] = '当前订单之前申请过礼物，不能重复申请';
+  				$response->sendJSON($res);
+  			}
+  		}
+  		
+  		$res['flag'] = 'SUC';
+  		$res['msg'] = '地址保存成功！';
+  		$response->sendJSON($res);
+  	}
+  	else {
+  		$this->v->set_tplname('mod_match_post_address');
+  		$this->v->set_page_render_mode(View::RENDER_MODE_GENERAL);
+  		$this->nav_flag1 = 'match_address';
+  		$this->topnav_no = 1;
+  		
+  		$match_id = $request->arg(1);
+  		$sendmoney= $request->get('sendmoney', 0);
+  		$player_id= $request->get('player_id', 0);
+  		$order_id = $request->get('order_id', 0);
+  		$backurl  = $request->get('backurl', '');
+  		$this->v->assign('match_id', $match_id);
+  		$this->v->assign('player_id', $player_id);
+  		$this->v->assign('order_id', $order_id);
+  		$this->v->assign('sendmoney', $sendmoney);
+  		$this->v->assign('backurl', $backurl);
+  		
+  		$player_info = Match_Model::getPlayerInfo($player_id);
+  		$this->v->assign('player_info', $player_info);
+  		
+  		$user_address = Match_Model::getUserAddress($uid);
+  		$this->v->assign('user_address', $user_address);
+  		
+  		$province = Match_Model::getProvinces();
+  		$this->v->assign('province', $province);
+  		
+  		$city_html = '<option value="0">选择城市▼</option>';
+  		if (!empty($user_address)) {
+  			$cities  = Match_Model::getCities($user_address['province']);
+  			$selected='';
+  			foreach ($cities AS $loc) {
+  				if ($loc['locaid']==$user_address['city']) {
+  					$selected=' selected="selected"';
+  				}
+  				else {
+  					$selected='';
+  				}
+  				$city_html .= '<option value="'.$loc['locaid'].'"'.$selected.'>'.$loc['location'].'</option>';
+  			}
+  		}
+  		$this->v->assign('city_html', $city_html);
+  		
+  		$seo = [
+  				'title'   => '地址上传',
+  				'keyword' => '',
+  				'desc'    => '',
+  		];
+  		$this->v->assign('seo', $seo);
+  		
+  		$response->send($this->v);
+  	}
+  }
+   
 }
  
 /*----- END FILE: Match_Controller.php -----*/
