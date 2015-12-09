@@ -6,6 +6,10 @@
  */
 defined('IN_SIMPHP') or die('Access Denied');
 
+define('DAY_SEP', ' ');
+define('DAY_BEGIN', DAY_SEP.'00:00:00');
+define('DAY_END',   DAY_SEP.'23:59:59');
+
 class Member_Controller extends Controller {
 
   private $_nav = 'yh';
@@ -17,6 +21,7 @@ class Member_Controller extends Controller {
   		'member/save'     => 'member_save',
   		'member/loginlog' => 'member_loginlog',
   		'member/player'            => 'player',
+  		'member/giftmember'        => 'giftmember',
   		'member/cities'            => 'cities',
   		'member/player/%d/edit'    => 'player_edit',
   		'member/player/%d/suspend' => 'player_suspend',
@@ -514,6 +519,52 @@ class Member_Controller extends Controller {
   	$res['msg']  = '';
   	$res['data'] = $cities;
   	$response->sendJSON($res);
+  }
+  
+
+  public function giftmember(Request $request, Response $response) {
+  	$this->_nav_second = 'giftmember';
+  	$this->v->set_tplname('mod_member_giftmember');
+  	 
+  	$searchinfo = ['start_date'=>'', 'end_date'=>''];
+  	$searchinfo['start_date']  = $request->get('sdate','');
+  	$searchinfo['end_date']    = $request->get('edate','');
+  	if (strlen($searchinfo['start_date'])!=10) { //format: 'YYYY-MM-DD'
+  		$searchinfo['start_date'] = '';
+  	}
+  	if (strlen($searchinfo['end_date'])!=10) { //format: 'YYYY-MM-DD'
+  		$searchinfo['end_date'] = '';
+  	}
+  	if (!empty($searchinfo['start_date']) && !empty($searchinfo['end_date']) && $searchinfo['start_date'] > $searchinfo['end_date']) { //交换
+  		$t = $searchinfo['start_date'];
+  		$searchinfo['start_date'] = $searchinfo['end_date'];
+  		$searchinfo['end_date'] = $t;
+  	}
+  	$searchstr  = 'sdate='.$searchinfo['start_date'].'&edate='.$searchinfo['end_date'];
+  	$this->v->assign('searchinfo', $searchinfo);
+  	$this->v->assign('searchstr', $searchstr);
+  	 
+  	//BEGIN list order
+  	$orderinfo = $this->v->set_listorder('rid', 'desc');
+  	$extraurl  = $searchstr.'&';
+  	$extraurl .= $orderinfo[2];
+  	$this->v->assign('extraurl', $extraurl);
+  	$this->v->assign('qparturl', "#/member/giftmember");
+  	//END list order
+  	 
+  	// Record List
+  	$limit = 30;
+  	$recordList = Member_Model::getGiftMemberList($orderinfo[0],$orderinfo[1],$limit,$searchinfo);
+  	$recordNum  = count($recordList);
+  	$totalNum   = $GLOBALS['pager_totalrecord_arr'][0];
+  	 
+  	$this->v->assign('recordList', $recordList)
+  	->assign('recordNum', $recordNum)
+  	->assign('totalNum', $totalNum)
+  	->assign('mainsite', C('env.site.mobile'))
+  	;
+  	 
+  	$response->send($this->v);
   }
   
 }

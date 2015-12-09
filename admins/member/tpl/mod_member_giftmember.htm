@@ -1,0 +1,80 @@
+<!--{include_file name="_smenu_member.htm"}-->
+<style type="text/css">
+.withlogo img{width: 28px;}
+</style>
+<script type="text/javascript" src="/misc/js/ext/date/jquery.calendar.js"></script>
+<link href="/misc/js/ext/date/calendars.css" rel="stylesheet" type="text/css" />
+
+<section id="ifr-main" class="ifr-main">
+
+<div class="breadcrumb">当前位置：<span>用户管理</span>&nbsp;&gt;&nbsp;<span>有礼物送花者</span></div>
+
+<div class="boxSearch">
+  <form name="searchform" id="searchform" action="/member/giftmember" method="post" onsubmit="return listsearch(this);">
+    <input type="text" name="start_date" value="<!--{$searchinfo.start_date}-->" class="inptxt inpshort" id="search_start_date" placeholder="开始日期(YYYY-MM-DD)" bj="cBj" />&nbsp;&nbsp;-
+    &nbsp;&nbsp;<input type="text" name="end_date" value="<!--{$searchinfo.end_date}-->" class="inptxt inpshort" id="search_end_date" placeholder="结束日期(YYYY-MM-DD)" bj="cBj" />
+    &nbsp;&nbsp;<input type="submit" name="btnsubmit" value="搜 索" class="frmbtn" />
+    &nbsp;&nbsp;<a href="#/member/giftmember" class="oplink">清除条件</a>
+  </form>
+<script type="text/javascript">
+function listsearch(form) {
+  window.location.hash = '#'+$(form).attr('action')+',sdate='+$('#search_start_date').val().trim()+'&edate='+$('#search_end_date').val().trim();
+  return false;
+}
+$(function(){
+  $("#search_start_date").cld();
+  $("#search_end_date").cld();
+});
+</script>
+</div>
+
+<div class="listnav">
+  <div class="listbtn-grp listbtn-grp-pager"><!--{include_pager url=$qparturl extraurl=$extraurl}--></div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <a href="javascript:void(0);" class="listbtn-link" onclick="return F.hashReload();">
+        <b class="smbg2 listbtn-rc listbtn-rc-1"></b>
+        <b class="smbg2 listbtn-rc listbtn-rc-2"></b>
+        <span>刷新</span>
+      </a>
+    </div>
+  </div>
+  <div class="listbtn-grp">
+    <div class="listbtn">
+      <span>总记录数:&nbsp;<!--{$totalNum}-->&nbsp;&nbsp;当前记录数:&nbsp;<!--{$recordNum}--></span>
+    </div>
+  </div>
+  
+</div>
+<div class="listContent">
+  <table class="listTable">
+  <tr class="rh">
+    <th class="c1 sortfield" data-rel="<!--{$qparturl}-->,<!--{$searchstr}-->&orderby=rid">记录ID<!--{sortfield field='rid'}--></th>
+    <th class="c2">收货人</th>
+    <th class="c3">收货人微信</th>
+    <th class="c4">收货人手机号</th>
+    <th class="c5">收货人地址</th>
+    <th class="c6 sortfield" data-rel="<!--{$qparturl}-->,<!--{$searchstr}-->&orderby=phase_money">奖品组<!--{sortfield field='phase_money'}--></th>
+    <th class="c7 sortfield" data-rel="<!--{$qparturl}-->,<!--{$searchstr}-->&orderby=true_money">实际送花数<!--{sortfield field='true_money'}--></th>
+    <th class="c8">关联订单号</th>
+    <th class="c9 sortfield" data-rel="<!--{$qparturl}-->,<!--{$searchstr}-->&orderby=timeline">申请时间<!--{sortfield field='timeline'}--></th>
+  </tr>
+  <!--{foreach from=$recordList item=it name=itn}-->
+  <tr class="rb">
+    <td class="c1"><!--{$it.rid}--></td>
+    <td class="c2"><!--{$it.consignee}-->(<!--{$it.user_id}-->)</td>
+    <td class="c3 withlogo"><a href="<!--{$it.logo}-->" target="_blank"><img src="<!--{$it.logo}-->" alt=""/></a>&nbsp;<!--{$it.nickname}--></td>
+    <td class="c4"><!--{$it.mobile}--></td>
+    <td class="c5"><!--{$it.province_name}-->省<!--{$it.city_name}-->市<!--{$it.address}--><!--{if $it.zipcode<>''}-->（<!--{$it.zipcode}-->）<!--{/if}--></td>
+    <td class="c6"><!--{$it.phase_money}-->元组</td>
+    <td class="c7"><!--{$it.true_money}-->元组</td>
+    <td class="c8"><!--{$it.order_sn}--></td>
+    <td class="c9"><!--{trans_time time=$it.timeline is_real=1}--></td>
+  </tr>
+  <!--{foreachelse}-->
+  <tr class="rn"><td colspan="9">暂没有相应的记录</td></tr>
+  <!--{/foreach}-->
+  </table>
+</div>
+
+</section>

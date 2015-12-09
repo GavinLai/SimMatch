@@ -117,6 +117,37 @@ class Member_Model extends Model {
 	
 	}
 	
+	static function getGiftMemberList($orderby='rid', $order='DESC', $limit=30 , $query_conds=[]) {
+		
+		$where = '';
+		if (isset($query_conds['start_date']) && $query_conds['start_date']) {
+			$starttime = strtotime($query_conds['start_date'].DAY_BEGIN);
+			$where .= " AND g.`timeline`>={$starttime}";
+		}
+		if (isset($query_conds['end_date']) && $query_conds['end_date']) {
+			$endtime = strtotime($query_conds['end_date'].DAY_END);
+			$where .= " AND g.`timeline`<={$endtime}";
+		}
+		
+		$sql    = "SELECT g.rid,g.player_id,g.order_id,g.phase_money,g.true_money,g.timeline,addr.*,p.truename,m.nickname,m.logo,o.order_sn
+		           FROM {member_giftpay} g INNER JOIN {member_address} addr ON g.address_id=addr.address_id
+		                INNER JOIN {player} p ON g.player_id=p.player_id
+		                INNER JOIN {member} m ON g.user_id=m.uid
+		                INNER JOIN {order_info} o ON g.order_id=o.order_id
+		           WHERE 1 {$where} ORDER BY `%s` %s";
+    $sqlcnt = "SELECT COUNT(g.rid) AS rcnt FROM {member_giftpay} g WHERE 1 {$where}";
+	
+    $result = D()->pager_query($sql,$limit,$sqlcnt,0,$orderby,$order)->fetch_array_all();
+    if (!empty($result)) {
+    	foreach ($result AS &$it) {
+    		
+    	}
+    }
+	
+		return $result;
+	
+	}
+	
 	static function getPlayerInfo($player_id) {
 		if(empty($player_id)) return [];
 		$rs = D()->get_one("SELECT * FROM {player} WHERE `player_id`=%d", $player_id);
