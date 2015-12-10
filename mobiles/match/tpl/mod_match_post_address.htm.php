@@ -6,7 +6,7 @@
 </script>
 <div class="match-address-tit">您刚给<span><?=$player_info['truename']?></span>送了<em><?=$sendmoney?></em>花，请填写收货地址，以便收取<span><?=$player_info['truename']?></span>托平台发出的礼物，以表感谢！
 <?php if(!empty($user_address)):?>
-<div class="match-address-tip">您之前已上传地址，可直接点右上角“<em>保存</em>”...</div>
+<div class="match-address-tip">您之前已上传收货地址，可直接点右上角“<em>保存</em>”...</div>
 <?php endif;?>
 </div>
 <div class="match-join match-address">
@@ -102,7 +102,7 @@ function change_city(obj) {
 	return false;
 }
 function cancel_address(obj) {
-	if(confirm('确定放弃保存？')) {
+	if(confirm("取消意味着放弃这次获取礼品的机会，\n确定放弃？")) {
 		var _back = "<?php echo U('match/'.$match_id);?>";
 		var _backurl = $('#frm_backurl').val();
 		if (''!=_backurl) _back = _backurl;

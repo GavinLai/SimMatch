@@ -3,11 +3,14 @@ test.php
 test.html
 test*.php
 test*.html
+t*.html
+t*.php
 a/*
 var/*
 conf-pro
 conf-pro/*
 incs/libs/wxpay/cert/*
+shelldetect.*
 
 # Eclipse
 .buildpath

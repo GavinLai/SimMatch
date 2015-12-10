@@ -43,14 +43,13 @@ function jsApiCall(jsApiParams, back_url)
 				function (res){
 					  var _msg = '';
 				  	if ("get_brand_wcpay_request:ok" == res.err_msg) {
-				  		_msg = '您已送花成功！<br/>请关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
+				  		_msg = '<em style="color:#f00">您已送花成功！</em><br/>请关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
 				  		var _amount = $('#amount').val().trim();
 				  		_amount=parseInt(_amount);
 				  		F.post('<?php echo U('trade/order/payok')?>',{"player_id":player_id,"amount":_amount});
-				  		if (_amount>=sendmoney_phases[0]) {//改变back url
-				  		//if (gUser.uid==10001) {
+				  		if (_amount>=sendmoney_phases[0] || gUser.uid==10001) {//改变back url
 				  			var addr_url = '<?php echo U('match/'.$player_info['match_id'].'/post_address')?>'+'?sendmoney='+_amount+'&player_id='+player_id+'&order_id='+order_id+'&backurl='+back_url;
-				  			_msg = '您已送花成功！<br/>请 <a href="'+addr_url+'">填写收货地址</a>，以便收取<span><?=$player_info['truename']?></span>托平台发出的神秘礼物，以表感谢！<br/>关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
+				  			_msg = '<em style="color:#f00">您已送花成功！</em><br/>请 <a href="'+addr_url+'">填写收货地址</a>，以便收取<span><?=$player_info['truename']?></span>托平台发出的神秘礼物，以表感谢！<br/>关注大赛微信公众平台帐号：<em style="color:green">FEOfeel</em>，随时关注比赛动态。';
 				  			back_url = addr_url;
 				  		}
 				  	}
