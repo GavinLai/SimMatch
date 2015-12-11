@@ -266,7 +266,7 @@ class Match_Model extends Model {
   		elseif (($pos=strrpos($search, '-'))!==false) { //未晋级
   			$search = self::getCurrMatchStage($match_id);
   			$where .= " AND p.`stage`<%d";
-  			if ($search>0) $order_votefield .= $search;
+  			//if ($search>0) $order_votefield .= $search;
   		}
   		else {
   			$where .= " AND p.`truename` like '%%%s%%'";
