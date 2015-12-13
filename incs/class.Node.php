@@ -153,6 +153,9 @@ class Node {
   	$now = simphp_time();
   	$votedcnt   = 0;
   	$maxvotenum = 5; //一个用户一天可以对每个女神投5次票，可连续投
+  	$voteinterval = 60*60*2; //投票间隔限制(单位：秒)
+  	$spaminterval = 1; //作弊检测时间(单位：秒)
+  	$maybespam    = 0; //可能作弊标志
   
   	if ('vote'==$act && !$nocheck) {
   
@@ -166,23 +169,27 @@ class Node {
   			return -11;
   		}
   
+  		//查找前一次投票时间
+  		$now = simphp_time();
+  		$latest = D()->from("action")->where("`action`='%s' AND `player_id`=%d AND `uid`=%d", $act, $player_id, $uid)
+  		             ->select("MAX(`timeline`) AS maxacttime")->result();
+  		$diff = $now - $latest;
+  		if ($diff < $spaminterval) {
+  			$maybespam = $spaminterval;
+  			//return -13;
+  		}
   		/*
-  		 //查找前一次投票时间
-  		 $now = simphp_time();
-  		 $latest = D()->from("action")->where("`action`='%s' AND `player_id`=%d AND `uid`=%d", $act, $player_id, $uid)->order_by("`aid` DESC")->limit(1)
-  		 ->select("`timeline`")->result();
-  		 if (($now - $latest) < 60*120) {
-  		 return -12;
-  		 }
-  		 */
-  
+  		if ($diff < $voteinterval) {
+  		  return -12;
+  		}
+  		*/
   	}
   
   	if (in_array($act, ['vote','flower','kiss'])) {
   		 
   		$aid = 0;
   		if (!$norecord) {
-  			$aid = D()->insert("action", ['action'=>$act, 'player_id'=>$player_id, 'inc'=>$inc, 'uid'=>$uid, 'timeline'=>$now]);
+  			$aid = D()->insert("action", ['action'=>$act, 'player_id'=>$player_id, 'inc'=>$inc, 'uid'=>$uid, 'timeline'=>$now, 'spam'=>$maybespam]);
   		}
   		 
   		if ($norecord || $aid) {

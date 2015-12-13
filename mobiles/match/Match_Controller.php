@@ -1002,6 +1002,9 @@ class Match_Controller extends Controller {
         elseif (-12==$ret) {
           $res['msg']  = '连续投票时间间隔要在2小时以上';
         }
+        elseif (-13==$ret) {
+        	$res['msg']  = '投票太频繁，请稍后再试';
+        }
         else {
           $res['msg']  = '发生未知错误';
         }
