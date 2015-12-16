@@ -274,7 +274,8 @@ a.alink { color: #b5359d; }
 .hl2 .ranktip { color: #b5359d; }
 .player-list .imgc img { width: 100%; display:inline-block;text-align: center;vertical-align: middle; }
 .player-list .fot { padding: 5px; margin-top: 3px;line-height: 18px;border-top: 1px dotted #ccc; }
-.player-list .fot .p { display: inline-block;width: 50%;text-align: left;font-size: 12px;font-size: 1.2rem; }
+.player-list .fot .p { display: inline-block;width: 55%;text-align: left;font-size: 12px;font-size: 1.2rem; }
+.player-list .fot .p.rt { width: 45%; }
 .paging { margin: 5px;-webkit-box-shadow: 0 0 10px rgba(0, 0, 0, .4);-moz-box-shadow: 0 0 10px rgba(0, 0, 0, .4);box-shadow: 0 0 10px rgba(0, 0, 0, .4); }
 .paging .pgbtn { display: inline-block;width: 20%;height: 40px;line-height: 40px;text-align: center;background: #fff;color: #333;border: none;padding: 0;margin: 0; }
 .paging .pgbtn.disable { color: #ccc; }
