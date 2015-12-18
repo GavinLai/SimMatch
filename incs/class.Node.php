@@ -154,7 +154,7 @@ class Node {
   	$votedcnt   = 0;
   	$maxvotenum = 5; //一个用户一天可以对每个女神投5次票，可连续投
   	$voteinterval = 60*60*2; //投票间隔限制(单位：秒)
-  	$spaminterval = 1; //作弊检测时间(单位：秒)
+  	$spaminterval = 2; //作弊检测时间(单位：秒)
   	$maybespam    = 0; //可能作弊标志
   
   	if ('vote'==$act && !$nocheck) {
@@ -175,8 +175,12 @@ class Node {
   		             ->select("MAX(`timeline`) AS maxacttime")->result();
   		$diff = $now - $latest;
   		if ($diff < $spaminterval) {
-  			$maybespam = $spaminterval;
+  			$maybespam = $spaminterval-$diff;
   			//return -13;
+  		}
+  		$ua = Request::ua();
+  		if (empty($ua)) {
+  			$maybespam = 100;
   		}
   		/*
   		if ($diff < $voteinterval) {
