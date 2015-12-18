@@ -108,7 +108,7 @@ $(function(){
 		if (ajaxing) return false;
 		ajaxing = true;
 		var oThis = this;
-		F.post('<?php echo U('match/vote')?>', {"player_id": player_id}, function(ret){
+		F.post('<?php echo U('match/vote')?>', {"player_id": player_id,"token":gData.token}, function(ret){
 			ajaxing = false;
 			if (ret.flag=='SUC') {
 				myAlert(ret.msg);

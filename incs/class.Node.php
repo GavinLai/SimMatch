@@ -143,12 +143,13 @@ class Node {
    * @param integer $inc
    * @param boolean $nocheck，是否不检查
    * @param boolean $norecord，是否不记录
+   * @param array $extra，额外参数记录
    * @return number
    *   -11: vote超过了最大次数(5)
    *   -12: vote时间间隔没超过120分钟
    *  -100: 操作失败
    */
-  static function action($act, $player_id, $uid, $inc = 1, $nocheck = FALSE, $norecord = FALSE) {
+  static function action($act, $player_id, $uid, $inc = 1, $nocheck = FALSE, $norecord = FALSE, $extra = array()) {
   
   	$now = simphp_time();
   	$votedcnt   = 0;
@@ -178,8 +179,7 @@ class Node {
   			$maybespam = $spaminterval-$diff;
   			//return -13;
   		}
-  		$ua = Request::ua();
-  		if (empty($ua)) {
+  		if (isset($extra['maybe_spam']) && $extra['maybe_spam']) {
   			$maybespam = 100;
   		}
   		/*

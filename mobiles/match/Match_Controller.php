@@ -952,6 +952,7 @@ class Match_Controller extends Controller {
   {
     if ($request->is_post()) { //提交数据
       $player_id = $request->post('player_id', 0);
+      $token = $request->post('token', '');
       
       $res = ['flag'=>'FAIL', 'msg'=>''];
       if (empty($player_id)) {
@@ -965,7 +966,9 @@ class Match_Controller extends Controller {
         $response->sendJSON($res);
       }
       
-      $ret = Node::action('vote', $player_id, $uid);
+      $maybe_spam = $request->is_token_post() ? 0 : 1;
+      
+      $ret = Node::action('vote', $player_id, $uid, 1, FALSE, FALSE, ['maybe_spam'=>$maybe_spam]);
       if ($ret >= 0) {
       	
       	$time_from  = 0;
