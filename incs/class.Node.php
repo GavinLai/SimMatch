@@ -157,6 +157,7 @@ class Node {
   	$voteinterval = 60*60*2; //投票间隔限制(单位：秒)
   	$spaminterval = 2; //作弊检测时间(单位：秒)
   	$maybespam    = 0; //可能作弊标志
+  	$limitvotetime = strtotime('2015-12-20 23:50:00');
   
   	if ('vote'==$act && !$nocheck) {
   
@@ -165,7 +166,7 @@ class Node {
   
   		//查找当天已经投的次数
   		$votedcnt = D()->from("action")->where("`player_id`=%d AND `action`='%s' AND `uid`=%d AND `timeline`>=%d AND `timeline`<%d", $player_id,$act,$uid,$today_start,$today_end)
-  		               ->select("SUM(`inc`) AS cnt")->result();
+  		               ->select("COUNT(`aid`) AS cnt")->result();
   		if ($votedcnt >= $maxvotenum) {
   			return -11;
   		}
@@ -208,10 +209,17 @@ class Node {
   			if ($act == 'vote') {
   				$player_stage = D()->from("player")->where("player_id=%d", $player_id)->select("`stage`")->result();
   				if (in_array($player_stage, ['1','2'])) { //同步更新晋级赛程的统计票数字段
-  					D()->query("UPDATE {player} SET votecnt{$player_stage}=votecnt{$player_stage}+%d WHERE player_id=%d", $inc, $player_id);
+  					if ($now < $limitvotetime || (isset($extra['from']) && in_array($extra['from'], ['sendflower','admin']))) {
+  						D()->query("UPDATE {player} SET votecnt{$player_stage}=votecnt{$player_stage}+%d WHERE player_id=%d", $inc, $player_id);
+  					}
+  					else {
+  						if (0==$votedcnt) { //最后十分钟仅保留1人1票
+  							D()->query("UPDATE {player} SET votecnt{$player_stage}=votecnt{$player_stage}+%d WHERE player_id=%d", $inc, $player_id);
+  						}
+  					}
   				}
   				if (!$nocheck) {
-  					return $maxvotenum - $votedcnt - $inc; //需检查限制的，返回当前剩余可投票数；否则留最后默认范围$aid
+  					return $maxvotenum - $votedcnt - $inc; //需检查限制的，返回当前剩余可投票数；否则留最后默认返回$aid
   				}
   			}
   			elseif ($act == 'flower') {
@@ -220,7 +228,7 @@ class Node {
   				// 2、数量不限、时间不限
   				 
   				// 送票(x2)
-  				self::action('vote', $player_id, $uid, $inc*2, TRUE, TRUE);
+  				self::action('vote', $player_id, $uid, $inc*2, TRUE, TRUE, ['from'=>'sendflower']);
   			}
   			elseif ($act == 'kiss') {
   				 

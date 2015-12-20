@@ -425,7 +425,7 @@ class Member_Controller extends Controller {
   		}
   		
   		if ($inc_vote) {
-  			$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE);
+  			$action_id = Node::action('vote', $player_id, $uid, $inc_vote, TRUE, FALSE, ['from'=>'admin']);
   			$ret['msg'].= '，增加了'.$inc_vote.'票';
   		}
   		if ($inc_flower) {
