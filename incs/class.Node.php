@@ -157,7 +157,8 @@ class Node {
   	$voteinterval = 60*60*2; //投票间隔限制(单位：秒)
   	$spaminterval = 2; //作弊检测时间(单位：秒)
   	$maybespam    = 0; //可能作弊标志
-  	$limitvotetime = strtotime('2015-12-20 23:50:00');
+  	$limitvotetime = strtotime('2015-12-20 23:55:00');
+  	$stopvotetime  = strtotime('2015-12-21 00:00:00');
   
   	if ('vote'==$act && !$nocheck) {
   
@@ -200,7 +201,9 @@ class Node {
   		if ($norecord || $aid) {
   			 
   			//更新player投票数
-  			D()->query("UPDATE {player} SET {$act}cnt={$act}cnt+%d WHERE player_id=%d", $inc, $player_id);
+  			if ($now < $stopvotetime) {
+  				D()->query("UPDATE {player} SET {$act}cnt={$act}cnt+%d WHERE player_id=%d", $inc, $player_id);
+  			}
   			 
   			//更新node总投票数
   			$match_id = D()->from("player")->where("player_id=%d", $player_id)->select("match_id")->result();
@@ -208,7 +211,7 @@ class Node {
   			 
   			if ($act == 'vote') {
   				$player_stage = D()->from("player")->where("player_id=%d", $player_id)->select("`stage`")->result();
-  				if (in_array($player_stage, ['1','2'])) { //同步更新晋级赛程的统计票数字段
+  				if ($now < $stopvotetime && in_array($player_stage, ['1','2'])) { //同步更新晋级赛程的统计票数字段
   					if ($now < $limitvotetime || (isset($extra['from']) && in_array($extra['from'], ['sendflower','admin']))) {
   						D()->query("UPDATE {player} SET votecnt{$player_stage}=votecnt{$player_stage}+%d WHERE player_id=%d", $inc, $player_id);
   					}

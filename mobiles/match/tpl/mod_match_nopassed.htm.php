@@ -6,7 +6,7 @@
 
 <?php else:?>
 
-<p class="player-pass-tip"><em><?=$totalnum?></em>名选手未晋级(可争取"话题女王奖")&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
+<p class="player-pass-tip"><em><?=$totalnum?></em>名选手未晋级(可争夺"话题女神奖")&nbsp;<a href="<?php echo U('match/'.$the_nid)?>" class="alink">☜返回首页</a></p>
 <div class="player-list" id="player-pass-list">
 	<!--{AJAXPART}-->
   <?php foreach ($player_pass_list AS $it):?>
