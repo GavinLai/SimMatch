@@ -147,6 +147,8 @@ class Node {
    * @return number
    *   -11: vote超过了最大次数(5)
    *   -12: vote时间间隔没超过120分钟
+   *   -13: 投票太频繁
+   *   -14: 投票已截止
    *  -100: 操作失败
    */
   static function action($act, $player_id, $uid, $inc = 1, $nocheck = FALSE, $norecord = FALSE, $extra = array()) {
@@ -161,6 +163,10 @@ class Node {
   	$stopvotetime  = strtotime('2015-12-21 00:00:00');
   
   	if ('vote'==$act && !$nocheck) {
+  		
+  		if ($now > $stopvotetime) {
+  			return -14;
+  		}
   
   		$today_start = shorttotime('jt');
   		$today_end   = shorttotime('mt');

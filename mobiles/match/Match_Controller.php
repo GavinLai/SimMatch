@@ -1008,6 +1008,9 @@ class Match_Controller extends Controller {
         elseif (-13==$ret) {
         	$res['msg']  = '投票太频繁，请稍后再试';
         }
+        elseif (-14==$ret) {
+        	$res['msg']  = '本次大赛投票已截止，感谢您的关注';
+        }
         else {
           $res['msg']  = '发生未知错误';
         }
